@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
 import { Form, Input, Button } from 'antd';
+import { DeleteFilled, DeleteOutlined, DownOutlined, EditOutlined, MergeCellsOutlined, PlusSquareOutlined, RetweetOutlined, SwapOutlined, UpOutlined, VideoCameraAddOutlined, VideoCameraOutlined } from '@ant-design/icons';
+
 
 import 'highlight.js/styles/monokai.css';
 import hljs from 'highlight.js';
@@ -10,46 +12,44 @@ import CopyIcon from '@/assets/CopyIcon';
 import { callCreateLesson, callFetchLesson } from '@/config/api';
 import UpArrow from '@/assets/Icons/UpArrow';
 import DownArrow from '@/assets/Icons/DownArrow';
-
-
-const modules = {
-    syntax: {
-        //@ts-ignore
-        highlight: (text) => {
-            const hlight = hljs.highlightAuto(text).value;
-            return hlight;
-        },
-    },
-    toolbar: [
-        [{ header: [1, 2, false] }],
-        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-        ['blockquote', 'code-block'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link'],
-    ],
-}
-
-const formats = [
-    'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'link', 'code-block'
-];
+import QuillEditor from './QuillEditor';
+import CourseMemu from './CourseMenu';
 
 const arrayTitle: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-const arrayLesson: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const arrayLesson: number[] = [1, 2, 3, 4, 5, 6, 7];
+
+
+const LessonTitle = () => {
+    const [title, setTitle] = useState('');
+    useEffect(() => {
+        // Gọi API lấy dữ liệu từ database
+        setTitle('Title from database')
+    }, [])
+    return (
+        <>
+            <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
+            <Input
+                value={title}
+                onChange={(e) => {
+                    console.log('check e: ', e.target.value);
+                    setTitle(e.target.value);
+                }}
+            />
+        </>
+    );
+}
 
 const CourseManage = () => {
-    const quillRef = useRef(null);
     const rightMenuRef = useRef(null);
     const menuScrollRef = useRef(null);
-    const [editorValue, setEditorValue] = useState(''); // Giá trị ban đầu
-    const [title, setTitle] = useState('');
     const [feContent, setFeContent] = useState('');
-
-
-    const keyExam: string = '1';
-    const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({ [keyExam]: true });
-    console.log("check openSections[1]: ", openSections['1']);
+    const keyExam: string = `1`;
+    const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({ ['1']: true });
     const [openingLesson, setOpeningLesson] = useState<{ [key: string]: boolean }>({});
+    const [lessonTitle, setLessonTitle] = useState('');
+    const handleSetTitle = (value: string) => {
+        setLessonTitle(value);
+    }
 
     const handleScrollMenu = (event: React.MouseEvent<HTMLElement>, id: string, openStatus: boolean = false) => {
         const target = event.currentTarget;
@@ -83,11 +83,6 @@ const CourseManage = () => {
     }
 
 
-
-    const handleOnchange = (value: any) => {
-        setEditorValue(value);
-    }
-
     const handleRenderHTML = async () => {
         // const lesson = {
         //     'title': title,
@@ -102,7 +97,6 @@ const CourseManage = () => {
 
         const res = (await callFetchLesson(6)).data;
         if (res?.data?.content) {
-            // setTitle(`${res.data.title} (from database)`);
             const innerHTML = addedButtonHTML(res.data.content);
             setFeContent(innerHTML);
         }
@@ -180,122 +174,25 @@ const CourseManage = () => {
         >
             <header className='header'></header>
             <div
-                style={{ width: '62%', textAlign: 'center', padding: '0 15px', height: '5000px', boxSizing: 'border-box' }}
+                style={{ width: '70%', textAlign: 'center', padding: '0 15px', height: '5000px', boxSizing: 'border-box' }}
             >
-                <Input onChange={(e) => setTitle(e.target.value)}
-                    value={title}
-                />
-                <ReactQuill
-                    value={editorValue} // Truyền giá trị ban đầu vào đây
-                    modules={modules}
-                    formats={formats}
-                    onChange={handleOnchange}
-                    ref={quillRef}
-                />
-                <Button
-                    //@ts-ignore
-                    onClick={() => handleRenderHTML()}
-                    style={{ marginTop: '20px' }}
-                >
-                    Click Here
-                </Button>
-                <div
-                    className='client-ql-editor'
-                    dangerouslySetInnerHTML={{ __html: feContent }}
-                />
-            </div >
-            <div
-                ref={rightMenuRef}
-                style={{
-                    width: '38%',
-                    position: 'fixed',
-                    top: 60,
-                    right: 0,
-                    boxSizing: 'border-box',
-                    borderLeft: '1px solid #cccccc',
-                    backgroundColor: '#f7f9fa',
-                }}
-            >
-                <div
-                    style={{
-                        height: '55px',
-                        lineHeight: '55px',
-                        textAlign: 'center',
-                        background: '#fff',
-                        boxSizing: 'border-box',
-                        border: '1px solid #cccccc'
-                    }}>
-                    Course
-                </div>
-                <div
-                    ref={menuScrollRef}
-                    style={{
-                        width: '100%',
-                        height: 'calc(100vh - 60px - 55px)',
-                        boxSizing: 'border-box',
-                        overflowY: 'auto',
-                        background: 'white'
-                    }}
-                >
-                    <div
-                        style={{
-                            width: '100%',
-                            boxSizing: 'border-box',
-                            paddingLeft: '1px',
-                            backgroundColor: '#f7f9fa'
-                        }}
+                <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
+                    <LessonTitle />
+                    <QuillEditor />
+                    <Button
+                        //@ts-ignore
+                        onClick={() => handleRenderHTML()}
+                        style={{ marginTop: '20px' }}
                     >
-                        {
-                            arrayTitle.map((t) => (
-                                <div className='chapter' key={t}>
-                                    <div
-                                        className='chapter-title'
-                                        style={{
-                                            backgroundColor: '#f7f9fa',
-                                            minHeight: '65px'
-                                        }}
-                                        onClick={(e) => {
-                                            setOpenSections((prev) => {
-                                                const copyState = prev;
-                                                return {
-                                                    ...copyState,
-                                                    [t.toString()]: !copyState[t.toString()],
-                                                }
-                                            })
-                                            handleScrollMenu(e, "chapter", openSections[t.toString()]);
-                                        }}
-                                    >
-                                        Chapter {t < 10 ? `0${t}` : t} {/* Định dạng tiêu đề cho 2 chữ số */}
-                                        <span>{openSections[t.toString()] ? <UpArrow /> : <DownArrow />}</span>
-                                    </div>
-                                    <div
-                                        className='chapter-lesson'
-                                        style={{
-                                            display: openSections[t.toString()] ? "block" : "none",
-                                        }}
-                                    >
-                                        <ul>
-                                            {arrayLesson.map((l) => (
-                                                <li
-                                                    className={`lesson-title ${t === 1 && l === 5 ? 'lesson-opening' : ''}`}
-                                                    key={t + '-' + l}
-                                                    onClick={(e) => {
-                                                        const liKey = t.toString() + l.toString();
-                                                        setOpeningLesson({ liKey: true })
-                                                        handleScrollMenu(e, 'lesson')
-                                                    }}
-                                                >
-                                                    {`Lesson ${(t - 1) * 10 + l}`}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
-                            ))
-                        }
-                    </div>
+                        Click Here
+                    </Button>
+                    <div
+                        className='client-ql-editor'
+                        dangerouslySetInnerHTML={{ __html: feContent }}
+                    />
                 </div>
-            </div>
+            </div >
+            {/* <CourseMemu /> */}
         </div >
     );
 }
@@ -332,7 +229,7 @@ const addedButtonHTML = (innerHTML: string) => {
                 btn.appendChild(btnTxt);
                 //@ts-ignore
                 block.style.position = 'relative';
-                block.appendChild(btn)
+                block.appendChild(btn);
             }
         });
     }

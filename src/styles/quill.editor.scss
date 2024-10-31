@@ -1,0 +1,16 @@
+.quill-editor-custom {
+    width: 100%;
+
+    .quill {
+        position: relative !important;
+        padding-top: 43px;
+
+        .ql-toolbar {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            background-color: white;
+            z-index: 1;
+        }
+    }
+}

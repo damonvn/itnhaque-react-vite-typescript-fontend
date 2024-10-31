@@ -10,46 +10,163 @@
         background-color: #2d2f31;
     }
 
-    // .chapter:not(:first-child) {
-    //     border-top: 1px solid #cccccc;
-    // }
-
-
     .chapter {
         border-bottom: 1px solid #cccccc;
 
         .chapter-title {
             background-color: #f7f9fa;
-            min-height: 65px;
-            padding-left: 10px;
-            line-height: 65px;
+            padding-top: 8px;
             position: relative;
-            padding-right: 15px;
+            padding-left: 16px;
+            padding-right: 35px;
 
-            span {
+            .down-arrrow {
                 position: absolute;
-                right: 5px;
+                top: 12px;
+                right: 12px;
+            }
+
+            .up-arrow {
+                position: absolute;
+                top: 13px;
+                right: 12px;
+            }
+
+            .chapter-action {
+                display: flex;
+                justify-content: right;
+                margin-left: -8px;
+                margin-right: -36px;
+                margin-top: -8px;
+
+                span {
+                    padding: 10px 10px 10px 10px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    opacity: 0.7;
+                }
+
+                .delete {
+                    &:hover {
+                        color: red;
+                        opacity: 1;
+                    }
+
+                    margin-right: 5px;
+                }
+
+                .edit {
+                    &:hover {
+                        color: orange;
+                        opacity: 1;
+                    }
+                }
+
+                .add {
+                    &:hover {
+                        color: #007BFF;
+                        opacity: 1;
+                    }
+                }
             }
         }
 
+
+
         .chapter-lesson {
+            background-color: #ffffff;
+
             ul {
                 list-style-type: none;
                 margin: 0;
                 padding: 0;
 
                 li {
+                    position: relative;
                     min-height: 45px;
-                    line-height: 45px;
                     padding-left: 10px;
+                    font-size: 14px;
+                    padding-left: 16px;
+                    padding-top: 8px;
+                    padding-bottom: 0px;
+
+
+                    &:hover {
+                        background-color: #e0e6ea;
+                    }
+
+                    .lesson-action {
+                        text-align: right;
+
+                        span {
+                            span {
+                                padding: 8px;
+                                cursor: pointer;
+
+                                &:hover {
+                                    color: blue;
+                                }
+                            }
+
+                        }
+                    }
                 }
 
                 .lesson-opening {
                     background-color: #d1d7dc;
                 }
+
+                .lesson-action {
+                    display: flex;
+                    justify-content: right;
+                    align-items: center;
+
+                    span {
+                        padding: 8px;
+                        opacity: 0.7;
+                    }
+
+                    .add {
+                        &:hover {
+                            color: #007BFF;
+                        }
+                    }
+
+                    .edit {
+                        &:hover {
+                            opacity: 1;
+                            color: orange;
+                        }
+                    }
+
+                    .swap {
+                        &:hover {
+                            color: purple;
+                        }
+                    }
+
+                    .delete {
+                        margin-right: 5px;
+
+                        &:hover {
+                            opacity: 1;
+                            color: red;
+                        }
+                    }
+
+                    .lesson-video {
+                        margin-left: 8px;
+                        margin-right: 5px;
+
+                        &:hover {
+                            opacity: 1;
+                            color: green;
+                        }
+                    }
+                }
             }
 
-            background-color: #ffffff;
+
         }
     }
 }

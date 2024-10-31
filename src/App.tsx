@@ -1,18 +1,22 @@
-import { useEffect, useState } from 'react'
 import {
     createBrowserRouter,
-    Outlet,
     RouterProvider,
-} from "react-router-dom";
+} from 'react-router-dom';
 import '@/styles/App.css'
-import AdminLayout from './components/admin/layout.admin';
-import CourseManage from './components/admin/course/course.manage';
+import AdminLayout from './components/admin/share/AdminLayout';
+import CourseManage from './components/admin/course/CourseManage';
+import QuillEditor from './components/admin/course/QuillEditor';
 
 const App = () => {
 
     const router = createBrowserRouter([
         {
-            path: "/admin",
+            path: '/',
+            element: <QuillEditor />,
+            errorElement: <div>404 Not Found</div>,
+        },
+        {
+            path: '/admin',
             element: <AdminLayout />,
             errorElement: <div>404 Not Found</div>,
             children: [
@@ -20,21 +24,21 @@ const App = () => {
                     index: true, element: <div>Admin Layout</div>
                 },
                 {
-                    path: "course",
+                    path: 'course',
                     element: <div>manage course page</div>
                 },
                 {
-                    path: "user",
+                    path: 'user',
                     element: <div>manage user page</div>
                 },
                 {
-                    path: "role",
+                    path: 'role',
                     element: <div>manage role page</div>
                 },
             ],
         },
         {
-            path: "course-manage",
+            path: 'course-manage',
             element: <CourseManage />,
             errorElement: <div>404 Not Found</div>,
         }

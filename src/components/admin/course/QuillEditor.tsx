@@ -220,7 +220,6 @@ const Editor: React.FC<Props> = ({ quillRef, modules }) => {
                     textAlign: 'center',
                     marginLeft: 'auto',
                     marginRight: 'auto',
-                    minHeight: '5000px'
                 }}
                 value={editorValue}
                 modules={modules}
@@ -228,8 +227,19 @@ const Editor: React.FC<Props> = ({ quillRef, modules }) => {
                 ref={quillRef}
                 onChange={handleOnchange}
             />
-            <button onClick={() => getLesson()}>Preview</button>
-            <div dangerouslySetInnerHTML={{ __html: lesson }} />
+            <button
+                style={{
+                    marginTop: '15px',
+                    marginBottom: '15px'
+                }}
+                onClick={() => getLesson()}
+            >Preview</button>
+            <div
+                style={{
+                    textAlign: 'left'
+                }}
+                dangerouslySetInnerHTML={{ __html: lesson }}
+            />
         </div>
     );
 }

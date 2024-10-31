@@ -12,7 +12,9 @@ const App = () => {
     const router = createBrowserRouter([
         {
             path: '/',
-            element: <QuillEditor />,
+            element: <div style={{ width: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
+                <QuillEditor />
+            </div>,
             errorElement: <div>404 Not Found</div>,
         },
         {

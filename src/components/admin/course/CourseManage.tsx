@@ -102,26 +102,6 @@ const CourseManage = () => {
         }
     }
 
-    const handleScrollLessson = (element: HTMLElement) => {
-        const scrollPosition = element.getBoundingClientRect().top;
-        //@ts-ignore
-        const rightTop = rightMenuRef.current.getBoundingClientRect().top;
-
-        setTimeout(() => {
-            //@ts-ignore
-            menuScrollRef.current.scrollTop = scrollPosition - rightTop - 56;
-        });
-
-    }
-
-    useEffect(() => {
-        const liOpen = window.document.querySelector('.lesson-opening')
-        if (liOpen) {
-            //@ts-ignore
-            handleScrollLessson(liOpen);
-        }
-    }, [])
-
     useEffect(() => {
         const handleScroll = () => {
             if (rightMenuRef.current) {
@@ -179,20 +159,9 @@ const CourseManage = () => {
                 <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
                     <LessonTitle />
                     <QuillEditor />
-                    <Button
-                        //@ts-ignore
-                        onClick={() => handleRenderHTML()}
-                        style={{ marginTop: '20px' }}
-                    >
-                        Click Here
-                    </Button>
-                    <div
-                        className='client-ql-editor'
-                        dangerouslySetInnerHTML={{ __html: feContent }}
-                    />
                 </div>
             </div >
-            {/* <CourseMemu /> */}
+            <CourseMemu />
         </div >
     );
 }

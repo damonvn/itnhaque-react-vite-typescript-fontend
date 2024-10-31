@@ -12,39 +12,37 @@ const arrayLesson: number[] = [1, 2, 3, 4, 5, 6, 7];
 
 
 const CourseMemu = () => {
-    const rightMenuRef = useRef(null);
-    const menuScrollRef = useRef(null);
+    const rightMenuRef = useRef<HTMLDivElement>(null);
+    const menuScrollRef = useRef<HTMLDivElement>(null);
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({ ['1']: true });
     const [openingLesson, setOpeningLesson] = useState<{ [key: string]: boolean }>({});
 
     const handleScrollMenu = (event: React.MouseEvent<HTMLElement>, id: string, openStatus: boolean = false) => {
         const target = event.currentTarget;
         if (target && rightMenuRef.current) {
-            setTimeout(() => {
-                const scrollPosition = target.getBoundingClientRect().top;
-                //@ts-ignore
-                const rightTop = rightMenuRef.current.getBoundingClientRect().top;
-                if (menuScrollRef.current) {
-                    if (id === "chapter") {
-                        if (!openStatus) {
-                            //@ts-ignore
-                            menuScrollRef.current.scrollTop += scrollPosition - rightTop - 55;
-                        }
-                    } else if (id === "lesson") {
+            const scrollPosition = target.getBoundingClientRect().top;
+            //@ts-ignore
+            const rightTop = rightMenuRef.current.getBoundingClientRect().top;
+            if (menuScrollRef.current instanceof HTMLDivElement) {
+                if (id === "chapter") {
+                    if (!openStatus) {
                         //@ts-ignore
-                        menuScrollRef.current.scrollTop += scrollPosition - rightTop - 56;
-                        const lessons = document.querySelectorAll('.chapter-lesson .lesson-title');
-                        if (lessons.length > 0) {
-                            lessons.forEach((item, index) => {
-                                if (item.classList.contains('lesson-opening')) {
-                                    item.classList.remove('lesson-opening');
-                                }
-                            });
-                        }
-                        target.classList.add('lesson-opening');
+                        menuScrollRef.current.scrollTop += scrollPosition - rightTop - 55;
                     }
+                } else if (id === "lesson") {
+                    //@ts-ignore
+                    menuScrollRef.current.scrollTop += scrollPosition - rightTop - 56;
+                    const lessons = document.querySelectorAll('.chapter-lesson .lesson-title');
+                    if (lessons.length > 0) {
+                        lessons.forEach((item, index) => {
+                            if (item.classList.contains('lesson-opening')) {
+                                item.classList.remove('lesson-opening');
+                            }
+                        });
+                    }
+                    target.classList.add('lesson-opening');
                 }
-            })
+            }
         }
     }
 
@@ -52,7 +50,7 @@ const CourseMemu = () => {
         const scrollPosition = element.getBoundingClientRect().top;
         //@ts-ignore
         const rightTop = rightMenuRef.current.getBoundingClientRect().top;
-        if (menuScrollRef.current) {
+        if (menuScrollRef.current instanceof HTMLDivElement) {
             //@ts-ignore
             menuScrollRef.current.scrollTop = scrollPosition - rightTop - 56;
         }
@@ -84,7 +82,7 @@ const CourseMemu = () => {
                             rightMenuRef.current.style.top = '0px';
                         }
                     }
-                    if (menuScrollRef.current) {
+                    if (menuScrollRef.current instanceof HTMLDivElement) {
                         //@ts-ignore
                         if (menuScrollRef.current.style.height !== 'calc(100vh - 55px)') {
                             //@ts-ignore
@@ -103,43 +101,31 @@ const CourseMemu = () => {
     return (
         <div
             ref={rightMenuRef}
-            style={{
-                width: '30%',
-                position: 'fixed',
-                top: 60,
-                right: 0,
-                boxSizing: 'border-box',
-                borderLeft: '1px solid #cccccc',
-                backgroundColor: '#f7f9fa',
-            }}
+            className='course-menu'
+            style={{ top: 60 }}
         >
-            <div
-                style={{
-                    height: '55px',
-                    lineHeight: '55px',
-                    textAlign: 'center',
-                    background: '#fff',
-                    boxSizing: 'border-box',
-                    border: '1px solid #cccccc'
-                }}>
+            <div className='menu-close'>
                 Course
             </div>
             <div
+                className='menu-container'
                 ref={menuScrollRef}
                 style={{
                     width: '100%',
                     height: 'calc(100vh - 60px - 55px)',
                     boxSizing: 'border-box',
                     overflowY: 'auto',
-                    background: 'white'
+                    background: 'white',
                 }}
             >
                 <div
+                    className='menu-content'
                     style={{
                         width: '100%',
                         boxSizing: 'border-box',
                         paddingLeft: '1px',
-                        backgroundColor: '#f7f9fa'
+                        backgroundColor: '#f7f9fa',
+                        overflowX: 'hidden'
                     }}
                 >
                     {
@@ -193,10 +179,6 @@ const CourseMemu = () => {
                                             } else {
                                                 return (
                                                     <li
-                                                        style={{
-                                                            // display: 'flex',
-                                                            // justifyContent: 'space-between',
-                                                        }}
                                                         className={`lesson-title ${t === 1 && l === 5 ? 'lesson-opening' : ''}`}
                                                         key={t + '-' + l}
                                                         onClick={(e) => {

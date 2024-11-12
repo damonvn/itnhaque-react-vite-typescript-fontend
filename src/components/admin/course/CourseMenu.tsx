@@ -1,21 +1,67 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { DeleteOutlined, EditOutlined, MergeCellsOutlined, PlusSquareOutlined, VideoCameraAddOutlined, VideoCameraOutlined } from '@ant-design/icons';
-
-
-
 import '@/styles/course.manage.scss'
 import UpArrow from '@/assets/Icons/UpArrow';
 import DownArrow from '@/assets/Icons/DownArrow';
+import { callFetchCourse } from '@/config/api';
+import { useLocation, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { IChapter } from '@/types/backend';
 
-const arrayTitle: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-const arrayLesson: number[] = [1, 2, 3, 4, 5, 6, 7];
+
+interface Props {
+    courseId: number;
+    contentId: number
+    chapterId: number
+}
 
 
-const CourseMemu = () => {
+
+
+const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) => {
     const rightMenuRef = useRef<HTMLDivElement>(null);
     const menuScrollRef = useRef<HTMLDivElement>(null);
-    const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({ ['1']: true });
-    const [openingLesson, setOpeningLesson] = useState<{ [key: string]: boolean }>({});
+    const [openSections, setOpenSections] = useState<{ [key: number]: boolean }>({ [0]: true });
+    const [arrayChapter, setArrayChapter] = useState<IChapter[]>([]);
+    const [courseLoaded, setCourseLoaded] = useState(false);
+
+
+    const location = useLocation();
+    const isEditLesson = location.pathname.includes('/lesson/edit');
+
+    const navigate = useNavigate();
+    const handleLessonClick = (lessonId: number) => {
+        navigate(`/course-manage/lesson/${lessonId}`);
+    }
+
+
+
+    useEffect(() => {
+        const getCourse = async (id: number) => {
+            if (id !== 0) {
+                const res = (await callFetchCourse(id)).data;
+                if (res?.data?.chapters) {
+                    setArrayChapter(res.data.chapters);
+                }
+                setCourseLoaded(true);
+            }
+
+        }
+        getCourse(courseId);
+    }, [courseId])
+
+    useEffect(() => {
+        if (courseLoaded && !isEditLesson) {
+            const openingLesson = document.querySelector('.lesson-opening');
+            if (openingLesson && rightMenuRef.current) {
+                const scrollPosition = openingLesson.getBoundingClientRect().top;
+                //@ts-ignore
+                const rightTop = rightMenuRef.current.getBoundingClientRect().top;
+                //@ts-ignore
+                menuScrollRef.current.scrollTop += scrollPosition - rightTop - 56;
+            }
+        }
+    }, [courseLoaded])
 
     const handleScrollMenu = (event: React.MouseEvent<HTMLElement>, id: string, openStatus: boolean = false) => {
         const target = event.currentTarget;
@@ -129,8 +175,11 @@ const CourseMemu = () => {
                     }}
                 >
                     {
-                        arrayTitle.map((t) => (
-                            <div className='chapter' key={t}>
+                        //@ts-ignore
+                        arrayChapter.length > 0 && arrayChapter.map((c, index) => (
+                            <div className='chapter' key={index}
+                                style={{ display: (isEditLesson && c.id !== chapterId) ? 'none' : '' }}
+                            >
                                 <div
                                     className='chapter-title'
                                     onClick={(e) => {
@@ -138,69 +187,57 @@ const CourseMemu = () => {
                                             const copyState = prev;
                                             return {
                                                 ...copyState,
-                                                [t.toString()]: !copyState[t.toString()],
+                                                [index]: !copyState[index],
                                             }
                                         })
-                                        handleScrollMenu(e, "chapter", openSections[t.toString()]);
+                                        handleScrollMenu(e, "chapter", openSections[index]);
                                     }}
                                 >
-                                    Chapter Viet Nam Hello That's I'm Which 111 1 Is The Country The Best The11 {t < 10 ? `0${t}` : t} {/* Định dạng tiêu đề cho 2 chữ số */}
-
-                                    {openSections[t.toString()] ? <span className='up-arrow'><UpArrow /></span> : <span className="down-arrrow"><DownArrow /></span>}
+                                    {`Chapter ${index > 0 ? index + 1 : '0' + (index + 1).toString()}: ${c.title}`}
+                                    {openSections[index] ? <span className='up-arrow'><UpArrow /></span> : <span className="down-arrrow"><DownArrow /></span>}
                                     <div className='chapter-action'>
                                         <PlusSquareOutlined className='add' />
-                                        <EditOutlined className='edit' />
-                                        <DeleteOutlined className='delete' />
+                                        <EditOutlined className='edit' style={{ marginRight: arrayChapter.length === 1 ? '5px' : '0px' }} />
+                                        {arrayChapter.length > 1 && <DeleteOutlined className='delete' />}
                                     </div>
                                 </div>
 
                                 <div
                                     className='chapter-lesson'
                                     style={{
-                                        display: openSections[t.toString()] ? "block" : "none",
+                                        display: openSections[index] ? "block" : "none",
                                     }}
                                 >
                                     <ul>
-                                        {arrayLesson.map((l) => {
-                                            if (arrayLesson.length === 1) {
-                                                return (
-                                                    <li
-                                                        className={`lesson-title ${t === 1 && l === 5 ? 'lesson-opening' : ''}`}
-                                                        key={t + '-' + l}
+                                        {c.lessons.map((l, lIndex) =>
+                                            <li
+                                                style={{ display: (isEditLesson && l.contentId !== contentId) ? 'none' : '' }}
+                                                className={'lesson-title'}
+                                                key={l.id}
+
+                                                onClick={(e) => {
+                                                    handleLessonClick(l.id);
+                                                    handleScrollMenu(e, 'lesson')
+                                                }}
+                                            >
+                                                {`${index * 10 + lIndex + 1}. ${l.title}`}
+                                                <div
+                                                    className='lesson-action'
+                                                >
+                                                    <PlusSquareOutlined className='add' />
+                                                    <EditOutlined
+                                                        className='edit'
                                                         onClick={(e) => {
-                                                            const liKey = t.toString() + l.toString();
-                                                            setOpeningLesson({ [liKey]: true })
-                                                            handleScrollMenu(e, 'lesson')
+                                                            e.stopPropagation();
+                                                            navigate(`/course-manage/lesson/edit/${l.contentId}`);
                                                         }}
-                                                    >
-                                                        {`Only One Lesson`}
-                                                    </li>
-                                                )
-                                            } else {
-                                                return (
-                                                    <li
-                                                        className={`lesson-title ${t === 1 && l === 5 ? 'lesson-opening' : ''}`}
-                                                        key={t + '-' + l}
-                                                        onClick={(e) => {
-                                                            const liKey = t.toString() + l.toString();
-                                                            setOpeningLesson({ [liKey]: true })
-                                                            handleScrollMenu(e, 'lesson')
-                                                        }}
-                                                    >
-                                                        {`Lesson ${(t - 1) * 10 + l}`}
-                                                        <div
-                                                            className='lesson-action'
-                                                        >
-                                                            <PlusSquareOutlined className='add' />
-                                                            <EditOutlined className='edit' />
-                                                            <MergeCellsOutlined className='swap' />
-                                                            <DeleteOutlined className='delete' />
-                                                            <VideoCameraAddOutlined className='lesson-video' />
-                                                        </div>
-                                                    </li>
-                                                );
-                                            }
-                                        })}
+                                                    />
+                                                    <MergeCellsOutlined className='swap' />
+                                                    {c.lessons.length > 1 && <DeleteOutlined className='delete' />}
+                                                    <VideoCameraAddOutlined className='lesson-video' />
+                                                </div>
+                                            </li>
+                                        )}
                                     </ul>
                                 </div>
                             </div>
@@ -210,6 +247,6 @@ const CourseMemu = () => {
             </div>
         </div>
     );
-}
+})
 
-export default CourseMemu;
+export default CourseMenu;

@@ -2,8 +2,10 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
 import 'highlight.js/styles/monokai.css';
 import hljs from 'highlight.js';
-import { useEffect, useRef, useState } from 'react';
-import '@/styles/quill.editor.scss'
+import React, { useEffect, useRef, useState, memo } from 'react';
+import '@/styles/quill.editor.scss';
+import { IContent, ILesson } from '@/types/backend';
+
 
 
 const formats = [
@@ -11,7 +13,19 @@ const formats = [
     'list', 'bullet', 'link', 'code-block'
 ];
 
-const QuillEditor = () => {
+
+interface IProps {
+    id: number;
+    courseId: number;
+    title: string;
+    content: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: string;
+    updatedBy?: string;
+}
+
+const QuillEditor: React.FC<IContent> = memo((props) => {
     const quillRef = useRef(null);
     const handleImageUpload = () => {
         const url = prompt('Enter the Image URL:');
@@ -20,7 +34,6 @@ const QuillEditor = () => {
             const quill = quillRef.current?.getEditor();
 
             if (quill) {
-                console.log('check quill: ', quill);
                 const range = quill.getSelection();  // Lấy vị trí con trỏ
                 if (range) {
                     const editorContainer = quill.root;
@@ -39,6 +52,8 @@ const QuillEditor = () => {
             }
         }
     };
+
+
 
     const handleVideoEmbed = () => {
         const url = prompt('Enter the video URL:');
@@ -117,18 +132,21 @@ const QuillEditor = () => {
 
     return (
         <>
-            < Editor quillRef={quillRef} modules={modules} />
+            < Editor quillRef={quillRef} modules={modules} content={props.content} />
         </>
     );
-}
+})
 
 
 interface Props {
-    quillRef: any; // Một prop kiểu string
+    quillRef: any;
     modules: any;
+    content: string
 }
 
-const Editor: React.FC<Props> = ({ quillRef, modules }) => {
+const Editor: React.FC<Props> = ({ quillRef, modules, content }) => {
+
+    console.log('check content content: ', content);
     //@ts-ignore
     const [lesson, setLesson] = useState('');
     const [editorValue, setEditorValue] = useState(''); // Giá trị ban đầu
@@ -145,6 +163,10 @@ const Editor: React.FC<Props> = ({ quillRef, modules }) => {
             setLesson(html);  // Cập nhật giá trị lesson
         }
     };
+
+    useEffect(() => {
+        setEditorValue(content);
+    }, [])
 
     useEffect(() => {
         const handleScroll = () => {

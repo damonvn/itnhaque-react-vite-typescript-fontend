@@ -8,12 +8,11 @@ import CourseManage from './components/admin/course/CourseManage';
 import QuillEditor from './components/admin/course/QuillEditor';
 
 const App = () => {
-
     const router = createBrowserRouter([
         {
             path: '/',
             element: <div style={{ width: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-                <QuillEditor />
+                Home Page
             </div>,
             errorElement: <div>404 Not Found</div>,
         },
@@ -26,16 +25,13 @@ const App = () => {
                     index: true, element: <div>Admin Layout</div>
                 },
                 {
-                    path: 'course',
-                    element: <div>manage course page</div>
+                    path: 'course', element: <div>manage course page</div>
                 },
                 {
-                    path: 'user',
-                    element: <div>manage user page</div>
+                    path: 'user', element: <div>manage user page</div>
                 },
                 {
-                    path: 'role',
-                    element: <div>manage role page</div>
+                    path: 'role', element: <div>manage role page</div>
                 },
             ],
         },
@@ -43,7 +39,18 @@ const App = () => {
             path: 'course-manage',
             element: <CourseManage />,
             errorElement: <div>404 Not Found</div>,
-        }
+            children: [
+                {
+                    index: true, element: <CourseManage />
+                },
+                {
+                    path: "lesson/:id", element: <CourseManage />
+                },
+                {
+                    path: "lesson/edit/:id", element: <CourseManage />
+                }
+            ],
+        },
     ]);
 
     return (

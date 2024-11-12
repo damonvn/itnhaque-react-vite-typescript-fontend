@@ -3,53 +3,59 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
 import { Form, Input, Button } from 'antd';
 import { DeleteFilled, DeleteOutlined, DownOutlined, EditOutlined, MergeCellsOutlined, PlusSquareOutlined, RetweetOutlined, SwapOutlined, UpOutlined, VideoCameraAddOutlined, VideoCameraOutlined } from '@ant-design/icons';
-
+import { useParams, useLocation } from 'react-router-dom';
 
 import 'highlight.js/styles/monokai.css';
-import hljs from 'highlight.js';
 import '@/styles/course.manage.scss'
 import CopyIcon from '@/assets/CopyIcon';
-import { callCreateLesson, callFetchLesson } from '@/config/api';
-import UpArrow from '@/assets/Icons/UpArrow';
-import DownArrow from '@/assets/Icons/DownArrow';
+import { callCreateLesson, callFetchContent, callFetchLesson } from '@/config/api';
 import QuillEditor from './QuillEditor';
 import CourseMemu from './CourseMenu';
+import { IContent, ILesson } from '@/types/backend';
 
 const arrayTitle: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 const arrayLesson: number[] = [1, 2, 3, 4, 5, 6, 7];
 
 
-const LessonTitle = () => {
-    const [title, setTitle] = useState('');
-    useEffect(() => {
-        // Gọi API lấy dữ liệu từ database
-        setTitle('Title from database')
-    }, [])
-    return (
-        <>
-            <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
-            <Input
-                value={title}
-                onChange={(e) => {
-                    console.log('check e: ', e.target.value);
-                    setTitle(e.target.value);
-                }}
-            />
-        </>
-    );
+const initialContent: IContent = {
+    id: 0,
+    courseId: 0,
+    chapterId: 0,
+    title: '',
+    content: ''
 }
 
 const CourseManage = () => {
     const rightMenuRef = useRef(null);
     const menuScrollRef = useRef(null);
     const [feContent, setFeContent] = useState('');
-    const keyExam: string = `1`;
+    const [courseId, setCourseId] = useState<number>(0)
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({ ['1']: true });
     const [openingLesson, setOpeningLesson] = useState<{ [key: string]: boolean }>({});
     const [lessonTitle, setLessonTitle] = useState('');
+    const [lessonContent, setLessonContent] = useState<IContent>(initialContent);
+
+    const location = useLocation();
+    const isEditLesson = location.pathname.includes('/lesson/edit');
     const handleSetTitle = (value: string) => {
         setLessonTitle(value);
     }
+
+    const { id } = useParams();
+
+    const getLesson = async (contentId: number) => {
+        const res = await callFetchContent(contentId);
+        if (res && res.data) {
+            setCourseId(res.data.courseId);
+            setLessonTitle(res.data.title);
+            setLessonContent(res.data);
+        }
+    }
+
+    useEffect(() => {
+        //@ts-ignore
+        getLesson(+id);
+    }, [id])
 
     const handleScrollMenu = (event: React.MouseEvent<HTMLElement>, id: string, openStatus: boolean = false) => {
         const target = event.currentTarget;
@@ -95,11 +101,11 @@ const CourseManage = () => {
         //     setEditorValue(res.data.content);
         // }
 
-        const res = (await callFetchLesson(6)).data;
-        if (res?.data?.content) {
-            const innerHTML = addedButtonHTML(res.data.content);
-            setFeContent(innerHTML);
-        }
+        // const res = (await callFetchLesson(6)).data;
+        // if (res?.data?.content) {
+        //     const innerHTML = addedButtonHTML(res.data.content);
+        //     setFeContent(innerHTML);
+        // }
     }
 
     useEffect(() => {
@@ -157,51 +163,75 @@ const CourseManage = () => {
                 style={{ width: '70%', textAlign: 'center', padding: '0 15px', height: '5000px', boxSizing: 'border-box' }}
             >
                 <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-                    <LessonTitle />
-                    <QuillEditor />
+
+                    {
+                        isEditLesson ?
+                            <>
+                                <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
+                                <Input
+                                    value={lessonTitle}
+                                    onChange={(e) => {
+                                        setLessonTitle(e.target.value);
+                                    }}
+                                />
+                                {
+                                    lessonContent.id !== 0 &&
+                                    <QuillEditor
+                                        id={lessonContent.id}
+                                        courseId={lessonContent.courseId}
+                                        title={lessonContent.title}
+                                        content={lessonContent.content}
+                                    />
+                                }
+                            </>
+                            :
+                            <div style={{ textAlign: 'left', border: '1px solid red', marginTop: '15px' }}>{lessonContent.content}</div>
+                    }
+
+
                 </div>
             </div >
-            <CourseMemu />
+            <CourseMemu courseId={courseId} chapterId={lessonContent.chapterId} contentId={lessonContent.id} />
         </div >
     );
 }
 
 export default CourseManage;
 
-const addedButtonHTML = (innerHTML: string) => {
-    const div = document.createElement('div')
-    div.innerHTML = innerHTML;
-    const blocks = div.querySelectorAll('.ql-syntax');
-    if (blocks.length > 0) {
-        //@ts-ignore
-        blocks.forEach((block) => {
-            if (!block.classList.contains('copy-btn')) {
-                const btn = document.createElement('button');
-                btn.className = 'copy-btn';
-                btn.style.position = 'absolute';
-                btn.style.top = '6px';
-                btn.style.right = '8px';
-                btn.style.width = '105px';
-                btn.style.height = '26px';
-                btn.style.display = 'flex';
-                btn.style.alignItems = 'center';
-                btn.style.justifyContent = 'center';
-                btn.style.borderRadius = '4px';
-                const btnIcon = document.createElement('span');
-                btnIcon.style.marginRight = '5px';
-                btnIcon.style.paddingTop = '2.5px';
-                btnIcon.innerHTML = CopyIcon();
-                const btnTxt = document.createElement('span');
-                btnTxt.textContent = 'Copy code';
-                btnTxt.style.fontSize = '12px';
-                btn.appendChild(btnIcon);
-                btn.appendChild(btnTxt);
-                //@ts-ignore
-                block.style.position = 'relative';
-                block.appendChild(btn);
-            }
-        });
-    }
-    return div.innerHTML;
-}
+// const addedButtonHTML = (innerHTML: string) => {
+//     const div = document.createElement('div')
+//     div.innerHTML = innerHTML;
+//     const blocks = div.querySelectorAll('.ql-syntax');
+//     if (blocks.length > 0) {
+//         //@ts-ignore
+//         blocks.forEach((block) => {
+//             if (!block.classList.contains('copy-btn')) {
+//                 const btn = document.createElement('button');
+//                 btn.className = 'copy-btn';
+//                 btn.style.position = 'absolute';
+//                 btn.style.top = '6px';
+//                 btn.style.right = '8px';
+//                 btn.style.width = '105px';
+//                 btn.style.height = '26px';
+//                 btn.style.display = 'flex';
+//                 btn.style.alignItems = 'center';
+//                 btn.style.justifyContent = 'center';
+//                 btn.style.borderRadius = '4px';
+//                 const btnIcon = document.createElement('span');
+//                 btnIcon.style.marginRight = '5px';
+//                 btnIcon.style.paddingTop = '2.5px';
+//                 btnIcon.innerHTML = CopyIcon();
+//                 const btnTxt = document.createElement('span');
+//                 btnTxt.textContent = 'Copy code';
+//                 btnTxt.style.fontSize = '12px';
+//                 btn.appendChild(btnIcon);
+//                 btn.appendChild(btnTxt);
+//                 //@ts-ignore
+//                 block.style.position = 'relative';
+//                 block.appendChild(btn);
+//             }
+//         });
+//     }
+//     return div.innerHTML;
+// }
 

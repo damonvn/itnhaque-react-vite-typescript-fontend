@@ -1,4 +1,5 @@
 import axiosClient from "axios";
+import { AxiosResponse } from 'axios';
 
 /**
  * Creates an initial 'axios' instance with custom settings.

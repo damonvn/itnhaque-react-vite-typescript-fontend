@@ -1,26 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
-import { Form, Input, Button } from 'antd';
-import { DeleteFilled, DeleteOutlined, DownOutlined, EditOutlined, MergeCellsOutlined, PlusSquareOutlined, RetweetOutlined, SwapOutlined, UpOutlined, VideoCameraAddOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { useParams, useLocation } from 'react-router-dom';
 
+import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
 import 'highlight.js/styles/monokai.css';
 import '@/styles/course.manage.scss'
-import CopyIcon from '@/assets/CopyIcon';
-import { callCreateLesson, callFetchContent, callFetchLesson } from '@/config/api';
+
+import { callFetchContent } from '@/config/api';
 import QuillEditor from './QuillEditor';
 import CourseMemu from './CourseMenu';
-import { IContent, ILesson } from '@/types/backend';
-
-const arrayTitle: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-const arrayLesson: number[] = [1, 2, 3, 4, 5, 6, 7];
-
+import { IContent } from '@/types/backend';
+import { useLocation, useParams } from 'react-router-dom';
+import CopyIcon from '@/assets/CopyIcon';
 
 const initialContent: IContent = {
     id: 0,
     courseId: 0,
     chapterId: 0,
+    lessonId: 0,
     title: '',
     content: ''
 }
@@ -28,18 +23,11 @@ const initialContent: IContent = {
 const CourseManage = () => {
     const rightMenuRef = useRef(null);
     const menuScrollRef = useRef(null);
-    const [feContent, setFeContent] = useState('');
     const [courseId, setCourseId] = useState<number>(0)
-    const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({ ['1']: true });
-    const [openingLesson, setOpeningLesson] = useState<{ [key: string]: boolean }>({});
-    const [lessonTitle, setLessonTitle] = useState('');
     const [lessonContent, setLessonContent] = useState<IContent>(initialContent);
 
     const location = useLocation();
     const isEditLesson = location.pathname.includes('/lesson/edit');
-    const handleSetTitle = (value: string) => {
-        setLessonTitle(value);
-    }
 
     const { id } = useParams();
 
@@ -47,7 +35,6 @@ const CourseManage = () => {
         const res = await callFetchContent(contentId);
         if (res && res.data) {
             setCourseId(res.data.courseId);
-            setLessonTitle(res.data.title);
             setLessonContent(res.data);
         }
     }
@@ -57,56 +44,7 @@ const CourseManage = () => {
         getLesson(+id);
     }, [id])
 
-    const handleScrollMenu = (event: React.MouseEvent<HTMLElement>, id: string, openStatus: boolean = false) => {
-        const target = event.currentTarget;
-        if (target && rightMenuRef.current) {
-            setTimeout(() => {
-                const scrollPosition = target.getBoundingClientRect().top;
-                //@ts-ignore
-                const rightTop = rightMenuRef.current.getBoundingClientRect().top;
-                if (menuScrollRef.current) {
-                    if (id === "chapter") {
-                        if (!openStatus) {
-                            //@ts-ignore
-                            menuScrollRef.current.scrollTop += scrollPosition - rightTop - 55;
-                        }
-                    } else if (id === "lesson") {
-                        //@ts-ignore
-                        menuScrollRef.current.scrollTop += scrollPosition - rightTop - 56;
-                        const lessons = document.querySelectorAll('.chapter-lesson .lesson-title');
-                        if (lessons.length > 0) {
-                            lessons.forEach((item, index) => {
-                                if (item.classList.contains('lesson-opening')) {
-                                    item.classList.remove('lesson-opening');
-                                }
-                            });
-                        }
-                        target.classList.add('lesson-opening');
-                    }
-                }
-            })
-        }
-    }
-
-
-    const handleRenderHTML = async () => {
-        // const lesson = {
-        //     'title': title,
-        //     'content': quillContent
-        // }
-
-        // const res = (await callCreateLesson(lesson)).data;
-        // if (res?.data) {
-        //     setTitle(`${res.data.title} (from database)`);
-        //     setEditorValue(res.data.content);
-        // }
-
-        // const res = (await callFetchLesson(6)).data;
-        // if (res?.data?.content) {
-        //     const innerHTML = addedButtonHTML(res.data.content);
-        //     setFeContent(innerHTML);
-        // }
-    }
+    const innerHTML = addedButtonHTML(lessonContent.content);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -152,7 +90,85 @@ const CourseManage = () => {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    })
+    }, [])
+
+    useEffect(() => {
+        const handleLessonScroll = () => {
+            const codeBlocks = document.querySelectorAll('.admin-lesson-content .ql-syntax');
+            const lessonBlock = document.querySelector('.admin-lesson-content');
+            if (codeBlocks.length > 0 && lessonBlock) {
+                //@ts-ignore
+                const lessonBlockLeft = lessonBlock.getBoundingClientRect().left;
+                //@ts-ignore
+                const lessonBlockWidth = lessonBlock.getBoundingClientRect().width;
+
+
+                codeBlocks.forEach(codeBlock => {
+                    const copyBTN = codeBlock.querySelector('.copy-btn');
+                    if (copyBTN) {
+                        const bottom = codeBlock.getBoundingClientRect().bottom;
+                        //@ts-ignore
+                        copyBTN.style.transition = 'opacity 0.05s ease';
+                        console.log('check bottom: ', bottom);
+                        if (bottom > 40) {
+                            //@ts-ignore
+                            if (copyBTN.style.opacity !== 1) {
+                                //@ts-ignore
+                                copyBTN.style.opacity = 1;
+                            }
+                            const top = codeBlock.getBoundingClientRect().top
+                            console.log('check top: ', top);
+                            if (top <= 0) {
+                                //@ts-ignore
+                                if (copyBTN.style.position !== 'fixed') {
+                                    //@ts-ignore
+                                    copyBTN.style.position = 'fixed';
+                                    //@ts-ignore
+                                    copyBTN.style.top = '6px';
+                                    //@ts-ignore
+                                    copyBTN.style.left = `${lessonBlockLeft + lessonBlockWidth - 8 - 105}px`;
+                                    //@ts-ignore
+                                    copyBTN.style.right = 'auto';
+                                }
+                            } else {
+                                //@ts-ignore
+                                if (copyBTN.style.position === 'fixed') {
+                                    //@ts-ignore
+                                    copyBTN.style.position = 'absolute';
+                                    //@ts-ignore
+                                    copyBTN.style.top = '6px';
+                                    //@ts-ignore
+                                    copyBTN.style.left = 'auto'
+                                    //@ts-ignore
+                                    copyBTN.style.right = '8px';
+                                }
+                            }
+                        } else {
+                            //@ts-ignore
+                            // if (copyBTN.style.visibility !== 'hidden') {
+                            //     //@ts-ignore
+                            //     copyBTN.style.visibility = 'hidden';
+                            // }
+                            if (copyBTN.style.opacity !== 0) {
+                                //@ts-ignore
+                                copyBTN.style.opacity = 0;
+                            }
+                        }
+
+                    }
+                });
+            }
+        };
+
+        // Gán sự kiện scroll cho window
+        window.addEventListener('scroll', handleLessonScroll);
+
+        // Cleanup sự kiện khi component bị unmount
+        return () => {
+            window.removeEventListener('scroll', handleLessonScroll);
+        };
+
+    }, [])
 
     return (
         <div
@@ -167,28 +183,34 @@ const CourseManage = () => {
                     {
                         isEditLesson ?
                             <>
-                                <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
+                                {/* <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
                                 <Input
                                     value={lessonTitle}
                                     onChange={(e) => {
                                         setLessonTitle(e.target.value);
                                     }}
-                                />
+                                /> */}
                                 {
                                     lessonContent.id !== 0 &&
                                     <QuillEditor
                                         id={lessonContent.id}
-                                        courseId={lessonContent.courseId}
                                         title={lessonContent.title}
                                         content={lessonContent.content}
+                                        courseId={lessonContent.courseId}
+                                        chapterId={lessonContent.chapterId}
+                                        lessonId={lessonContent.lessonId}
                                     />
                                 }
                             </>
                             :
-                            <div style={{ textAlign: 'left', border: '1px solid red', marginTop: '15px' }}>{lessonContent.content}</div>
+                            <div
+                                style={{ textAlign: 'left', marginTop: '10px' }}
+                                className='admin-lesson-content'
+                                dangerouslySetInnerHTML={{ __html: innerHTML }}
+                            />
+
+
                     }
-
-
                 </div>
             </div >
             <CourseMemu courseId={courseId} chapterId={lessonContent.chapterId} contentId={lessonContent.id} />
@@ -198,40 +220,39 @@ const CourseManage = () => {
 
 export default CourseManage;
 
-// const addedButtonHTML = (innerHTML: string) => {
-//     const div = document.createElement('div')
-//     div.innerHTML = innerHTML;
-//     const blocks = div.querySelectorAll('.ql-syntax');
-//     if (blocks.length > 0) {
-//         //@ts-ignore
-//         blocks.forEach((block) => {
-//             if (!block.classList.contains('copy-btn')) {
-//                 const btn = document.createElement('button');
-//                 btn.className = 'copy-btn';
-//                 btn.style.position = 'absolute';
-//                 btn.style.top = '6px';
-//                 btn.style.right = '8px';
-//                 btn.style.width = '105px';
-//                 btn.style.height = '26px';
-//                 btn.style.display = 'flex';
-//                 btn.style.alignItems = 'center';
-//                 btn.style.justifyContent = 'center';
-//                 btn.style.borderRadius = '4px';
-//                 const btnIcon = document.createElement('span');
-//                 btnIcon.style.marginRight = '5px';
-//                 btnIcon.style.paddingTop = '2.5px';
-//                 btnIcon.innerHTML = CopyIcon();
-//                 const btnTxt = document.createElement('span');
-//                 btnTxt.textContent = 'Copy code';
-//                 btnTxt.style.fontSize = '12px';
-//                 btn.appendChild(btnIcon);
-//                 btn.appendChild(btnTxt);
-//                 //@ts-ignore
-//                 block.style.position = 'relative';
-//                 block.appendChild(btn);
-//             }
-//         });
-//     }
-//     return div.innerHTML;
-// }
-
+const addedButtonHTML = (innerHTML: string) => {
+    const div = document.createElement('div')
+    div.innerHTML = innerHTML;
+    const blocks = div.querySelectorAll('.ql-syntax');
+    if (blocks.length > 0) {
+        //@ts-ignore
+        blocks.forEach((block) => {
+            if (!block.classList.contains('copy-btn')) {
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.style.position = 'absolute';
+                btn.style.top = '6px';
+                btn.style.right = '8px';
+                btn.style.width = '105px';
+                btn.style.height = '26px';
+                btn.style.display = 'flex';
+                btn.style.alignItems = 'center';
+                btn.style.justifyContent = 'center';
+                btn.style.borderRadius = '4px';
+                const btnIcon = document.createElement('span');
+                btnIcon.style.marginRight = '5px';
+                btnIcon.style.paddingTop = '2.5px';
+                btnIcon.innerHTML = CopyIcon();
+                const btnTxt = document.createElement('span');
+                btnTxt.textContent = 'Copy code';
+                btnTxt.style.fontSize = '12px';
+                btn.appendChild(btnIcon);
+                btn.appendChild(btnTxt);
+                //@ts-ignore
+                block.style.position = 'relative';
+                block.appendChild(btn);
+            }
+        });
+    }
+    return div.innerHTML;
+}

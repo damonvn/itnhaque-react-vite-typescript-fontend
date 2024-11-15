@@ -2,9 +2,12 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
 import 'highlight.js/styles/monokai.css';
 import hljs from 'highlight.js';
-import React, { useEffect, useRef, useState, memo } from 'react';
+import React, { useEffect, useRef, useState, memo, useMemo } from 'react';
 import '@/styles/quill.editor.scss';
 import { IContent, ILesson } from '@/types/backend';
+import { callUpdateLessonContent } from '@/config/api';
+import { Input } from 'antd';
+import CopyIcon from '@/assets/CopyIcon';
 
 
 
@@ -14,18 +17,14 @@ const formats = [
 ];
 
 
-interface IProps {
-    id: number;
-    courseId: number;
-    title: string;
-    content: string;
-    createdAt?: string;
-    updatedAt?: string;
-    createdBy?: string;
-    updatedBy?: string;
-}
-
 const QuillEditor: React.FC<IContent> = memo((props) => {
+    const [lessonTitle, setLessonTitle] = useState('');
+    const [editorValue, setEditorValue] = useState(''); // Giá trị ban đầu
+
+    const handleOnchange = (value: any) => {
+        setEditorValue(value);
+    }
+
     const quillRef = useRef(null);
     const handleImageUpload = () => {
         const url = prompt('Enter the Image URL:');
@@ -52,8 +51,6 @@ const QuillEditor: React.FC<IContent> = memo((props) => {
             }
         }
     };
-
-
 
     const handleVideoEmbed = () => {
         const url = prompt('Enter the video URL:');
@@ -106,7 +103,7 @@ const QuillEditor: React.FC<IContent> = memo((props) => {
         }
     };
 
-    const modules = {
+    const modules = useMemo(() => ({
         syntax: {
             //@ts-ignore
             highlight: (text) => {
@@ -128,142 +125,128 @@ const QuillEditor: React.FC<IContent> = memo((props) => {
                 link: handleLinkInsert
             }
         }
+    }), []);
+
+    const handleUpdateLessonContent = async () => {
+        const content: IContent = {
+            id: props.id,
+            title: lessonTitle,
+            lessonId: props.lessonId,
+            chapterId: props.chapterId,
+            courseId: props.courseId,
+            content: editorValue,
+
+        }
+        const res = await callUpdateLessonContent(content);
+        if (res && res?.data) {
+            console.log('Check handleUpdateLessonContent: ', res);
+            window.location.href = `/course-manage/lesson/${res.data.id}`;
+        }
     }
+
+    useEffect(() => {
+        setLessonTitle(props.title);
+        setEditorValue(props.content);
+    }, [])
+
+
 
     return (
         <>
-            < Editor quillRef={quillRef} modules={modules} content={props.content} />
+            <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
+            <Input
+                value={lessonTitle}
+                onChange={(e) => {
+                    setLessonTitle(e.target.value);
+                }}
+            />
+            <div
+                className='quill-editor-custom'
+            >
+                <ReactQuill
+                    style={{
+                        minWidth: '600px',
+                        marginTop: '30px',
+                        textAlign: 'center',
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                    }}
+                    value={editorValue}
+                    modules={modules}
+                    formats={formats}
+                    ref={quillRef}
+                    onChange={handleOnchange}
+                />
+                <button
+                    style={{
+                        marginTop: '15px',
+                        marginBottom: '15px'
+                    }}
+                    onClick={() => {
+                        handleUpdateLessonContent();
+                    }}
+                >Save</button>
+            </div>
         </>
     );
 })
 
-
-interface Props {
-    quillRef: any;
-    modules: any;
-    content: string
-}
-
-const Editor: React.FC<Props> = ({ quillRef, modules, content }) => {
-
-    console.log('check content content: ', content);
-    //@ts-ignore
-    const [lesson, setLesson] = useState('');
-    const [editorValue, setEditorValue] = useState(''); // Giá trị ban đầu
-
-    const handleOnchange = (value: any) => {
-        setEditorValue(value);
-    }
-
-    const getLesson = () => {
-        if (quillRef.current) {
-            //@ts-ignore
-            const quillEditor = quillRef.current.getEditor();
-            const html = quillEditor.root.innerHTML;
-            setLesson(html);  // Cập nhật giá trị lesson
-        }
-    };
-
-    useEffect(() => {
-        setEditorValue(content);
-    }, [])
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollY = window.scrollY;  // Lấy vị trí scroll hiện tại
-            const quillTop = document.querySelector('.quill-editor-custom');
-            const quillTobar = document.querySelector('.ql-toolbar');
-            const editorContainer = document.querySelector('.ql-container');
-            if (quillTobar && editorContainer && quillTop) {
-                //@ts-ignore
-                quillTobar.style.transition = 'opacity 0.3s ease';
-                if (editorContainer.getBoundingClientRect().bottom < 120) {
-                    //@ts-ignore
-                    if (quillTobar.style.opacity !== '0') {
-                        //@ts-ignore
-                        if (quillTobar.style.opacity !== '0') {
-                            //@ts-ignore
-                            quillTobar.style.opacity = '0';  // Ẩn dần dần
-                        }
-
-                    }
-
-                } else {
-                    //@ts-ignore
-                    if (quillTobar.style.opacity === '0') {
-                        //@ts-ignore
-                        quillTobar.style.opacity = '1';
-                    }
-                    if (quillTop.getBoundingClientRect().top < 0) {
-                        //@ts-ignore
-                        if (quillTobar.style.position !== 'fixed') {
-                            //@ts-ignore
-                            quillTobar.style.width = `${editorContainer.clientWidth + 2}px`;
-                            //@ts-ignore
-                            quillTobar.style.position = 'fixed';
-                            //@ts-ignore
-                            quillTobar.style.top = '0px';
-
-                        }
-                    } else {
-                        //@ts-ignore
-                        if (quillTobar.style.position === 'fixed') {
-                            //@ts-ignore
-                            quillTobar.style.position = 'absolute';
-                        }
-                    }
-
-                }
-
-
-            }
-
-            console.log('Y-axis scroll:', scrollY);
-            // Thực hiện các hành động khác khi scroll
-        };
-
-        // Gán sự kiện scroll cho window
-        window.addEventListener('scroll', handleScroll);
-
-        // Cleanup sự kiện khi component bị unmount
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [])
-
-    return (
-        <div
-            className='quill-editor-custom'
-        >
-            <ReactQuill
-                style={{
-                    minWidth: '600px',
-                    marginTop: '30px',
-                    textAlign: 'center',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                }}
-                value={editorValue}
-                modules={modules}
-                formats={formats}
-                ref={quillRef}
-                onChange={handleOnchange}
-            />
-            <button
-                style={{
-                    marginTop: '15px',
-                    marginBottom: '15px'
-                }}
-                onClick={() => getLesson()}
-            >Preview</button>
-            <div
-                style={{
-                    textAlign: 'left'
-                }}
-                dangerouslySetInnerHTML={{ __html: lesson }}
-            />
-        </div>
-    );
-}
-
 export default QuillEditor;
+
+
+// useEffect(() => {
+//     const handleScroll = () => {
+//         const scrollY = window.scrollY;  // Lấy vị trí scroll hiện tại
+//         const quillTop = document.querySelector('.quill-editor-custom');
+//         const quillTobar = document.querySelector('.ql-toolbar');
+//         const editorContainer = document.querySelector('.ql-container');
+//         if (quillTobar && editorContainer && quillTop) {
+//             //@ts-ignore
+//             quillTobar.style.transition = 'opacity 0.3s ease';
+//             if (editorContainer.getBoundingClientRect().bottom < 120) {
+//                 //@ts-ignore
+//                 if (quillTobar.style.opacity !== '0') {
+//                     //@ts-ignore
+//                     if (quillTobar.style.opacity !== '0') {
+//                         //@ts-ignore
+//                         quillTobar.style.opacity = '0';  // Ẩn dần dần
+//                     }
+
+//                 }
+//             } else {
+//                 //@ts-ignore
+//                 if (quillTobar.style.opacity === '0') {
+//                     //@ts-ignore
+//                     quillTobar.style.opacity = '1';
+//                 }
+//                 if (quillTop.getBoundingClientRect().top < 0) {
+//                     //@ts-ignore
+//                     if (quillTobar.style.position !== 'fixed') {
+//                         //@ts-ignore
+//                         quillTobar.style.width = `${editorContainer.clientWidth + 2}px`;
+//                         //@ts-ignore
+//                         quillTobar.style.position = 'fixed';
+//                         //@ts-ignore
+//                         quillTobar.style.top = '0px';
+
+//                     }
+//                 } else {
+//                     //@ts-ignore
+//                     if (quillTobar.style.position === 'fixed') {
+//                         //@ts-ignore
+//                         quillTobar.style.position = 'absolute';
+//                     }
+//                 }
+//             }
+//         }
+//     };
+
+//     // Gán sự kiện scroll cho window
+//     window.addEventListener('scroll', handleScroll);
+
+//     // Cleanup sự kiện khi component bị unmount
+//     return () => {
+//         window.removeEventListener('scroll', handleScroll);
+//     };
+// }, [])
+

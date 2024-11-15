@@ -33,6 +33,7 @@
 
             .chapter-title {
                 background-color: #f7f9fa;
+                // background-color: #dfe8ee;
                 padding-top: 8px;
                 position: relative;
                 padding-left: 16px;
@@ -100,7 +101,11 @@
                     padding: 0;
 
                     .lesson-opening {
-                        background-color: #d1d7dc;
+                        // background-color: #d1d7dc;
+                        // background-color: #eaf3fb;
+                        // background-color: #dde3e9;
+                        // background-color: #0b94c1;
+                        background-color: #7dc0d6;
                     }
 
                     li {
@@ -112,11 +117,16 @@
                         padding-top: 8px;
                         padding-bottom: 0px;
                         padding-right: 24px;
+                        box-sizing: border-box;
+                        border: 1px solid white;
 
 
 
                         &:hover {
-                            background-color: #e6ecf1;
+                            // background-color: #e5edf4;
+                            // border: 1px solid grey;
+                            background-color: #181818;
+                            color: white;
                         }
 
 
@@ -213,4 +223,20 @@ pre.ql-syntax {
 .client-ql-editor {
     text-align: left;
     padding: 25px;
+}
+
+
+.admin-lesson-content {
+    .ql-syntax {
+        overflow-x: auto;
+
+        .copy-btn {
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.9;
+                color: greenyellow;
+            }
+        }
+    }
 }

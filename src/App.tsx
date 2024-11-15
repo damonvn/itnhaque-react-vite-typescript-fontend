@@ -48,7 +48,11 @@ const App = () => {
                 },
                 {
                     path: "lesson/edit/:id", element: <CourseManage />
-                }
+                },
+                {
+                    path: "chapter/lesson/:id", element: <CourseManage />
+                },
+
             ],
         },
     ]);

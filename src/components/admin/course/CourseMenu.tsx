@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { IChapter } from '@/types/backend';
 import AddChapter from './AddChapterModal';
 import AddLesson from './AddLessonModal';
+import AddLessonVideo from './AddLessonVideoModal';
 
 
 interface Props {
@@ -39,9 +40,18 @@ const initialAddLessonState: AddLessonState = {
     lessonIndex: -1,
 }
 
+export interface AddLessonVideoState {
+    openModal: boolean;
+    lessonId: number;
+}
+
+const initialAddLessonVideoState: AddLessonVideoState = {
+    openModal: false,
+    lessonId: 0,
+}
+
 
 const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) => {
-
     const rightMenuRef = useRef<HTMLDivElement>(null);
     const menuScrollRef = useRef<HTMLDivElement>(null);
     const [openSections, setOpenSections] = useState<{ [key: number]: boolean }>({});
@@ -49,18 +59,15 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
     const [courseLoaded, setCourseLoaded] = useState(false);
     const [openAddChapter, setOpenAddChapter] = useState<AddChapterState>(initialAddChapterState);
     const [openAddLesson, setOpenAddLesson] = useState<AddLessonState>(initialAddLessonState);
-
+    const [openAddLessonVideo, setOpenAddLessonVideo] = useState<AddLessonVideoState>(initialAddLessonVideoState);
     const location = useLocation();
     const isOpenLesson = location.pathname.includes('/course-manage/lesson');
     const isEditLesson = location.pathname.includes('/lesson/edit');
     const isOpenNewChapter = location.pathname.includes('/chapter/lesson');
-
     const navigate = useNavigate();
     const handleLessonClick = (lessonId: number) => {
         navigate(`/course-manage/lesson/${lessonId}`);
     }
-
-
     useEffect(() => {
         if (courseLoaded && (isOpenLesson || isEditLesson)) {
             setTimeout(() => {
@@ -74,7 +81,6 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                 }
             })
         }
-
         if (courseLoaded && isOpenNewChapter) {
             const openingChapter = document.querySelector('.chapter-opening');
             if (openingChapter && rightMenuRef.current) {
@@ -85,7 +91,6 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                 menuScrollRef.current.scrollTop += scrollPosition - rightTop - 55;
             }
         }
-
     }, [courseLoaded])
 
     useEffect(() => {
@@ -165,8 +170,6 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
             window.removeEventListener('scroll', handleScroll);
         };
     }, [])
-
-
 
     return (
         <>
@@ -251,6 +254,7 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                                                     className={`lesson-title ${(isOpenLesson && l.contentId === contentId) ? 'lesson-opening' : ''}`}
                                                     key={l.id}
                                                     onClick={(e) => {
+                                                        e.stopPropagation();
                                                         handleLessonClick(l.id);
                                                         handleScrollMenu(e, 'lesson')
                                                     }}
@@ -281,7 +285,27 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                                                         />
                                                         <MergeCellsOutlined className='swap' />
                                                         {c.lessons.length > 1 && <DeleteOutlined className='delete' />}
-                                                        <VideoCameraAddOutlined className='lesson-video' />
+                                                        {!l.linkVideo ?
+                                                            <VideoCameraAddOutlined
+                                                                className='lesson-video'
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    const newState: AddLessonVideoState = {
+                                                                        lessonId: l.id,
+                                                                        openModal: true
+                                                                    }
+                                                                    setOpenAddLessonVideo(newState);
+                                                                }}
+                                                            />
+                                                            :
+                                                            <VideoCameraOutlined
+                                                                className='lesson-video'
+                                                                onClick={() => {
+                                                                    window.open(`${l.linkVideo}`, '_blank');
+                                                                }}
+                                                            />
+                                                        }
+
                                                     </div>
 
                                                 </li>
@@ -294,8 +318,9 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                     </div>
                 </div>
             </div>
-            {openAddChapter && <AddChapter state={openAddChapter} setSate={setOpenAddChapter} courseId={courseId} />}
-            {openAddLesson && <AddLesson state={openAddLesson} setState={setOpenAddLesson} courseId={courseId} />}
+            {openAddChapter.openModal && <AddChapter state={openAddChapter} setSate={setOpenAddChapter} courseId={courseId} />}
+            {openAddLesson.openModal && <AddLesson state={openAddLesson} setState={setOpenAddLesson} courseId={courseId} />}
+            {openAddLessonVideo.openModal && <AddLessonVideo state={openAddLessonVideo} setState={setOpenAddLessonVideo} />}
         </>
     );
 })

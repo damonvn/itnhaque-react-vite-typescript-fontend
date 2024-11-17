@@ -4,9 +4,6 @@ import { callCreateLesson } from '@/config/api';
 import { INewLesson } from '@/types/backend';
 import { AddLessonState } from './CourseMenu';
 
-
-
-
 interface AddChapterProps {
     state: AddLessonState;
     setState: React.Dispatch<React.SetStateAction<AddLessonState>>;

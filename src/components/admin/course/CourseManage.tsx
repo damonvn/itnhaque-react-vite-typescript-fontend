@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
+import 'react-quill/dist/quill.snow.css';
 import 'highlight.js/styles/monokai.css';
 import '@/styles/course.manage.scss'
 
@@ -17,6 +17,7 @@ const initialContent: IContent = {
     chapterId: 0,
     lessonId: 0,
     title: '',
+    lessonVideoURL: '',
     content: ''
 }
 
@@ -56,15 +57,6 @@ const CourseManage = () => {
                     }
                     //@ts-ignore
                     menuScrollRef.current.style.height = `calc(100vh - 60px - 55px + ${window.scrollY}px)`;
-                    //@ts-ignore
-                    console.log('menuScrollRef.current.style.height: ', menuScrollRef.current.style.height)
-
-                    // if (menuScrollRef.current) {
-                    //     //@ts-ignore
-                    //     menuScrollRef.current.style.height = `${menuScrollRef.current.style.clientHeight + window.scrollY}px`;
-                    //     //@ts-ignore
-                    //     console.log('menuScrollRef.current.style.height: ', menuScrollRef.current.style.height)
-                    // }
 
                 } else {
                     if (rightMenuRef.current) {
@@ -85,8 +77,6 @@ const CourseManage = () => {
             }
         };
         window.addEventListener('scroll', handleScroll);
-
-        // Cleanup function to remove the event listener when component unmounts
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
@@ -101,15 +91,12 @@ const CourseManage = () => {
                 const lessonBlockLeft = lessonBlock.getBoundingClientRect().left;
                 //@ts-ignore
                 const lessonBlockWidth = lessonBlock.getBoundingClientRect().width;
-
-
                 codeBlocks.forEach(codeBlock => {
                     const copyBTN = codeBlock.querySelector('.copy-btn');
                     if (copyBTN) {
                         const bottom = codeBlock.getBoundingClientRect().bottom;
                         //@ts-ignore
                         copyBTN.style.transition = 'opacity 0.05s ease';
-                        console.log('check bottom: ', bottom);
                         if (bottom > 40) {
                             //@ts-ignore
                             if (copyBTN.style.opacity !== 1) {
@@ -117,7 +104,6 @@ const CourseManage = () => {
                                 copyBTN.style.opacity = 1;
                             }
                             const top = codeBlock.getBoundingClientRect().top
-                            console.log('check top: ', top);
                             if (top <= 0) {
                                 //@ts-ignore
                                 if (copyBTN.style.position !== 'fixed') {
@@ -145,25 +131,16 @@ const CourseManage = () => {
                             }
                         } else {
                             //@ts-ignore
-                            // if (copyBTN.style.visibility !== 'hidden') {
-                            //     //@ts-ignore
-                            //     copyBTN.style.visibility = 'hidden';
-                            // }
                             if (copyBTN.style.opacity !== 0) {
                                 //@ts-ignore
                                 copyBTN.style.opacity = 0;
                             }
                         }
-
                     }
                 });
             }
         };
-
-        // Gán sự kiện scroll cho window
         window.addEventListener('scroll', handleLessonScroll);
-
-        // Cleanup sự kiện khi component bị unmount
         return () => {
             window.removeEventListener('scroll', handleLessonScroll);
         };
@@ -179,26 +156,13 @@ const CourseManage = () => {
                 style={{ width: '70%', textAlign: 'center', padding: '0 15px', height: '5000px', boxSizing: 'border-box' }}
             >
                 <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-
                     {
                         isEditLesson ?
                             <>
-                                {/* <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
-                                <Input
-                                    value={lessonTitle}
-                                    onChange={(e) => {
-                                        setLessonTitle(e.target.value);
-                                    }}
-                                /> */}
                                 {
                                     lessonContent.id !== 0 &&
                                     <QuillEditor
-                                        id={lessonContent.id}
-                                        title={lessonContent.title}
-                                        content={lessonContent.content}
-                                        courseId={lessonContent.courseId}
-                                        chapterId={lessonContent.chapterId}
-                                        lessonId={lessonContent.lessonId}
+                                        lessonContent={lessonContent}
                                     />
                                 }
                             </>
@@ -208,8 +172,6 @@ const CourseManage = () => {
                                 className='admin-lesson-content'
                                 dangerouslySetInnerHTML={{ __html: innerHTML }}
                             />
-
-
                     }
                 </div>
             </div >

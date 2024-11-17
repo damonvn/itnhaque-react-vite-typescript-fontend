@@ -4,10 +4,9 @@ import 'highlight.js/styles/monokai.css';
 import hljs from 'highlight.js';
 import React, { useEffect, useRef, useState, memo, useMemo } from 'react';
 import '@/styles/quill.editor.scss';
-import { IContent, ILesson } from '@/types/backend';
-import { callUpdateLessonContent } from '@/config/api';
+import { IContent } from '@/types/backend';
+import { callUpdateLesson } from '@/config/api';
 import { Input } from 'antd';
-import CopyIcon from '@/assets/CopyIcon';
 
 
 
@@ -16,9 +15,14 @@ const formats = [
     'list', 'bullet', 'link', 'code-block'
 ];
 
+interface IProps {
+    lessonContent: IContent
+}
 
-const QuillEditor: React.FC<IContent> = memo((props) => {
+const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
+
     const [lessonTitle, setLessonTitle] = useState('');
+    const [lsVideoURL, setLsVideoURL] = useState('');
     const [editorValue, setEditorValue] = useState(''); // Giá trị ban đầu
 
     const handleOnchange = (value: any) => {
@@ -128,36 +132,38 @@ const QuillEditor: React.FC<IContent> = memo((props) => {
     }), []);
 
     const handleUpdateLessonContent = async () => {
-        const content: IContent = {
-            id: props.id,
-            title: lessonTitle,
-            lessonId: props.lessonId,
-            chapterId: props.chapterId,
-            courseId: props.courseId,
-            content: editorValue,
-
-        }
-        const res = await callUpdateLessonContent(content);
+        const lesson: IContent = lessonContent;
+        lesson.title = lessonTitle;
+        lesson.content = editorValue;
+        lesson.lessonVideoURL = lsVideoURL;
+        const res = await callUpdateLesson(lesson);
         if (res && res?.data) {
-            console.log('Check handleUpdateLessonContent: ', res);
             window.location.href = `/course-manage/lesson/${res.data.id}`;
         }
     }
 
     useEffect(() => {
-        setLessonTitle(props.title);
-        setEditorValue(props.content);
+        setLessonTitle(lessonContent.title);
+        setLsVideoURL(lessonContent.lessonVideoURL);
+        setEditorValue(lessonContent.content);
     }, [])
 
 
 
     return (
         <>
-            <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span> Title</label>
+            <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span>Lesson Title</label>
             <Input
                 value={lessonTitle}
                 onChange={(e) => {
                     setLessonTitle(e.target.value);
+                }}
+            />
+            <label style={{ display: 'block', textAlign: 'left', fontSize: '14px', marginBottom: '6px', marginTop: '14px    ' }}><span style={{ color: 'red' }}>*</span>Lesson Video URL</label>
+            <Input
+                value={lsVideoURL}
+                onChange={(e) => {
+                    setLsVideoURL(e.target.value);
                 }}
             />
             <div
@@ -192,61 +198,3 @@ const QuillEditor: React.FC<IContent> = memo((props) => {
 })
 
 export default QuillEditor;
-
-
-// useEffect(() => {
-//     const handleScroll = () => {
-//         const scrollY = window.scrollY;  // Lấy vị trí scroll hiện tại
-//         const quillTop = document.querySelector('.quill-editor-custom');
-//         const quillTobar = document.querySelector('.ql-toolbar');
-//         const editorContainer = document.querySelector('.ql-container');
-//         if (quillTobar && editorContainer && quillTop) {
-//             //@ts-ignore
-//             quillTobar.style.transition = 'opacity 0.3s ease';
-//             if (editorContainer.getBoundingClientRect().bottom < 120) {
-//                 //@ts-ignore
-//                 if (quillTobar.style.opacity !== '0') {
-//                     //@ts-ignore
-//                     if (quillTobar.style.opacity !== '0') {
-//                         //@ts-ignore
-//                         quillTobar.style.opacity = '0';  // Ẩn dần dần
-//                     }
-
-//                 }
-//             } else {
-//                 //@ts-ignore
-//                 if (quillTobar.style.opacity === '0') {
-//                     //@ts-ignore
-//                     quillTobar.style.opacity = '1';
-//                 }
-//                 if (quillTop.getBoundingClientRect().top < 0) {
-//                     //@ts-ignore
-//                     if (quillTobar.style.position !== 'fixed') {
-//                         //@ts-ignore
-//                         quillTobar.style.width = `${editorContainer.clientWidth + 2}px`;
-//                         //@ts-ignore
-//                         quillTobar.style.position = 'fixed';
-//                         //@ts-ignore
-//                         quillTobar.style.top = '0px';
-
-//                     }
-//                 } else {
-//                     //@ts-ignore
-//                     if (quillTobar.style.position === 'fixed') {
-//                         //@ts-ignore
-//                         quillTobar.style.position = 'absolute';
-//                     }
-//                 }
-//             }
-//         }
-//     };
-
-//     // Gán sự kiện scroll cho window
-//     window.addEventListener('scroll', handleScroll);
-
-//     // Cleanup sự kiện khi component bị unmount
-//     return () => {
-//         window.removeEventListener('scroll', handleScroll);
-//     };
-// }, [])
-

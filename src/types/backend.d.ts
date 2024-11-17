@@ -73,9 +73,15 @@ export interface IContent {
     chapterId: number;
     lessonId: number;
     title: string;
+    lessonVideoURL: string;
     content: string;
     createdAt?: string;
     updatedAt?: string;
     createdBy?: string;
     updatedBy?: string;
+}
+
+export interface IAddLessonVideo {
+    lessonId: number,
+    lessonVideoURL: string;
 }

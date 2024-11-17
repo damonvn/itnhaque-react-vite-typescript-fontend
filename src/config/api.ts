@@ -1,5 +1,5 @@
 import axios from './axios-customize'
-import { IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse } from '@/types/backend';
+import { IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse, IAddLessonVideo } from '@/types/backend';
 
 
 export const callFetchContent = async (id: number) => {
@@ -13,11 +13,6 @@ export const callFetchLesson = async (id: number) => {
 export const callFetchAccount = () => {
     return axios.get('/')
 }
-
-// export const callCreateLesson = (quill: any) => {
-//     return axios.post('/api/v1/lesson', { ...quill })
-
-// }
 
 
 export const callFetchCourse = async (id: number) => {
@@ -34,8 +29,13 @@ export const callCreateLesson = async (lesson: INewLesson) => {
     return (await axios.post<IBackendRes<IContent>>('/api/v1/lesson', { ...lesson })).data;
 }
 
-export const callUpdateLessonContent = async (lesson: IContent) => {
-    return (await axios.put<IBackendRes<IContent>>('/api/v1/lesson/content', { ...lesson })).data;
+export const callUpdateLesson = async (content: IContent) => {
+    return (await axios.put<IBackendRes<IContent>>('/api/v1/lesson/update', { ...content })).data;
 }
+
+export const callAddLessonVideo = async (lesson: IAddLessonVideo) => {
+    return (await axios.put<IBackendRes<IContent>>('/api/v1/lesson/video', { ...lesson })).data;
+}
+
 
 

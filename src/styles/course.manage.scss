@@ -90,8 +90,6 @@
                 }
             }
 
-
-
             .chapter-lesson {
                 background-color: #ffffff;
 
@@ -101,11 +99,8 @@
                     padding: 0;
 
                     .lesson-opening {
-                        // background-color: #d1d7dc;
-                        // background-color: #eaf3fb;
-                        // background-color: #dde3e9;
-                        // background-color: #0b94c1;
-                        background-color: #7dc0d6;
+                        background-color: #2d2f31;
+                        color: white;
                     }
 
                     li {
@@ -118,18 +113,18 @@
                         padding-bottom: 0px;
                         padding-right: 24px;
                         box-sizing: border-box;
-                        border: 1px solid white;
-
-
 
                         &:hover {
                             // background-color: #e5edf4;
                             // border: 1px solid grey;
-                            background-color: #181818;
+                            // background-color: #363636;
+                            // color: white;
+                            // border: 2px solid black;
+                            // color: orange;
+                            opacity: 0.8;
+                            background-color: #121313;
                             color: white;
                         }
-
-
 
                         .lesson-action {
                             display: flex;
@@ -183,8 +178,6 @@
                         }
                     }
                 }
-
-
             }
         }
     }

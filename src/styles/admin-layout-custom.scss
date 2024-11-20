@@ -1,4 +1,72 @@
 .admin-layout-custom {
-    min-height: calc(100vh + 200px);
-    margin-top: 60px;
+    .ant-layout {
+        min-height: calc(100vh + 1px);
+    }
+
+
+    .ant-layout-content {
+        background: transparent !important;
+    }
+
+    .admin-course {
+        margin-top: -24px;
+        padding: 10px;
+    }
+
+    .admin-course {
+        .header {
+            padding: 15px;
+            height: 60px;
+            line-height: 60px;
+            background: #fff;
+            border-radius: 7px;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .course-title {
+            font-family: sans-serif;
+            // font-family: "Roboto", "Arial", sans-serif;
+            font-size: 17px;
+            /* Kích thước chữ */
+            line-height: 24px;
+            /* Chiều cao mỗi dòng */
+            font-weight: 600;
+            /* Độ đậm chữ */
+            overflow: hidden;
+            /* Ẩn phần văn bản thừa */
+            display: -webkit-box;
+            /* Sử dụng Flexbox */
+            -webkit-box-orient: vertical;
+            /* Đặt hướng là dọc */
+            -webkit-line-clamp: 2;
+            /* Hiển thị tối đa 2 dòng */
+            text-overflow: ellipsis;
+            /* Thêm dấu ba chấm khi bị cắt */
+            white-space: normal;
+            /* Cho phép ngắt dòng */
+        }
+
+        .course-discripttion {
+            margin-top: 10px;
+            font-size: 15px;
+            overflow: hidden;
+            /* Ẩn phần văn bản thừa */
+            display: -webkit-box;
+            /* Sử dụng Flexbox */
+            -webkit-box-orient: vertical;
+            /* Đặt hướng là dọc */
+            -webkit-line-clamp: 3;
+            /* Hiển thị tối đa 2 dòng */
+            text-overflow: ellipsis;
+            /* Thêm dấu ba chấm khi bị cắt */
+            white-space: normal;
+            /* Cho phép ngắt dòng */
+        }
+    }
+
+
 }

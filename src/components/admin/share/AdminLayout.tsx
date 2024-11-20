@@ -20,11 +20,9 @@ const AdminLayout: React.FC = () => {
     } = theme.useToken();
 
     return (
-        <>
-            <div style={{ height: "60px", width: "100vw", background: "green", position: "fixed", zIndex: 100, top: 0 }}></div>
-            <Layout
-                className='admin-layout-custom'
-            >
+        <div className='admin-layout-custom'>
+            {/* <div style={{ height: "60px", width: "100vw", background: "green", position: "fixed", zIndex: 100, top: 0 }}></div> */}
+            <Layout>
 
                 <Sider trigger={null} collapsible collapsed={collapsed}>
                     {/* <div className="demo-logo-vertical" /> */}
@@ -83,7 +81,7 @@ const AdminLayout: React.FC = () => {
                     </Content>
                 </Layout>
             </Layout>
-        </>
+        </div>
 
     );
 };

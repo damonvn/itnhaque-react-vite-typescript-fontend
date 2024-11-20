@@ -132,16 +132,17 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
     }), []);
 
     const handleUpdateLessonContent = async () => {
-        const lesson: IContent = lessonContent;
-        lesson.title = lessonTitle;
-        lesson.content = editorValue;
-        lesson.lessonVideoURL = lsVideoURL;
-        const res = await callUpdateLesson(lesson);
-        if (res && res?.data) {
-            window.location.href = `/course-manage/lesson/${res.data.id}`;
+        if (quillRef.current) {
+            const lesson: IContent = lessonContent;
+            lesson.title = lessonTitle;
+            lesson.content = editorValue;
+            lesson.lessonVideoURL = lsVideoURL;
+            const res = await callUpdateLesson(lesson);
+            if (res && res?.data) {
+                window.location.href = `/course-manage/lesson/${res.data.id}`;
+            }
         }
     }
-
     useEffect(() => {
         setLessonTitle(lessonContent.title);
         setLsVideoURL(lessonContent.lessonVideoURL);

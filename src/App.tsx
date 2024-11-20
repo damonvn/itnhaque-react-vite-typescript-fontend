@@ -5,15 +5,14 @@ import {
 import '@/styles/App.css'
 import AdminLayout from './components/admin/share/AdminLayout';
 import CourseManage from './components/admin/course/CourseManage';
-import QuillEditor from './components/admin/course/QuillEditor';
+
+import AdminCourse from './components/admin/AdminCourse';
 
 const App = () => {
     const router = createBrowserRouter([
         {
             path: '/',
-            element: <div style={{ width: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-                Home Page
-            </div>,
+            element: <div>Home</div>,
             errorElement: <div>404 Not Found</div>,
         },
         {
@@ -25,7 +24,7 @@ const App = () => {
                     index: true, element: <div>Admin Layout</div>
                 },
                 {
-                    path: 'course', element: <div>manage course page</div>
+                    path: 'course', element: <AdminCourse />
                 },
                 {
                     path: 'user', element: <div>manage user page</div>

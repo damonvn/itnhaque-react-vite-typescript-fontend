@@ -26,6 +26,7 @@ const CourseManage = () => {
     const menuScrollRef = useRef(null);
     const [courseId, setCourseId] = useState<number>(0)
     const [lessonContent, setLessonContent] = useState<IContent>(initialContent);
+    const [isRender, setIsRender] = useState<boolean>(false);
 
     const location = useLocation();
     const isEditLesson = location.pathname.includes('/lesson/edit');
@@ -37,6 +38,7 @@ const CourseManage = () => {
         if (res && res.data) {
             setCourseId(res.data.courseId);
             setLessonContent(res.data);
+            setIsRender(true);
         }
     }
 
@@ -48,7 +50,7 @@ const CourseManage = () => {
     const innerHTML = addedButtonHTML(lessonContent.content);
 
     useEffect(() => {
-        const handleScroll = () => {
+        const handleMenuScroll = () => {
             if (rightMenuRef.current) {
                 if (window.scrollY <= 60) {
                     if (rightMenuRef.current) {
@@ -76,76 +78,72 @@ const CourseManage = () => {
                 }
             }
         };
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleMenuScroll);
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('scroll', handleMenuScroll);
         };
+
     }, [])
 
     useEffect(() => {
-        const handleLessonScroll = () => {
-            const codeBlocks = document.querySelectorAll('.admin-lesson-content .ql-syntax');
-            const lessonBlock = document.querySelector('.admin-lesson-content');
-            if (codeBlocks.length > 0 && lessonBlock) {
-                //@ts-ignore
-                const lessonBlockLeft = lessonBlock.getBoundingClientRect().left;
-                //@ts-ignore
-                const lessonBlockWidth = lessonBlock.getBoundingClientRect().width;
-                codeBlocks.forEach(codeBlock => {
-                    const copyBTN = codeBlock.querySelector('.copy-btn');
-                    if (copyBTN) {
-                        const bottom = codeBlock.getBoundingClientRect().bottom;
-                        //@ts-ignore
-                        copyBTN.style.transition = 'opacity 0.05s ease';
-                        if (bottom > 40) {
-                            //@ts-ignore
-                            if (copyBTN.style.opacity !== 1) {
-                                //@ts-ignore
-                                copyBTN.style.opacity = 1;
-                            }
-                            const top = codeBlock.getBoundingClientRect().top
-                            if (top <= 0) {
-                                //@ts-ignore
-                                if (copyBTN.style.position !== 'fixed') {
-                                    //@ts-ignore
-                                    copyBTN.style.position = 'fixed';
-                                    //@ts-ignore
-                                    copyBTN.style.top = '6px';
-                                    //@ts-ignore
-                                    copyBTN.style.left = `${lessonBlockLeft + lessonBlockWidth - 8 - 105}px`;
-                                    //@ts-ignore
-                                    copyBTN.style.right = 'auto';
-                                }
-                            } else {
-                                //@ts-ignore
-                                if (copyBTN.style.position === 'fixed') {
-                                    //@ts-ignore
-                                    copyBTN.style.position = 'absolute';
-                                    //@ts-ignore
-                                    copyBTN.style.top = '6px';
-                                    //@ts-ignore
-                                    copyBTN.style.left = 'auto'
-                                    //@ts-ignore
-                                    copyBTN.style.right = '8px';
-                                }
-                            }
-                        } else {
-                            //@ts-ignore
-                            if (copyBTN.style.opacity !== 0) {
-                                //@ts-ignore
-                                copyBTN.style.opacity = 0;
-                            }
-                        }
-                    }
-                });
-            }
-        };
         window.addEventListener('scroll', handleLessonScroll);
         return () => {
             window.removeEventListener('scroll', handleLessonScroll);
         };
-
     }, [])
+
+    useEffect(() => {
+        // Hàm xử lý
+        const handleCopyCodeBlocks = () => {
+            const codeBlocks = document.querySelectorAll('.ql-syntax');
+            codeBlocks.forEach((fatherElement: Element) => {
+                const copyBtn = fatherElement.querySelector('.copy-btn') as HTMLButtonElement | null;
+                if (copyBtn) {
+                    const fatherCopy = fatherElement.cloneNode(true) as HTMLElement;
+                    const removeBTN = fatherCopy.querySelector('.copy-btn');
+                    if (removeBTN) {
+                        fatherCopy.removeChild(removeBTN);
+                    }
+                    const handleClick = () => {
+                        const innerHTML = fatherCopy.innerHTML.replace(/&nbsp;/g, ' ');
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = innerHTML;
+                        const contentToCopy = tempDiv.textContent || '';
+
+                        // Sao chép nội dung vào clipboard
+                        navigator.clipboard.writeText(contentToCopy)
+                            .then(() => {
+                                console.log('contentToCopy: ', contentToCopy);
+                            })
+                            .catch(err => {
+                                console.error('Failed to copy: ', err);
+                            });
+                    };
+
+                    // Lưu hàm handleClick vào thuộc tính dataset để có thể truy xuất lại
+                    (copyBtn as any)._handleClick = handleClick;
+                    // Gắn sự kiện click
+                    copyBtn.addEventListener('click', handleClick);
+                }
+            });
+        }
+
+        handleCopyCodeBlocks();
+
+        // Cleanup tổng thể
+        return () => {
+            const codeBlocks = document.querySelectorAll('.ql-syntax');
+            codeBlocks.forEach((fatherElement: Element) => {
+                const copyBtn = fatherElement.querySelector('.copy-btn') as HTMLButtonElement | null;
+                if (copyBtn) {
+                    const handleClick = (copyBtn as any)._handleClick; // Truy xuất lại hàm handleClick
+                    if (handleClick) {
+                        copyBtn.removeEventListener('click', handleClick);
+                    }
+                }
+            });
+        };
+    }, [isRender]);
 
     return (
         <div
@@ -218,3 +216,61 @@ const addedButtonHTML = (innerHTML: string) => {
     }
     return div.innerHTML;
 }
+
+const handleLessonScroll = () => {
+    const codeBlocks = document.querySelectorAll('.admin-lesson-content .ql-syntax');
+    const lessonBlock = document.querySelector('.admin-lesson-content');
+    if (codeBlocks.length > 0 && lessonBlock) {
+        //@ts-ignore
+        const lessonBlockLeft = lessonBlock.getBoundingClientRect().left;
+        //@ts-ignore
+        const lessonBlockWidth = lessonBlock.getBoundingClientRect().width;
+        codeBlocks.forEach(codeBlock => {
+            const copyBTN = codeBlock.querySelector('.copy-btn');
+            if (copyBTN) {
+                const bottom = codeBlock.getBoundingClientRect().bottom;
+                //@ts-ignore
+                copyBTN.style.transition = 'opacity 0.05s ease';
+                if (bottom > 40) {
+                    //@ts-ignore
+                    if (copyBTN.style.opacity !== 1) {
+                        //@ts-ignore
+                        copyBTN.style.opacity = 1;
+                    }
+                    const top = codeBlock.getBoundingClientRect().top
+                    if (top <= 0) {
+                        //@ts-ignore
+                        if (copyBTN.style.position !== 'fixed') {
+                            //@ts-ignore
+                            copyBTN.style.position = 'fixed';
+                            //@ts-ignore
+                            copyBTN.style.top = '6px';
+                            //@ts-ignore
+                            copyBTN.style.left = `${lessonBlockLeft + lessonBlockWidth - 8 - 105}px`;
+                            //@ts-ignore
+                            copyBTN.style.right = 'auto';
+                        }
+                    } else {
+                        //@ts-ignore
+                        if (copyBTN.style.position === 'fixed') {
+                            //@ts-ignore
+                            copyBTN.style.position = 'absolute';
+                            //@ts-ignore
+                            copyBTN.style.top = '6px';
+                            //@ts-ignore
+                            copyBTN.style.left = 'auto'
+                            //@ts-ignore
+                            copyBTN.style.right = '8px';
+                        }
+                    }
+                } else {
+                    //@ts-ignore
+                    if (copyBTN.style.opacity !== 0) {
+                        //@ts-ignore
+                        copyBTN.style.opacity = 0;
+                    }
+                }
+            }
+        });
+    }
+};

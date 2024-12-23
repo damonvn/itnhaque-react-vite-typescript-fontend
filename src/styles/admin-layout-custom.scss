@@ -66,7 +66,33 @@
             white-space: normal;
             /* Cho phép ngắt dòng */
         }
+
+        .course-edit {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            height: 22px;
+            width: 48px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #FFFFFF;
+            background-color: #FF8A33;
+            border: 1.5px solid #D9772D;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+
+            &:hover {
+                color: #F2F2F2;
+                background-color: #FF8A33;
+                border: 1.5px solid #D9772D;
+                opacity: 0.9;
+            }
+        }
     }
 
-
+    .admin-course {
+        .ant-modal {
+            width: 1200px !important;
+        }
+    }
 }

@@ -1,9 +1,12 @@
 import { BorderInnerOutlined, BorderTopOutlined, EditOutlined, PlusOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import { Card, Switch, Button } from 'antd';
 import Meta from 'antd/es/card/Meta';
+import AddCourseModal from './course/AddCourseModal';
+import { useState } from 'react';
 
 
 const AdminCourse = () => {
+    const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
     const onChange = (checked: boolean) => {
         console.log(`switch to ${checked}`);
     };
@@ -14,6 +17,7 @@ const AdminCourse = () => {
                 <div>Course Manage</div>
                 <Button
                     style={{ borderRadius: '3px', marginRight: '5px' }}
+                    onClick={() => setAddCourseModalOpen(true)}
                 >
                     <PlusOutlined />
                     Add Course
@@ -52,17 +56,9 @@ const AdminCourse = () => {
                         </div>
                         <Switch
                             defaultChecked onChange={onChange}
-                            style={{ position: 'absolute', left: '70px', bottom: '12px' }}
+                            style={{ position: 'absolute', left: '75px', bottom: '12px', borderRadius: '15px' }}
                         />
-                        <Button style={{
-                            position: 'absolute',
-                            left: '12px', bottom: '12px',
-                            height: '22px', width: '44px',
-                            borderRadius: '100px', background: '#fece12',
-                            border: '1px solid orange',
-                            fontSize: '12px',
-                            fontWeight: '400'
-                        }}>EDIT</Button>
+                        <Button className='course-edit'>EDIT</Button>
                         {/* <EditOutlined style={{ position: 'absolute', right: '20px', bottom: '12px', fontSize: '22px' }} /> */}
                     </Card>
                 </div>
@@ -172,6 +168,7 @@ const AdminCourse = () => {
                     </Card>
                 </div>
             </div>
+            <AddCourseModal isModalOpen={addCourseModalOpen} setIsModalOpen={setAddCourseModalOpen} />
 
         </div>
     );

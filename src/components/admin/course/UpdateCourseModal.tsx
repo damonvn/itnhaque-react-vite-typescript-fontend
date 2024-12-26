@@ -2,11 +2,12 @@
 import { Input, Modal, Form, Button, message, Upload } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { callCreateCourse, callUploadCourseImage } from '@/config/api';
-import { INewCourse } from '@/types/backend';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { callCreateCourse, callFetchUpdateCourse, callUpdateCourse, callUploadCourseImage } from '@/config/api';
+import { INewCourse, IUpdateCourse } from '@/types/backend';
 
 interface IProps {
+    courseId: number;
     isModalOpen: boolean;
     setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -25,17 +26,16 @@ const handleUploadChange = (info: any) => {
 };
 
 
-const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
+const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, courseId }) => {
 
-    const [imageLink, setImageLink] = useState('')
-
+    const [imageName, setImageName] = useState('')
     const [form] = Form.useForm();
     const { TextArea } = Input;
 
     const handleUploadImage = async ({ file, onSuccess, onError }: any) => {
         const resImg = await callUploadCourseImage(file, "course");
         if (resImg && resImg.data) {
-            setImageLink(resImg.data.fileName);
+            setImageName(resImg.data.fileName);
             // setDataLogo([{
             //     name: res.data.fileName,
             //     uid: uuidv4()
@@ -56,21 +56,22 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
             // Validate form fields
             const values = await form.validateFields();
             // Create course object
-            const course: INewCourse = {
+            const course: IUpdateCourse = {
+                id: courseId,
                 title: values.title,
                 description: values.description,
-                image: imageLink
+                image: imageName
             };
 
             // Call API to create course
-            const resCourse = await callCreateCourse(course);
-            if (resCourse && resCourse.data) {
-                console.log("Check create course: ", resCourse.data);
+            const resCourse = await callUpdateCourse(course);
+            if (resCourse && resCourse.data && resCourse.statusCode === 200) {
+                setIsModalOpen(false);
+                window.location.href = 'http://localhost:5173/admin/course';
             }
 
             // Close the modal and reset form fields
-            setIsModalOpen(false);
-            form.resetFields();
+
         } catch (info) {
             console.log("Validation Failed:", info);
         }
@@ -80,6 +81,22 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
         setIsModalOpen(false);
         form.resetFields(); // Optional: reset form when cancelling
     };
+
+    useEffect(() => {
+        const fetchUpdateCourse = async () => {
+            const res = await callFetchUpdateCourse(courseId);
+            if (res && res.data) {
+                form.setFieldsValue({
+                    title: res.data.title,
+                    description: res.data.description
+                });
+
+                setImageName(res.data.image)
+            }
+        }
+        fetchUpdateCourse();
+    }, [courseId])
+
     return (
         <>
             <Modal
@@ -101,7 +118,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                                 height: '170px',
                                 marginTop: '8px',
                                 marginBottom: '20px',
-                                backgroundImage: `url('${imageLink}')`,
+                                backgroundImage: `url('${import.meta.env.VITE_BACKEND_URL}/storage/course/${imageName}')`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 backgroundRepeat: 'no-repeat'
@@ -118,7 +135,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                         // onRemove={(file) => handleRemoveFile(file)}
                         // onPreview={handlePreview}
                         >
-                            <Button icon={<PlusOutlined />}>Upload Avatar</Button>
+                            <Button icon={<PlusOutlined />}>Update Image</Button>
                         </Upload>
                     </div>
                     <Form
@@ -153,4 +170,4 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
     );
 }
 
-export default AddCourseModal;
+export default UpdateCourseModal;

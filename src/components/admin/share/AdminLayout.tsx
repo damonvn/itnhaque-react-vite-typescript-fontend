@@ -26,13 +26,13 @@ const AdminLayout: React.FC = () => {
 
                 <Sider trigger={null} collapsible collapsed={collapsed}>
                     {/* <div className="demo-logo-vertical" /> */}
-                    <div style={{ color: "white", padding: "5px" }}>
-                        <div style={{ height: "59px", lineHeight: "59px", color: "white", textAlign: "center", fontSize: "20px", borderBottom: "1px solid white" }}>
-                            Admin
+                    <div style={{ color: "white", padding: "15px" }}>
+                        <div style={{ height: "49px", lineHeight: "49px", color: "white", textAlign: "center", fontSize: "20px", borderBottom: "1px solid #d7caca" }}>
+                            ADMIN
                         </div>
                     </div>
                     <Menu
-                        // style={{ position: "fixed", zIndex: 50, top: 60 }}
+                        style={{ marginTop: '16px' }}
                         theme="dark"
                         mode="inline"
                         defaultSelectedKeys={['1']}

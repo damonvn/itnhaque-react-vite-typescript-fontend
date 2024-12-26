@@ -19,6 +19,53 @@ export interface ICourse {
     chapters: IChapter[];
 }
 
+export interface ICoursePages {
+    id: number;
+    title: string;
+    image: string;
+    description: string;
+    active: boolean;
+    createdAt?: string;
+    createdBy?: string;
+    updatedAt?: string;
+    updatedBy?: string;
+}
+
+export type ICourseArray = ICoursePages[];
+
+export interface Pages<ICourseArray> {
+    meta: Meta;
+    result: T;  // Có thể thay 'any' bằng kiểu dữ liệu phù hợp tùy theo yêu cầu
+}
+
+export interface Meta {
+    page: number;
+    pageSize: number;
+    pages: number;
+    total: number;
+}
+
+
+export interface INewCourse {
+    title: string;
+    description: string;
+    image: string;
+}
+
+export interface IUpdateCourse {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+}
+
+export interface IUpdateCourseActive {
+    id: number;
+    title: string;
+    active: boolean;
+}
+
+
 export interface ILesson {
     id: number;
     title: string;
@@ -42,7 +89,6 @@ export interface IChapter {
     updatedAt?: string;
     updatedBy?: string;
 }
-
 
 export interface INewChapterCourse {
     id: number

@@ -78,7 +78,7 @@ const AdminCourse = () => {
                                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/course/${course.image}`}
                                 />
                             }
-                            onClick={() => window.location.href = `http://localhost:5173/course-manage/lesson/${course.id}`}
+                            onClick={() => window.location.href = `/course-manage/lesson/${course.id}`}
                         >
                             <div
                                 style={{

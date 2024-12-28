@@ -131,3 +131,26 @@ export interface IAddLessonVideo {
     lessonId: number,
     lessonVideoURL: string;
 }
+
+
+export interface ILogin {
+    username: string;
+    password: string;
+};
+
+export interface IAccount {
+    id: number;
+    email: string;
+    name: string;
+    role: string;
+}
+
+export interface IResUserLogin {
+    user: IAccount;
+    access_token: string;
+    refresh_token: string;
+}
+
+export interface IFetchAccount {
+    user: IAccount
+}

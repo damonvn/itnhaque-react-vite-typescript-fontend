@@ -67,7 +67,7 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
             const resCourse = await callUpdateCourse(course);
             if (resCourse && resCourse.data && resCourse.statusCode === 200) {
                 setIsModalOpen(false);
-                window.location.href = 'http://localhost:5173/admin/course';
+                window.location.href = '/admin/course';
             }
 
             // Close the modal and reset form fields

@@ -1,5 +1,5 @@
 import axios from './axios-customize'
-import { IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse, IAddLessonVideo, INewCourse, ICoursePages, Pages, IPagesCourse, IUpdateCourse, IUpdateCourseActive } from '@/types/backend';
+import { IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse, IAddLessonVideo, INewCourse, ICoursePages, Pages, IPagesCourse, IUpdateCourse, IUpdateCourseActive, ILogin, IResUserLogin, IAccount, IFetchAccount } from '@/types/backend';
 
 
 export const callFetchContent = async (id: number) => {
@@ -10,9 +10,7 @@ export const callFetchLesson = async (id: number) => {
     return (await axios.get<IBackendRes<ILesson>>(`/api/v1/lesson/${id}`)).data;
 }
 
-export const callFetchAccount = () => {
-    return axios.get('/')
-}
+
 
 export const callCreateChapter = async (chapter: INewChapter) => {
     return (await axios.post<IBackendRes<IContent>>('/api/v1/chapter', { ...chapter })).data;
@@ -70,6 +68,19 @@ export const callUpdateCourse = async (course: IUpdateCourse) => {
 
 export const callUpdateCourseActive = async (course: IUpdateCourseActive) => {
     return (await axios.put<IBackendRes<null>>('/api/v1/course/active', { ...course })).data;
+}
+
+export const callLogin = async (user: ILogin) => {
+    return (await axios.post<IBackendRes<IResUserLogin>>('/api/v1/auth/login', { ...user })).data;
+}
+
+export const callFetchAccount = async () => {
+    return (await axios.get<IBackendRes<IFetchAccount>>('/api/v1/auth/account')).data
+}
+
+
+export const callRefreshToken = async () => {
+    return (await axios.get<IBackendRes<String>>('/api/v1/auth/refresh')).data
 }
 
 

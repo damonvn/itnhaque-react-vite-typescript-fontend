@@ -6,29 +6,29 @@ import {
     UserOutlined,
     VideoCameraOutlined,
 } from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
-
+import { Avatar, Button, Layout, Menu, theme } from 'antd';
 import '@/styles/admin-layout-custom.scss'
 import { Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const { Header, Sider, Content } = Layout;
 
+
 const AdminLayout: React.FC = () => {
     const [collapsed, setCollapsed] = useState(false);
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken();
+    const accountState = useSelector((state: any) => state.account);
+    const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
 
     return (
+
         <div className='admin-layout-custom'>
             {/* <div style={{ height: "60px", width: "100vw", background: "green", position: "fixed", zIndex: 100, top: 0 }}></div> */}
             <Layout>
-
                 <Sider trigger={null} collapsible collapsed={collapsed}>
                     {/* <div className="demo-logo-vertical" /> */}
                     <div style={{ color: "white", padding: "15px" }}>
                         <div style={{ height: "49px", lineHeight: "49px", color: "white", textAlign: "center", fontSize: "20px", borderBottom: "1px solid #d7caca" }}>
-                            ADMIN
+                            Admin
                         </div>
                     </div>
                     <Menu
@@ -56,7 +56,7 @@ const AdminLayout: React.FC = () => {
                     />
                 </Sider>
                 <Layout>
-                    <Header style={{ padding: 0, background: colorBgContainer }}>
+                    <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Button
                             type="text"
                             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -67,6 +67,7 @@ const AdminLayout: React.FC = () => {
                                 height: 64,
                             }}
                         />
+                        <Avatar size={40} style={{ marginRight: '50px' }}>{accountState.name}</Avatar>
                     </Header>
                     <Content
                         style={{

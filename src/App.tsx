@@ -3,12 +3,26 @@ import {
     RouterProvider,
 } from 'react-router-dom';
 import '@/styles/App.css'
-import AdminLayout from './components/admin/share/AdminLayout';
+import AdminLayout from './components/admin/AdminLayout';
 import CourseManage from './components/admin/course/CourseManage';
 
 import AdminCourse from './components/admin/AdminCourse';
+import LoginPage from './components/login/LoginPage';
+import { useEffect } from 'react';
+import { useAppDispatch } from './redux/hooks';
+import { fetchAccount } from './redux/slices/accountSlice';
+import ProtectedRoute from './components/share/protected/protected-route';
+import Test from './pages/test-cookie';
 
 const App = () => {
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        if (
+            window.location.pathname === '/login'
+        )
+            return;
+        dispatch(fetchAccount())
+    }, [])
     const router = createBrowserRouter([
         {
             path: '/',
@@ -17,7 +31,7 @@ const App = () => {
         },
         {
             path: '/admin',
-            element: <AdminLayout />,
+            element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
             errorElement: <div>404 Not Found</div>,
             children: [
                 {
@@ -35,8 +49,8 @@ const App = () => {
             ],
         },
         {
-            path: 'course-manage',
-            element: <CourseManage />,
+            path: '/course-manage',
+            element: <ProtectedRoute><CourseManage /></ProtectedRoute>,
             errorElement: <div>404 Not Found</div>,
             children: [
                 {
@@ -53,6 +67,16 @@ const App = () => {
                 },
 
             ],
+        },
+        {
+            path: '/login',
+            element: <LoginPage />,
+            errorElement: <div>404 Not Found</div>,
+        },
+        {
+            path: '/refresh',
+            element: <Test />,
+            errorElement: <div>404 Not Found</div>,
         },
     ]);
 

@@ -1,11 +1,10 @@
 import axiosClient from "axios";
 import { Mutex } from "async-mutex";
-import { IBackendRes } from "@/types/backend";
+import { IBackendRes, IResUserLogin } from "@/types/backend";
 import { notification } from "antd";
 
-interface AccessTokenResponse {
-    access_token: string;
-}
+
+
 
 /**
  * Creates an initial 'axios' instance with custom settings.
@@ -16,13 +15,15 @@ const instance = axiosClient.create({
 });
 
 const mutex = new Mutex();
-const NO_RETRY_HEADER = 'no-retry';
+const NO_RETRY_HEADER = 'x-no-retry';
 
 const handleRefreshToken = async (): Promise<string | null> => {
+    // const dispatch = useAppDispatch();
     return await mutex.runExclusive(async () => {
-        const res = (await instance.get<IBackendRes<AccessTokenResponse>>('/api/v1/auth/refresh')).data;
-        if (res && res.data) return res.data.access_token;
-        else return null;
+        const res = (await instance.get<IBackendRes<IResUserLogin>>('/api/v1/auth/refresh')).data;
+        if (res && res.data) {
+            return res.data.accessToken;
+        } else return null
     });
 };
 
@@ -61,8 +62,8 @@ instance.interceptors.response.use(
             const access_token = await handleRefreshToken();
             error.config.headers[NO_RETRY_HEADER] = 'true'
             if (access_token) {
-                error.config.headers['Authorization'] = `Bearer ${access_token}`;
                 localStorage.setItem('access_token', access_token)
+                error.config.headers['Authorization'] = `Bearer ${access_token}`;
                 return instance.request(error.config);
             }
         }

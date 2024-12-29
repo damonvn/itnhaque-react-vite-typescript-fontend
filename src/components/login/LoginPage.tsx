@@ -23,7 +23,7 @@ const LoginPage = () => {
         }
         const res = await callLogin(user);
         if (res?.data) {
-            localStorage.setItem('access_token', res.data.access_token);
+            localStorage.setItem('access_token', res.data.accessToken);
             const userPayload: IAccount = {
                 id: res.data.user.id,
                 email: res.data.user.email,

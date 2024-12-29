@@ -12,7 +12,6 @@ import { useEffect } from 'react';
 import { useAppDispatch } from './redux/hooks';
 import { fetchAccount } from './redux/slices/accountSlice';
 import ProtectedRoute from './components/share/protected/protected-route';
-import Test from './pages/test-cookie';
 
 const App = () => {
     const dispatch = useAppDispatch();
@@ -71,11 +70,6 @@ const App = () => {
         {
             path: '/login',
             element: <LoginPage />,
-            errorElement: <div>404 Not Found</div>,
-        },
-        {
-            path: '/refresh',
-            element: <Test />,
             errorElement: <div>404 Not Found</div>,
         },
     ]);

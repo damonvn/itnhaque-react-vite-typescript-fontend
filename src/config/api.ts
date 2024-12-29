@@ -74,14 +74,14 @@ export const callLogin = async (user: ILogin) => {
     return (await axios.post<IBackendRes<IResUserLogin>>('/api/v1/auth/login', { ...user })).data;
 }
 
+export const callLogout = async () => {
+    return (await axios.post<IBackendRes<null>>('/api/v1/auth/logout')).data;
+}
+
 export const callFetchAccount = async () => {
     return (await axios.get<IBackendRes<IFetchAccount>>('/api/v1/auth/account')).data
 }
 
-
-export const callRefreshToken = async () => {
-    return (await axios.get<IBackendRes<String>>('/api/v1/auth/refresh')).data
-}
 
 
 

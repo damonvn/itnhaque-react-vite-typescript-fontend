@@ -147,8 +147,8 @@ export interface IAccount {
 
 export interface IResUserLogin {
     user: IAccount;
-    access_token: string;
-    refresh_token: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 export interface IFetchAccount {

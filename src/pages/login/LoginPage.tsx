@@ -7,14 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUerLoginInfor } from '@/redux/slices/accountSlice';
 import { useLocation } from 'react-router-dom';
 
-
-
 const LoginPage = () => {
-
     const dispatch = useDispatch();
     let location = useLocation();
     let params = new URLSearchParams(location.search);
     const callback = params?.get("callback");
+    console.log('check params: ', params);
+    console.log('check callback: ', callback);
 
     const onFinish: FormProps<ILogin>['onFinish'] = async (values) => {
         const user: ILogin = {
@@ -31,7 +30,7 @@ const LoginPage = () => {
                 role: res.data.user.role,
             }
             dispatch(setUerLoginInfor(userPayload));
-            message.success('Đăng nhập tài khoản thành công!');
+            // message.success('Đăng nhập tài khoản thành công!');
             window.location.href = callback ? callback : '/admin/course';
         }
     };

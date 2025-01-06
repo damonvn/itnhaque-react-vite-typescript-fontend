@@ -24,7 +24,7 @@ const AddLesson: React.FC<AddChapterProps> = ({ state, setState, courseId }) => 
         };
         const res = await callCreateLesson(newLesson);
         if (res?.data) {
-            window.location.href = `/course-manage/lesson/edit/${res.data.id}`;
+            window.location.href = `admin/course-manage/lesson/edit/${res.data.id}`;
             const newState: AddLessonState = {
                 openModal: false,
                 chapterId: 0,

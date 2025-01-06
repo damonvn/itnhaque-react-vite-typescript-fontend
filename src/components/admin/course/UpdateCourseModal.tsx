@@ -1,9 +1,9 @@
 
-import { Input, Modal, Form, Button, message, Upload } from 'antd';
+import { Input, Modal, Form, Button, message, Upload, Select } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { callCreateCourse, callFetchUpdateCourse, callUpdateCourse, callUploadCourseImage } from '@/config/api';
+import { callCreateCourse, callFetchCategories, callFetchSkills, callFetchUpdateCourse, callUpdateCourse, callUploadCourseImage } from '@/config/api';
 import { INewCourse, IUpdateCourse } from '@/types/backend';
 
 interface IProps {
@@ -25,10 +25,22 @@ const handleUploadChange = (info: any) => {
     }
 };
 
+interface ISkillSelect {
+    value: number,
+    label: string
+}
+
+interface ICategorySelect {
+    value: number,
+    label: string
+}
+
 
 const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, courseId }) => {
 
     const [imageName, setImageName] = useState('')
+    const [skillList, setSkillList] = useState<ISkillSelect[]>([]);
+    const [categoryList, setCategoryList] = useState<ICategorySelect[]>([]);
     const [form] = Form.useForm();
     const { TextArea } = Input;
 
@@ -59,6 +71,12 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
             const course: IUpdateCourse = {
                 id: courseId,
                 title: values.title,
+                category: {
+                    id: values.category
+                },
+                skill: {
+                    id: values.category
+                },
                 description: values.description,
                 image: imageName
             };
@@ -67,7 +85,7 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
             const resCourse = await callUpdateCourse(course);
             if (resCourse && resCourse.data && resCourse.statusCode === 200) {
                 setIsModalOpen(false);
-                window.location.href = '/admin/course';
+                window.location.href = `${import.meta.env.VITE_FRONTEND_URL}/admin/course`;
             }
 
             // Close the modal and reset form fields
@@ -86,11 +104,36 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
         const fetchUpdateCourse = async () => {
             const res = await callFetchUpdateCourse(courseId);
             if (res && res.data) {
+                const fetchCategories = async () => {
+                    const resCategories = await callFetchCategories();
+                    if (resCategories?.data) {
+                        const categorySelect: ICategorySelect[] = [];
+                        resCategories.data.map((ct) => {
+                            categorySelect.push({ value: ct.id, label: ct.name });
+                        })
+                        setCategoryList(categorySelect);
+                    }
+                }
+                const fetchSkills = async () => {
+                    const resSkills = await callFetchSkills();
+                    if (resSkills?.data) {
+                        const skillSelect: ISkillSelect[] = [];
+                        resSkills.data.map((sk) => {
+                            skillSelect.push({ value: sk.id, label: sk.name });
+                        })
+                        setSkillList(skillSelect);
+                    }
+                }
+
+                fetchCategories();
+                fetchSkills();
+
                 form.setFieldsValue({
                     title: res.data.title,
-                    description: res.data.description
+                    category: res.data.category.id,
+                    skill: res.data.skill.id,
+                    description: res.data.description,
                 });
-
                 setImageName(res.data.image)
             }
         }
@@ -139,7 +182,9 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
                         </Upload>
                     </div>
                     <Form
-                        form={form} layout="vertical" name="modalForm"
+                        form={form}
+                        layout="vertical"
+                        name="modalForm"
                         style={{
                             width: '60%', paddingLeft: '25px'
                         }}
@@ -151,6 +196,34 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
                             rules={[{ required: true, message: "Please enter your name!" }]}
                         >
                             <Input placeholder="Enter your name" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Category"
+                            name="category"
+                            rules={[{ required: true, message: "Please enter your name!" }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Select category"
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={categoryList}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Skill"
+                            name="skill"
+                            rules={[{ required: true, message: "Please enter your name!" }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Select skill"
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={skillList}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Description"

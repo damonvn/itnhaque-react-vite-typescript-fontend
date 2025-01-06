@@ -3,34 +3,56 @@ import {
     RouterProvider,
 } from 'react-router-dom';
 import '@/styles/App.css'
-import AdminLayout from './components/admin/AdminLayout';
-import CourseManage from './components/admin/course/CourseManage';
-
+import CourseManage from '@/pages/admin/course-manage-page';
 import AdminCourse from './components/admin/AdminCourse';
-import LoginPage from './components/login/LoginPage';
+import LoginPage from './pages/login/LoginPage';
 import { useEffect } from 'react';
 import { useAppDispatch } from './redux/hooks';
 import { fetchAccount } from './redux/slices/accountSlice';
 import ProtectedRoute from './components/share/protected/protected-route';
+import AdminPage from '@/pages/admin/AdminPage';
+import CourseLectures from './pages/client/course-lectures/course-lectures';
+import HomePage from './pages/client/home/home';
+import '@/styles/responsive.scss'
 
 const App = () => {
     const dispatch = useAppDispatch();
     useEffect(() => {
-        if (
-            window.location.pathname === '/login'
-        )
+        if (window.location.pathname === '/login') {
             return;
-        dispatch(fetchAccount())
+        } else {
+            dispatch(fetchAccount())
+        }
     }, [])
     const router = createBrowserRouter([
         {
             path: '/',
-            element: <div>Home</div>,
+            element: <HomePage />,
             errorElement: <div>404 Not Found</div>,
         },
         {
+            path: '/course',
+            element: <CourseLectures />,
+            errorElement: <div>404 Not Found</div>,
+            children: [
+                {
+                    index: true, element: <CourseManage />
+                },
+                {
+                    path: "lesson/:id", element: <CourseManage />
+                },
+                {
+                    path: "lesson/edit/:id", element: <CourseManage />
+                },
+                {
+                    path: "chapter/lesson/:id", element: <CourseManage />
+                },
+
+            ],
+        },
+        {
             path: '/admin',
-            element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+            element: <ProtectedRoute><AdminPage /></ProtectedRoute>,
             errorElement: <div>404 Not Found</div>,
             children: [
                 {
@@ -48,7 +70,7 @@ const App = () => {
             ],
         },
         {
-            path: '/course-manage',
+            path: '/admin-course-manage',
             element: <ProtectedRoute><CourseManage /></ProtectedRoute>,
             errorElement: <div>404 Not Found</div>,
             children: [

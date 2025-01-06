@@ -139,7 +139,7 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
             lesson.lessonVideoURL = lsVideoURL;
             const res = await callUpdateLesson(lesson);
             if (res && res?.data) {
-                window.location.href = `/course-manage/lesson/${res.data.id}`;
+                window.location.href = `/admin-course-manage/lesson/${res.data.id}`;
             }
         }
     }

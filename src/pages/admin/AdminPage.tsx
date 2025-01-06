@@ -33,7 +33,7 @@ const logoutMenu = () => {
 
 const { Header, Sider, Content } = Layout;
 
-const AdminLayout: React.FC = () => {
+const AdminPage: React.FC = () => {
     const [collapsed, setCollapsed] = useState(false);
     const accountState = useSelector((state: any) => state.account);
     const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
@@ -111,4 +111,4 @@ const AdminLayout: React.FC = () => {
     );
 };
 
-export default AdminLayout;
+export default AdminPage;

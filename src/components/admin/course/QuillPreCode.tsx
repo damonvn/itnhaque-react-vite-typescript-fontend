@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import ReactQuill from 'react-quill'; // Import React-Quill
 import 'react-quill/dist/quill.snow.css'; // Import CSS của Quill
 

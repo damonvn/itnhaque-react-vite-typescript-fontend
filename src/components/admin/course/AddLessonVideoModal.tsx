@@ -18,7 +18,7 @@ const AddLessonVideo: React.FC<Props> = ({ state, setState }) => {
         };
         const res = await callAddLessonVideo(data);
         if (res?.data) {
-            window.location.href = `/course-manage/lesson/${res.data.id}`;
+            window.location.href = `admin/course-manage/lesson/${res.data.id}`;
             const newState: AddLessonVideoState = {
                 openModal: false,
                 lessonId: -1

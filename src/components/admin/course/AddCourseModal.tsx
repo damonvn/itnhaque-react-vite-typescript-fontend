@@ -1,14 +1,23 @@
 
-import { Input, Modal, Form, Button, message, Upload } from 'antd';
-import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { callCreateCourse, callUploadCourseImage } from '@/config/api';
+import { Input, Modal, Form, Button, message, Upload, Select } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { callCreateCourse, callFetchCategories, callFetchSkills, callUploadCourseImage } from '@/config/api';
 import { INewCourse } from '@/types/backend';
 
 interface IProps {
     isModalOpen: boolean;
     setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+interface ISkillSelect {
+    value: number,
+    label: string
+}
+
+interface ICategorySelect {
+    value: number,
+    label: string
 }
 
 const handleUploadChange = (info: any) => {
@@ -26,8 +35,9 @@ const handleUploadChange = (info: any) => {
 
 
 const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
-
     const [imageLink, setImageLink] = useState('')
+    const [skillList, setSkillList] = useState<ISkillSelect[]>([]);
+    const [categoryList, setCategoryList] = useState<ICategorySelect[]>([]);
 
     const [form] = Form.useForm();
     const { TextArea } = Input;
@@ -36,15 +46,9 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
         const resImg = await callUploadCourseImage(file, "course");
         if (resImg && resImg.data) {
             setImageLink(resImg.data.fileName);
-            // setDataLogo([{
-            //     name: res.data.fileName,
-            //     uid: uuidv4()
-            // }])
-
             if (onSuccess) onSuccess('ok')
         } else {
             if (onError) {
-                // setDataLogo([])
                 const error = new Error(resImg.message);
                 onError({ event: error });
             }
@@ -59,18 +63,23 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
             const course: INewCourse = {
                 title: values.title,
                 description: values.description,
-                image: imageLink
+                image: imageLink,
+                category: {
+                    id: values.category
+                },
+                skill: {
+                    id: values.skill
+                }
             };
 
             // Call API to create course
             const resCourse = await callCreateCourse(course);
             if (resCourse && resCourse.data) {
-                console.log("Check create course: ", resCourse.data);
+                window.location.href = `${import.meta.env.VITE_FRONTEND_URL}/admin/course`;
+                // Close the modal and reset form fields
+                setIsModalOpen(false);
+                form.resetFields();
             }
-
-            // Close the modal and reset form fields
-            setIsModalOpen(false);
-            form.resetFields();
         } catch (info) {
             console.log("Validation Failed:", info);
         }
@@ -80,6 +89,34 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
         setIsModalOpen(false);
         form.resetFields(); // Optional: reset form when cancelling
     };
+
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const resCategories = await callFetchCategories();
+            if (resCategories?.data) {
+                const categorySelect: ICategorySelect[] = [];
+                resCategories.data.map((ct) => {
+                    categorySelect.push({ value: ct.id, label: ct.name });
+                })
+                setCategoryList(categorySelect);
+            }
+        }
+        const fetchSkills = async () => {
+            const resSkills = await callFetchSkills();
+            if (resSkills?.data) {
+                const skillSelect: ISkillSelect[] = [];
+                resSkills.data.map((sk) => {
+                    skillSelect.push({ value: sk.id, label: sk.name });
+                })
+                setSkillList(skillSelect);
+            }
+        }
+
+        fetchCategories();
+        fetchSkills();
+    }, [])
+
     return (
         <>
             <Modal
@@ -101,7 +138,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                                 height: '170px',
                                 marginTop: '8px',
                                 marginBottom: '20px',
-                                backgroundImage: `url('${imageLink}')`,
+                                backgroundImage: `url('${import.meta.env.VITE_BACKEND_URL}/storage/course/${imageLink}')`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 backgroundRepeat: 'no-repeat'
@@ -134,6 +171,34 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                             rules={[{ required: true, message: "Please enter your name!" }]}
                         >
                             <Input placeholder="Enter your name" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Category"
+                            name="category"
+                            rules={[{ required: true, message: "Please enter your name!" }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Select category"
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={categoryList}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Skill"
+                            name="skill"
+                            rules={[{ required: true, message: "Please enter your name!" }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Select skill"
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={skillList}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Description"

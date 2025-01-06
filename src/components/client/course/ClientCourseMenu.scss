@@ -1,0 +1,43 @@
+.client-custom {
+    padding-top: 14px !important;
+    padding-bottom: 16px !important;
+    padding-right: 42px;
+    min-height: 38px;
+    padding-right: 44px !important;
+
+    .down-arrrow {
+        top: 17px !important;
+    }
+
+    .up-arrow {
+        top: 18px !important;
+    }
+}
+
+.client-lesson-action {
+    position: absolute;
+    right: 7px;
+    bottom: 7px;
+    padding: 1px 7px;
+    border: 1px solid #6e6d6d;
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 500;
+
+
+
+    &:hover {
+        cursor: pointer;
+        color: yellow;
+        border: 1px solid yellow !important;
+    }
+}
+
+.lesson-title-client-custom:hover .client-lesson-action {
+    border: 1px solid #fff;
+}
+
+.lesson-title-client-custom {
+    padding-right: 75px !important;
+    padding-bottom: 30px !important;
+}

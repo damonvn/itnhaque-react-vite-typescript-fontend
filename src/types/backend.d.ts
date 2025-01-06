@@ -31,6 +31,42 @@ export interface ICoursePages {
     updatedBy?: string;
 }
 
+export interface ICourseClient {
+    id: number;
+    title: string;
+    image: string;
+    description: string;
+    active: boolean;
+    createdAt?: string;
+    createdBy?: string;
+    updatedAt?: string;
+    updatedBy?: string;
+}
+
+export type ICourseClientArray = ICourseClient[];
+
+export interface ICourseUpdate {
+    id: number;
+    title: string;
+    image: string;
+    description: string;
+    active: boolean;
+    category: {
+        id: number,
+        name: string,
+        value: string
+    };
+    skill: {
+        id: number,
+        name: string,
+        value: string
+    }
+    createdAt?: string;
+    createdBy?: string;
+    updatedAt?: string;
+    updatedBy?: string;
+}
+
 export type ICourseArray = ICoursePages[];
 
 export interface Pages<ICourseArray> {
@@ -45,18 +81,31 @@ export interface Meta {
     total: number;
 }
 
-
 export interface INewCourse {
     title: string;
     description: string;
     image: string;
+    category: {
+        id: number
+    };
+    skill: {
+        id: number
+    };
 }
+
+
 
 export interface IUpdateCourse {
     id: number;
     title: string;
     description: string;
     image: string;
+    category: {
+        id: number
+    };
+    skill: {
+        id: number
+    };
 }
 
 export interface IUpdateCourseActive {
@@ -152,5 +201,22 @@ export interface IResUserLogin {
 }
 
 export interface IFetchAccount {
-    user: IAccount
+    user: IAccount;
 }
+
+export interface ICategory {
+    id: number;
+    name: string;
+    value: string;
+}
+
+export type ICategoryArray = ICategory[];
+
+export interface ISkill {
+    id: number;
+    name: string;
+    value: string;
+}
+
+export type ISkillArray = ISkill[];
+

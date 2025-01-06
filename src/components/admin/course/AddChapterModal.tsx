@@ -12,9 +12,6 @@ interface AddChapterProps {
     courseId: number;
 }
 
-
-
-
 const AddChapter: React.FC<AddChapterProps> = ({ state, setSate, courseId }) => {
     const [chapterTitle, setChapterTitle] = useState('');
 
@@ -30,7 +27,7 @@ const AddChapter: React.FC<AddChapterProps> = ({ state, setSate, courseId }) => 
         };
         const res = await callCreateChapter(newChapter);
         if (res?.data) {
-            window.location.href = `/course-manage/chapter/lesson/${res.data.id}`;
+            window.location.href = `/admin-course-manage/chapter/lesson/${res.data.id}`;
             const newState: AddChapterState = {
                 openModal: false,
                 chapterIndex: -1,

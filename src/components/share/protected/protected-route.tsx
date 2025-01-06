@@ -1,4 +1,3 @@
-import { Navigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/hooks";
 import NotPermitted from "./not-permitted";
 import Loading from "../Loading";
@@ -27,7 +26,8 @@ const AdminRoleBaseRoute = (props: any) => {
             if (!isDelayed) {
                 return null;
             }
-            return (<NotPermitted />)
+            const callback = window.location.pathname;
+            return (<NotPermitted callback={callback} />)
         }
     }
 }

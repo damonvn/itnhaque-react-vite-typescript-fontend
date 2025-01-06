@@ -5,8 +5,8 @@ import 'highlight.js/styles/monokai.css';
 import '@/styles/course.manage.scss'
 
 import { callFetchContent } from '@/config/api';
-import QuillEditor from './QuillEditor';
-import CourseMemu from './CourseMenu';
+import QuillEditor from '@/components/admin/course/QuillEditor';
+import CourseMemu from '@/components/admin/course/CourseMenu';
 import { IContent } from '@/types/backend';
 import { useLocation, useParams } from 'react-router-dom';
 import CopyIcon from '@/assets/CopyIcon';

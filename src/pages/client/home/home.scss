@@ -1,0 +1,114 @@
+/* Extra small devices (< 576px) */
+.home-header {
+    height: 60px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    box-sizing: border-box;
+    border-bottom: 1px solid #e8ebed;
+    background-color: #fff;
+}
+
+.home-header-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .header-menu-item {
+        padding-left: 15px;
+        padding-right: 15px;
+        font-weight: 600;
+        font-size: 14px;
+        // font-family: 'Roboto regular', sans-serif;
+        line-height: 50px;
+
+        &:hover {
+            background-color: #0dc1e0;
+        }
+    }
+
+    .ant-menu-title-content {
+        min-width: 85px;
+
+        a {
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+        }
+    }
+
+    .ant-menu-item-selected {
+        &::after {
+            border-bottom-color: #00bf63 !important;
+        }
+
+        a {
+            color: #00bf63 !important;
+        }
+    }
+
+    .ant-menu-overflow-item {
+        &:hover {
+            &::after {
+                border-bottom-color: #00bf63 !important;
+            }
+        }
+    }
+}
+
+
+.home-content {}
+
+.home-left-menu {
+    position: sticky;
+    top: 90px;
+}
+
+.home-left-menu-item {
+    margin-top: 15px;
+    padding-left: 5px;
+
+    .ant-checkbox-checked .ant-checkbox-inner {
+        background-color: #00bf63 !important;
+        /* Màu nền khi được chọn */
+        border-color: #00bf63 !important;
+        /* Viền khi được chọn */
+    }
+
+    .ant-checkbox-wrapper {
+        &:hover {
+            .ant-checkbox-inner {
+                border-color: #00bf63 !important;
+            }
+        }
+    }
+}
+
+.home-course-container {
+    .ant-card {
+        border-radius: 0;
+
+        img {
+            border-radius: 0;
+        }
+    }
+}
+
+
+
+
+/* Small devices (≥576px) */
+@media (min-width: 576px) {}
+
+/* Medium devices (≥768px) */
+@media (min-width: 768px) {}
+
+/* Large devices (≥992px) */
+@media (min-width: 992px) {}
+
+/* Extra large devices (≥1200px) */
+@media (min-width: 1200px) {}
+
+/* XXL devices (≥1400px) */
+@media (min-width: 1400px) {}

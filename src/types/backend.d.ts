@@ -220,3 +220,10 @@ export interface ISkill {
 
 export type ISkillArray = ISkill[];
 
+export interface LessonParameters {
+    lessonInChapterIndex: number;
+    chapterInCourseIndex: number;
+    courseChapterSize: number;
+    chapterLessonSize: number;
+}
+

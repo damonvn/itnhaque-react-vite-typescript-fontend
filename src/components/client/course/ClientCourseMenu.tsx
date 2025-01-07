@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, memo } from 'react';
+import React, { useState, useRef, useEffect, memo, useLayoutEffect } from 'react';
 import '@/styles/course.manage.scss'
 import UpArrow from '@/assets/Icons/UpArrow';
 import DownArrow from '@/assets/Icons/DownArrow';
@@ -6,32 +6,32 @@ import { callFetchCourse } from '@/config/api';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { IChapter } from '@/types/backend';
+
+import { CloseOutlined } from '@ant-design/icons';
 import './ClientCourseMenu.scss';
+import { Dropdown } from 'antd';
 
 interface Props {
     courseId: number;
-    contentId: number
-    chapterId: number
+    contentId: number;
+    chapterId: number;
+    menuShow: boolean | null;
+    setMenuShow: (value: boolean | null) => void;
 }
 
-const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) => {
+const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId, menuShow, setMenuShow }) => {
     const rightMenuRef = useRef<HTMLDivElement>(null);
     const menuScrollRef = useRef<HTMLDivElement>(null);
     const [openSections, setOpenSections] = useState<{ [key: number]: boolean }>({});
     const [arrayChapter, setArrayChapter] = useState<IChapter[]>([]);
     const [courseLoaded, setCourseLoaded] = useState(false);
-    const location = useLocation();
-    const isOpenLesson = location.pathname.includes('admin/course-manage/lesson');
-    const isEditLesson = location.pathname.includes('/lesson/edit');
-    const isOpenNewChapter = location.pathname.includes('/chapter/lesson');
     const navigate = useNavigate();
 
     const handleLessonClick = (lessonId: number) => {
         navigate(`lesson/${lessonId}`);
     }
-
     useEffect(() => {
-        if (courseLoaded && (isOpenLesson || isEditLesson)) {
+        if (courseLoaded) {
             setTimeout(() => {
                 const openingLesson = document.querySelector('.lesson-opening');
                 if ((openingLesson) && rightMenuRef.current) {
@@ -43,7 +43,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                 }
             })
         }
-        if (courseLoaded && isOpenNewChapter) {
+        if (courseLoaded) {
             const openingChapter = document.querySelector('.chapter-opening');
             if (openingChapter && rightMenuRef.current) {
                 const scrollPosition = openingChapter.getBoundingClientRect().top;
@@ -137,11 +137,33 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
         <>
             <div
                 ref={rightMenuRef}
-                className='course-menu'
-                style={{ top: 60 }}
+                className='client-course-menu'
+                style={{ top: window.scrollY < 60 ? `${60 - window.scrollY}px` : 0 }} //display: menuShow ? 'block' : 'none'
             >
-                <div className='menu-close'>
-                    Course
+                <div className='menu-close menu-close-client'>
+                    <h2>Course content</h2>
+                    <div className='menu-close-btn'>
+                        <Dropdown
+                            dropdownRender={() => (
+                                <div
+                                    style={{
+                                        background: '#1c1d1f', color: '#fff', padding: '4px 10px',
+                                        borderRadius: '4px', marginTop: '-4px', border: '1px solid #6a6f73', fontSize: '14px'
+                                    }}
+                                >
+                                    Close Panel
+                                </div>
+                            )}
+                        >
+                            <CloseOutlined
+                                style={{ padding: '10px', fontSize: 16, fontWeight: 600 }}
+                                onClick={() => {
+                                    setMenuShow(false);
+                                }}
+                            />
+                        </Dropdown>
+
+                    </div>
                 </div>
                 <div
                     className='menu-container'
@@ -169,7 +191,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                             arrayChapter.length > 0 && arrayChapter.map((c, cIndex) => (
                                 <div className='chapter' key={c.id}>
                                     <div
-                                        className={`chapter-title client-custom ${isOpenNewChapter && chapterId === c.id ? 'chapter-opening' : ''}`}
+                                        className={`chapter-title client-custom ${chapterId === c.id ? 'chapter-opening' : ''}`}
                                         onClick={(e) => {
                                             setOpenSections((prev) => {
                                                 const copyState = prev;
@@ -193,7 +215,8 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                                         <ul>
                                             {c.lessons.map((l, lIndex) =>
                                                 <li
-                                                    className={`lesson-title lesson-title-client-custom ${(isOpenLesson && l.contentId === contentId) ? 'lesson-opening' : ''}`}
+                                                    //isOpenLesson &&
+                                                    className={`lesson-title lesson-title-client-custom ${(l.contentId === contentId) ? 'lesson-opening' : ''}`}
                                                     key={l.id}
                                                     onClick={(e) => {
                                                         e.stopPropagation();

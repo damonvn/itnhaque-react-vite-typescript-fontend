@@ -61,7 +61,7 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
     const [openAddLesson, setOpenAddLesson] = useState<AddLessonState>(initialAddLessonState);
     const [openAddLessonVideo, setOpenAddLessonVideo] = useState<AddLessonVideoState>(initialAddLessonVideoState);
     const location = useLocation();
-    const isOpenLesson = location.pathname.includes('admin/course-manage/lesson');
+    const isOpenLesson = location.pathname.includes('admin-course-manage/lesson');
     const isEditLesson = location.pathname.includes('/lesson/edit');
     const isOpenNewChapter = location.pathname.includes('/chapter/lesson');
     const navigate = useNavigate();

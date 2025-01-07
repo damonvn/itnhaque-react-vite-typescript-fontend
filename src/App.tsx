@@ -29,6 +29,11 @@ const App = () => {
             path: '/',
             element: <HomePage />,
             errorElement: <div>404 Not Found</div>,
+            children: [
+                {
+                    path: "/course", element: <HomePage />
+                }
+            ]
         },
         {
             path: '/course',
@@ -36,16 +41,13 @@ const App = () => {
             errorElement: <div>404 Not Found</div>,
             children: [
                 {
-                    index: true, element: <CourseManage />
+                    path: "lesson/:id", element: <CourseLectures />
                 },
                 {
-                    path: "lesson/:id", element: <CourseManage />
+                    path: "lesson/edit/:id", element: <CourseLectures />
                 },
                 {
-                    path: "lesson/edit/:id", element: <CourseManage />
-                },
-                {
-                    path: "chapter/lesson/:id", element: <CourseManage />
+                    path: "chapter/lesson/:id", element: <CourseLectures />
                 },
 
             ],

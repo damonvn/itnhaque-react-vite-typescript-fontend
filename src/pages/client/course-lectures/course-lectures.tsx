@@ -1,14 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 
 import 'react-quill/dist/quill.snow.css';
 import 'highlight.js/styles/monokai.css';
-import '@/styles/course.manage.scss'
+// import '@/styles/course.manage.scss'
+import './course-lectures.scss';
 
-import { callFetchContent } from '@/config/api';
+import { callFetchContent, callGetLessonParameters, callNextBtnHandle, callPrevBtnHandle } from '@/config/api';
 import { IContent } from '@/types/backend';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CopyIcon from '@/assets/CopyIcon';
 import ClientCourseMenu from '@/components/client/course/ClientCourseMenu';
+import { ArrowLeftOutlined, LeftOutlined, LeftSquareOutlined, RightOutlined, RightSquareOutlined } from '@ant-design/icons';
+import { useSearchParams } from 'react-router-dom';
+
 
 const initialContent: IContent = {
     id: 0,
@@ -26,8 +30,42 @@ const CourseLectures = () => {
     const [courseId, setCourseId] = useState<number>(0)
     const [lessonContent, setLessonContent] = useState<IContent>(initialContent);
     const [isRender, setIsRender] = useState<boolean>(false);
+    const [currentChapterIndex, setCurrentChapterIndex] = useState<number>(-1);
+    const [currentLessonIndex, setCurrentLessonIndex] = useState<number>(-1);
+    const [chaptersSize, setChaptersSize] = useState<number>(-1);
+    const [lessonsSize, setLessonsSize] = useState<number>(-1);
+    const [menuShow, setMenuShow] = useState<boolean | null>(null);
+    // Lấy giá trị của tham số `menushow`
+    const [searchParams, setSearchParams] = useSearchParams();
+    const menuShowParam = searchParams.get('menushow');
 
     const { id } = useParams();
+    console.log('check id: ', id)
+
+    const nextBtnOnClickHandle = async () => {
+        //@ts-ignore
+        const res = await callNextBtnHandle(id);
+        if (res?.data) {
+            if (menuShow === false) {
+                window.location.href = `/course/lesson/${res.data}?menushow=false`;
+            } else {
+                window.location.href = `/course/lesson/${res.data}`;
+            }
+        }
+    }
+
+    const prevBtnOnClickHandle = async () => {
+        //@ts-ignore
+        const res = await callPrevBtnHandle(id);
+        if (res?.data) {
+            // navigate(`/course/lesson/${res.data}`)
+            if (menuShow === false) {
+                window.location.href = `/course/lesson/${res.data}?menushow=false`;
+            } else {
+                window.location.href = `/course/lesson/${res.data}`;
+            }
+        }
+    }
 
     const getLesson = async (contentId: number) => {
         const res = await callFetchContent(contentId);
@@ -38,9 +76,53 @@ const CourseLectures = () => {
         }
     }
 
+    useLayoutEffect(() => {
+        if (menuShow !== null) { // Chỉ thực hiện logic khi menuShow là false
+            const leftContent = document.querySelector('.client-lesson-content');
+            if (leftContent) {
+                const l = leftContent.getBoundingClientRect().left;
+                const w = leftContent.getBoundingClientRect().width;
+
+                const copyBtns = document.querySelectorAll('.copy-btn');
+                if (copyBtns.length > 0) {
+                    copyBtns.forEach((btn) => {
+                        if (btn.getBoundingClientRect().top === 6) {
+                            //@ts-ignore
+                            btn.style.left = `${l + w - btn.clientWidth - 8}px`;
+                        }
+                    });
+                }
+            }
+        }
+    }, [menuShow]);
+
+    useEffect(() => {
+        if (menuShowParam === null) {
+            setMenuShow(true);
+        } else if (menuShowParam === 'true') {
+            setMenuShow(true);
+        } else if (menuShowParam === 'false') {
+            setMenuShow(false);
+        } else {
+            setMenuShow(true);
+        }
+    }, [])
+
     useEffect(() => {
         //@ts-ignore
         getLesson(+id);
+
+        const getLessonParameters = async (contentId: number) => {
+            const res = await callGetLessonParameters(contentId);
+            if (res?.data) {
+                setCurrentChapterIndex(res.data.chapterInCourseIndex);
+                setCurrentLessonIndex(res.data.lessonInChapterIndex);
+                setChaptersSize(res.data.courseChapterSize);
+                setLessonsSize(res.data.chapterLessonSize);
+            }
+        }
+        //@ts-ignore
+        getLessonParameters(+id);
     }, [id])
 
     const innerHTML = addedButtonHTML(lessonContent.content);
@@ -143,21 +225,102 @@ const CourseLectures = () => {
 
     return (
         <div
-            className='admin-course-manager'
+            className='client-course-manager'
         >
             <header className='header'></header>
-            <div
-                style={{ width: '70%', textAlign: 'center', padding: '0 15px', height: '5000px', boxSizing: 'border-box' }}
-            >
-                <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
+            {
+                menuShow !== null &&
+                <div
+                    className='lesson-content'
+                    style={{
+                        width: menuShow ? '70%' : '100%', textAlign: 'center', height: '5000px', boxSizing: 'border-box',
+                    }}
+                >
                     <div
-                        style={{ textAlign: 'left', marginTop: '10px' }}
-                        className='admin-lesson-content'
-                        dangerouslySetInnerHTML={{ __html: innerHTML }}
-                    />
-                </div>
-            </div >
-            <ClientCourseMenu courseId={courseId} chapterId={lessonContent.chapterId} contentId={lessonContent.id} />
+                        style={{
+                            width: '100%', marginLeft: 'auto', marginRight: 'auto', boxSizing: 'border-box',
+                            paddingLeft: menuShow === false ? '10%' : '7%', paddingRight: menuShow === false ? '10%' : '7%'
+                        }}
+                    >
+                        <div
+                            style={{ textAlign: 'left', marginTop: '10px' }}
+                            className='client-lesson-content'
+                            dangerouslySetInnerHTML={{ __html: innerHTML }}
+                        />
+                    </div>
+                    {
+                        menuShow === false &&
+                        <div
+                            className='show-course-menu-btn'
+                            onClick={() => {
+                                setMenuShow(true);
+                                searchParams.delete('menushow');
+                                setSearchParams(searchParams);
+
+                            }}
+                        >
+                            <ArrowLeftOutlined style={{ fontSize: '18px' }} />
+                            <span
+                                className='show-course-menu-btn-text'
+                            >
+                                Course content
+                            </span>
+                        </div>
+                    }
+
+                    {
+                        currentChapterIndex !== -1 && currentLessonIndex !== -1 &&
+                        !(currentChapterIndex === 0 && currentLessonIndex === 0) &&
+                        <div
+                            className='course-left-btn'
+                            onClick={() => prevBtnOnClickHandle()}
+                        >
+                            <LeftOutlined
+                                className='course-left-btn-icon'
+                                style={{
+                                    position: 'absolute', left: '1px', top: '50%', transform: 'translateY(-50%)', zIndex: 50, fontSize: '27px'
+                                }}
+
+                            />
+                        </div>
+                    }
+                    {
+                        currentChapterIndex !== -1 && currentLessonIndex !== -1 && menuShow !== null &&
+                        chaptersSize !== -1 && lessonsSize !== -1 &&
+                        !(currentChapterIndex === chaptersSize - 1 && currentLessonIndex === lessonsSize - 1) &&
+                        <div
+                            className='course-right-btn'
+                            style={{
+                                left: menuShow ? 'calc(70vw - 42px)' : 'calc(100vw - 47px)',
+                            }}
+                            onClick={() => {
+                                nextBtnOnClickHandle();
+                            }}
+                        >
+                            <RightOutlined
+                                className='course-right-btn-icon'
+                                style={{
+                                    position: 'absolute', top: '50%', transform: 'translateY(-50%)', zIndex: 50,
+                                    left: '2px',
+                                    fontSize: '27px'
+                                }}
+
+                            />
+                        </div>
+                    }
+                </div >
+            }
+            {
+                menuShow &&
+                <ClientCourseMenu
+                    courseId={courseId}
+                    chapterId={lessonContent.chapterId}
+                    contentId={lessonContent.id}
+                    menuShow={menuShow}
+                    setMenuShow={setMenuShow}
+                />
+            }
+
         </div >
     );
 }
@@ -201,9 +364,10 @@ const addedButtonHTML = (innerHTML: string) => {
     return div.innerHTML;
 }
 
+
 const handleLessonScroll = () => {
-    const codeBlocks = document.querySelectorAll('.admin-lesson-content .ql-syntax');
-    const lessonBlock = document.querySelector('.admin-lesson-content');
+    const codeBlocks = document.querySelectorAll('.client-lesson-content .ql-syntax');
+    const lessonBlock = document.querySelector('.client-lesson-content');
     if (codeBlocks.length > 0 && lessonBlock) {
         //@ts-ignore
         const lessonBlockLeft = lessonBlock.getBoundingClientRect().left;

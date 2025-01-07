@@ -1,3 +1,29 @@
+.menu-close-client {
+
+    display: flex;
+    justify-items: center;
+    justify-content: space-between;
+    padding-left: 15px;
+    padding-right: 8px;
+    height: 55px;
+
+    h2 {
+        font-size: 16px;
+        margin: 0;
+        margin-top: -2px;
+    }
+
+    .menu-close-btn {
+        margin-top: -2px;
+
+        span {
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+}
+
 .client-custom {
     padding-top: 14px !important;
     padding-bottom: 16px !important;
@@ -40,4 +66,10 @@
 .lesson-title-client-custom {
     padding-right: 75px !important;
     padding-bottom: 30px !important;
+}
+
+.lesson-opening {
+    .client-lesson-action {
+        border-color: #fff;
+    }
 }

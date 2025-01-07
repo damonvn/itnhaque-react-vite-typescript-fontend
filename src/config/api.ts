@@ -1,5 +1,5 @@
 import axios from './axios-customize'
-import { IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse, IAddLessonVideo, INewCourse, ICoursePages, Pages, IPagesCourse, IUpdateCourse, IUpdateCourseActive, ILogin, IResUserLogin, IAccount, IFetchAccount, ISkill, ISkillArray, ICategoryArray, ICourseUpdate, ICourseClientArray } from '@/types/backend';
+import { IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse, IAddLessonVideo, INewCourse, ICoursePages, Pages, IPagesCourse, IUpdateCourse, IUpdateCourseActive, ILogin, IResUserLogin, IAccount, IFetchAccount, ISkill, ISkillArray, ICategoryArray, ICourseUpdate, ICourseClientArray, LessonParameters } from '@/types/backend';
 
 
 export const callFetchContent = async (id: number) => {
@@ -90,10 +90,28 @@ export const callFetchSkills = async () => {
     return (await axios.get<IBackendRes<ISkillArray>>('/api/v1/skill')).data
 }
 
-
 export const callFetClientCourses = async () => {
     return (await axios.get<IBackendRes<ICourseClientArray>>('/api/v1/client/course')).data
 }
+
+export const callFetchChapterById = async (id: number) => {
+    return (await axios.get<IBackendRes<any>>(`/api/v1/chapter/${id}`)).data
+}
+
+export const callGetLessonParameters = async (id: number) => {
+    return (await axios.post<IBackendRes<LessonParameters>>('/api/v1/client/lesson/parameters', { contentId: id })).data
+}
+
+export const callNextBtnHandle = async (id: number) => {
+    return (await axios.post<IBackendRes<number>>('/api/v1/client/lesson/next', { contentId: id })).data
+}
+
+export const callPrevBtnHandle = async (id: number) => {
+    return (await axios.post<IBackendRes<number>>('/api/v1/client/lesson/previous', { contentId: id })).data
+}
+
+
+
 
 
 

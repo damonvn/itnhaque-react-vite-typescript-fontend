@@ -16,7 +16,7 @@ const items: MenuItem[] = [
         key: 'all',
         label: (
             <a target="_blank" rel="noopener noreferrer">
-                TẤT CẢ
+                Tất cả
             </a>
         ),
     },
@@ -24,7 +24,7 @@ const items: MenuItem[] = [
         key: 'two',
         label: (
             <a target="_blank" rel="noopener noreferrer">
-                FRONTEND
+                Frontend
             </a>
         ),
     },
@@ -32,7 +32,7 @@ const items: MenuItem[] = [
         key: 'three',
         label: (
             <a target="_blank" rel="noopener noreferrer">
-                BACKEND
+                Backend
             </a>
         ),
     }
@@ -70,14 +70,17 @@ const HomePage = () => {
                 >
                     <div className='header-logo'>
                         <img
-                            src="/it-nha-que-logo2.png" alt="IT NHA QUE"
-                            style={{ width: '120px', marginTop: '0px', marginRight: '50px', marginLeft: '15px' }}
+                            // src="/it-nha-que-logo2.png" alt="IT NHA QUE"
+                            // src="/number_44622925.png" alt="IT NHA QUE"
+                            // src="/logoqletter.png" alt="IT NHA QUE"
+                            src="/logoqleaf123.png" alt="IT NHA QUE"
+                            style={{ width: '50px', marginTop: '6px', marginRight: '100px', marginLeft: '10px' }}
                         />
                     </div>
                     {/* <div className='header-menu-item'>Full Stack</div>
                     <div className='header-menu-item'>Front End</div>
                     <div className='header-menu-item'>Back End</div> */}
-                    <Menu style={{ height: '53px', lineHeight: '53px', marginTop: '7px', fontSize: '12px' }} onClick={onClickTopMenu} selectedKeys={[current]} mode="horizontal" items={items} />
+                    <Menu style={{ height: '58px', lineHeight: '58px', marginTop: '2px' }} onClick={onClickTopMenu} selectedKeys={[current]} mode="horizontal" items={items} />
                 </div>
             </header>
             <div
@@ -98,8 +101,6 @@ const HomePage = () => {
                                 } else {
                                     setCurrent('');
                                 }
-
-
                             }}>
                             <Form.Item
                                 name='category'

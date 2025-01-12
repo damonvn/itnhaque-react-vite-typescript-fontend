@@ -5,12 +5,12 @@ import 'highlight.js/styles/monokai.css';
 // import '@/styles/course.manage.scss'
 import './course-lectures.scss';
 
-import { callFetchContent, callGetLessonParameters, callNextBtnHandle, callPrevBtnHandle } from '@/config/api';
+import { callFetchClientContent, callGetLessonParameters, callNextBtnHandle, callPrevBtnHandle } from '@/config/api';
 import { IContent } from '@/types/backend';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import CopyIcon from '@/assets/CopyIcon';
 import ClientCourseMenu from '@/components/client/course/ClientCourseMenu';
-import { ArrowLeftOutlined, LeftOutlined, LeftSquareOutlined, RightOutlined, RightSquareOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 
 
@@ -28,6 +28,7 @@ const CourseLectures = () => {
     const rightMenuRef = useRef(null);
     const menuScrollRef = useRef(null);
     const [courseId, setCourseId] = useState<number>(0)
+    const [courseTitle, setCourseTitle] = useState<string>('')
     const [lessonContent, setLessonContent] = useState<IContent>(initialContent);
     const [isRender, setIsRender] = useState<boolean>(false);
     const [currentChapterIndex, setCurrentChapterIndex] = useState<number>(-1);
@@ -40,8 +41,6 @@ const CourseLectures = () => {
     const menuShowParam = searchParams.get('menushow');
 
     const { id } = useParams();
-    console.log('check id: ', id)
-
     const nextBtnOnClickHandle = async () => {
         //@ts-ignore
         const res = await callNextBtnHandle(id);
@@ -68,16 +67,17 @@ const CourseLectures = () => {
     }
 
     const getLesson = async (contentId: number) => {
-        const res = await callFetchContent(contentId);
+        const res = await callFetchClientContent(contentId);
         if (res && res.data) {
             setCourseId(res.data.courseId);
+            setCourseTitle(res.data.courseTitle);
             setLessonContent(res.data);
             setIsRender(true);
         }
     }
 
     useLayoutEffect(() => {
-        if (menuShow !== null) { // Chỉ thực hiện logic khi menuShow là false
+        if (menuShow !== null) {
             const leftContent = document.querySelector('.client-lesson-content');
             if (leftContent) {
                 const l = leftContent.getBoundingClientRect().left;
@@ -223,23 +223,64 @@ const CourseLectures = () => {
         };
     }, [isRender]);
 
+    useEffect(() => {
+        const handleResize = () => {
+            const leftContent = document.querySelector('.client-lesson-content');
+            if (leftContent) {
+                const l = leftContent.getBoundingClientRect().left;
+                const w = leftContent.getBoundingClientRect().width;
+
+                const copyBtns = document.querySelectorAll('.copy-btn');
+                if (copyBtns.length > 0) {
+                    copyBtns.forEach((btn) => {
+                        if (btn.getBoundingClientRect().top === 6) {
+                            console.log('btn.getBoundingClientRect().top: ', btn.getBoundingClientRect().top)
+                            //@ts-ignore
+                            btn.style.left = `${l + w - btn.clientWidth - 8}px`;
+                        }
+                    });
+                }
+            }
+        };
+        // Gắn sự kiện resize
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup khi component bị unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []); // Chỉ chạy một lần khi component được mount
+
     return (
         <div
             className='client-course-manager'
         >
-            <header className='header'></header>
+            <header className='header' style={{ display: 'flex', alignItems: 'center' }}>
+
+                <img
+                    src="/9999999.png" alt="IT NHA QUE"
+                    // src="/qblackbgrlogo.png" alt="IT NHA QUE"
+                    // src="/logoqleaf123.png" alt="IT NHA QUE"
+                    // src="/logoqletter.png" alt="IT NHA QUE"
+                    // src="/image123-removebg-preview.png" alt="IT NHA QUE"
+                    // src="/number_44622925.png" alt="IT NHA QUE"
+                    style={{ width: '40px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
+                />
+                <span style={{ paddingLeft: '25px', marginRight: '35px', borderRight: '1px solid gray', height: '20px' }}></span>
+                <span>{courseTitle}</span>
+            </header>
             {
                 menuShow !== null &&
                 <div
                     className='lesson-content'
                     style={{
-                        width: menuShow ? '70%' : '100%', textAlign: 'center', height: '5000px', boxSizing: 'border-box',
+                        width: menuShow ? '70%' : '100%', textAlign: 'center', minHeight: '100vh', boxSizing: 'border-box',
                     }}
                 >
                     <div
                         style={{
-                            width: '100%', marginLeft: 'auto', marginRight: 'auto', boxSizing: 'border-box',
-                            paddingLeft: menuShow === false ? '10%' : '7%', paddingRight: menuShow === false ? '10%' : '7%'
+                            width: '100%', boxSizing: 'border-box',
+                            paddingLeft: menuShow === false ? '10%' : '7%', paddingRight: menuShow === false ? '10%' : '7%',
                         }}
                     >
                         <div

@@ -42,6 +42,7 @@ const AddLessonVideo: React.FC<Props> = ({ state, setState }) => {
                 open={state.openModal}
                 onOk={handleOk}
                 onCancel={handleCancel}
+                maskClosable={false}
             >
                 <Input
                     value={videoURL}

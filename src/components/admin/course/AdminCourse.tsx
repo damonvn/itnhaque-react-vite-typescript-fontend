@@ -1,11 +1,10 @@
-import { BorderInnerOutlined, BorderTopOutlined, EditOutlined, PlusOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { Card, Switch, Button } from 'antd';
-import Meta from 'antd/es/card/Meta';
-import AddCourseModal from './course/AddCourseModal';
+import AddCourseModal from './AddCourseModal';
 import { useEffect, useState } from 'react';
 import { callFetchCourses, callUpdateCourseActive } from '@/config/api';
-import { ICoursePages, IUpdateCourseActive } from '@/types/backend';
-import UpdateCourseModal from './course/UpdateCourseModal';
+import { ICourseCard, IUpdateCourseActive } from '@/types/backend';
+import UpdateCourseModal from './UpdateCourseModal';
 
 
 
@@ -13,7 +12,7 @@ const AdminCourse = () => {
     const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
     const [updateCourseModalOpen, setUpdateCourseModalOpen] = useState(false);
     const [updateCourseId, setUpdateCourseId] = useState(-1);
-    const [courses, setCourses] = useState<ICoursePages[]>([]);
+    const [courses, setCourses] = useState<ICourseCard[]>([]);
     const [coursesActive, setCoursesActive] = useState<{ [key: number]: boolean }>({});
     const switchOnChange = async (checked: boolean, cId: number, cTitle: string) => {
         const actCourse: IUpdateCourseActive = {
@@ -39,7 +38,7 @@ const AdminCourse = () => {
             setCourses(coursesDB);
 
             const coursesActiveDB: { [key: number]: boolean } = {}
-            coursesDB.forEach((item: ICoursePages) => {
+            coursesDB.forEach((item: ICourseCard) => {
                 coursesActiveDB[item.id] = item.active;
             });
             setCoursesActive(coursesActiveDB);

@@ -19,7 +19,7 @@ export interface ICourse {
     chapters: IChapter[];
 }
 
-export interface ICoursePages {
+export interface ICourseCard {
     id: number;
     title: string;
     image: string;
@@ -65,13 +65,6 @@ export interface ICourseUpdate {
     createdBy?: string;
     updatedAt?: string;
     updatedBy?: string;
-}
-
-export type ICourseArray = ICoursePages[];
-
-export interface Pages<ICourseArray> {
-    meta: Meta;
-    result: T;  // Có thể thay 'any' bằng kiểu dữ liệu phù hợp tùy theo yêu cầu
 }
 
 export interface Meta {
@@ -176,6 +169,21 @@ export interface IContent {
     updatedBy?: string;
 }
 
+export interface IContentDTO {
+    id: number;
+    courseId: number;
+    chapterId: number;
+    lessonId: number;
+    title: string;
+    courseTitle: string;
+    lessonVideoURL: string;
+    content: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: string;
+    updatedBy?: string;
+}
+
 export interface IAddLessonVideo {
     lessonId: number,
     lessonVideoURL: string;
@@ -210,6 +218,12 @@ export interface ICategory {
     value: string;
 }
 
+export interface ICategoryCreate {
+    name: string;
+    value: string;
+}
+
+
 export type ICategoryArray = ICategory[];
 
 export interface ISkill {
@@ -217,6 +231,12 @@ export interface ISkill {
     name: string;
     value: string;
 }
+
+export interface ISkillCreate {
+    name: string;
+    value: string;
+}
+
 
 export type ISkillArray = ISkill[];
 
@@ -227,3 +247,61 @@ export interface LessonParameters {
     chapterLessonSize: number;
 }
 
+export interface IPagination<T> {
+    meta: Meta;
+    result: T;
+}
+
+export interface IRole {
+    id: number;
+    name: string;
+    description: string;
+}
+
+export interface IRoleUpdate {
+    id: number
+    name: string;
+    description: string;
+}
+
+export enum GenderEnum {
+    MALE = "MALE",
+    FEMALE = "FEMALE"
+}
+
+export interface IUser {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+    age?: number;
+    gender?: GenderEnum;
+    address?: string;
+    phone?: string;
+    refreshToken?: string;
+    createdAt: string;
+    updatedAt: string;
+    createdBy?: string;
+    updatedBy?: string;
+    role: {
+        id: number;
+        name: string;
+    };
+}
+
+export interface IUserCreate {
+    name: string;
+    email: string;
+    password: string;
+    gender: string;
+    address: string;
+    phone: string;
+    role: {
+        id: number
+    }
+}
+
+export interface IRoleCreate {
+    name: string;
+    description: string
+}

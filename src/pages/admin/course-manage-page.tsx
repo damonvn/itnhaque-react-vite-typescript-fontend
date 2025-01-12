@@ -4,12 +4,13 @@ import 'react-quill/dist/quill.snow.css';
 import 'highlight.js/styles/monokai.css';
 import '@/styles/course.manage.scss'
 
-import { callFetchContent } from '@/config/api';
+import { callFetchContent, callGetLessonParameters, callNextBtnHandle, callPrevBtnHandle } from '@/config/api';
 import QuillEditor from '@/components/admin/course/QuillEditor';
 import CourseMemu from '@/components/admin/course/CourseMenu';
 import { IContent } from '@/types/backend';
 import { useLocation, useParams } from 'react-router-dom';
 import CopyIcon from '@/assets/CopyIcon';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
 const initialContent: IContent = {
     id: 0,
@@ -31,6 +32,11 @@ const CourseManage = () => {
     const location = useLocation();
     const isEditLesson = location.pathname.includes('/lesson/edit');
 
+    const [currentChapterIndex, setCurrentChapterIndex] = useState<number>(-1);
+    const [currentLessonIndex, setCurrentLessonIndex] = useState<number>(-1);
+    const [chaptersSize, setChaptersSize] = useState<number>(-1);
+    const [lessonsSize, setLessonsSize] = useState<number>(-1);
+
     const { id } = useParams();
 
     const getLesson = async (contentId: number) => {
@@ -45,6 +51,19 @@ const CourseManage = () => {
     useEffect(() => {
         //@ts-ignore
         getLesson(+id);
+
+        const getLessonParameters = async (contentId: number) => {
+            const res = await callGetLessonParameters(contentId);
+            console.log('check res 222: ', res)
+            if (res?.data) {
+                setCurrentChapterIndex(res.data.chapterInCourseIndex);
+                setCurrentLessonIndex(res.data.lessonInChapterIndex);
+                setChaptersSize(res.data.courseChapterSize);
+                setLessonsSize(res.data.chapterLessonSize);
+            }
+        }
+        //@ts-ignore
+        getLessonParameters(+id);
     }, [id])
 
     const innerHTML = addedButtonHTML(lessonContent.content);
@@ -145,15 +164,43 @@ const CourseManage = () => {
         };
     }, [isRender]);
 
+    const nextBtnOnClickHandle = async () => {
+        //@ts-ignore
+        const res = await callNextBtnHandle(id);
+        if (res?.data) {
+            window.location.href = `/admin-course-manage/lesson/${res.data}`;
+        }
+    }
+
+    const prevBtnOnClickHandle = async () => {
+        //@ts-ignore
+        const res = await callPrevBtnHandle(id);
+        if (res?.data) {
+            window.location.href = `/admin-course-manage/lesson/${res.data}`;
+        }
+    }
+
     return (
         <div
             className='admin-course-manager'
         >
             <header className='header'></header>
             <div
-                style={{ width: '70%', textAlign: 'center', padding: '0 15px', height: '5000px', boxSizing: 'border-box' }}
+                className='admin-lesson-content-container'
+                style={{
+                    width: '70%', textAlign: 'center', height: '5000px', boxSizing: 'border-box',
+                }}
             >
-                <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
+
+                <div
+                    style={{
+                        boxSizing: 'border-box',
+                        width: '100%',
+                        paddingLeft: '6%',
+                        paddingRight: '6%',
+
+                    }}
+                >
                     {
                         isEditLesson ?
                             <>
@@ -167,11 +214,53 @@ const CourseManage = () => {
                             :
                             <div
                                 style={{ textAlign: 'left', marginTop: '10px' }}
-                                className='admin-lesson-content'
+                                className='lesson-content'
                                 dangerouslySetInnerHTML={{ __html: innerHTML }}
                             />
                     }
                 </div>
+
+                {
+                    currentChapterIndex !== -1 && currentLessonIndex !== -1 &&
+                    chaptersSize !== -1 && lessonsSize !== -1 &&
+                    !(currentChapterIndex === 0 && currentLessonIndex === 0) &&
+                    <div
+                        className='course-left-btn'
+                        onClick={() => prevBtnOnClickHandle()}
+                    >
+                        <LeftOutlined
+                            className='course-left-btn-icon'
+                            style={{
+                                position: 'absolute', left: '1px', top: '50%', transform: 'translateY(-50%)', zIndex: 50, fontSize: '27px'
+                            }}
+
+                        />
+                    </div>
+                }
+                {
+                    currentChapterIndex !== -1 && currentLessonIndex !== -1 &&
+                    chaptersSize !== -1 && lessonsSize !== -1 &&
+                    !(currentChapterIndex === chaptersSize - 1 && currentLessonIndex === lessonsSize - 1) &&
+                    <div
+                        className='course-right-btn'
+                        style={{
+                            left: 'calc(70vw - 42px)',
+                        }}
+                        onClick={() => {
+                            nextBtnOnClickHandle();
+                        }}
+                    >
+                        <RightOutlined
+                            className='course-right-btn-icon'
+                            style={{
+                                position: 'absolute', top: '50%', transform: 'translateY(-50%)', zIndex: 50,
+                                left: '2px',
+                                fontSize: '27px'
+                            }}
+                        />
+                    </div>
+                }
+
             </div >
             <CourseMemu courseId={courseId} chapterId={lessonContent.chapterId} contentId={lessonContent.id} />
         </div >
@@ -218,8 +307,8 @@ const addedButtonHTML = (innerHTML: string) => {
 }
 
 const handleLessonScroll = () => {
-    const codeBlocks = document.querySelectorAll('.admin-lesson-content .ql-syntax');
-    const lessonBlock = document.querySelector('.admin-lesson-content');
+    const codeBlocks = document.querySelectorAll('.lesson-content .ql-syntax');
+    const lessonBlock = document.querySelector('.lesson-content');
     if (codeBlocks.length > 0 && lessonBlock) {
         //@ts-ignore
         const lessonBlockLeft = lessonBlock.getBoundingClientRect().left;

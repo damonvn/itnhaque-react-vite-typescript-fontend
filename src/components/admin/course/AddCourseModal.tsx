@@ -2,7 +2,7 @@
 import { Input, Modal, Form, Button, message, Upload, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { callCreateCourse, callFetchCategories, callFetchSkills, callUploadCourseImage } from '@/config/api';
+import { callCreateCourse, callFetchAllCategories, callFetchAllSkills, callUploadCourseImage } from '@/config/api';
 import { INewCourse } from '@/types/backend';
 
 interface IProps {
@@ -93,7 +93,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const resCategories = await callFetchCategories();
+            const resCategories = await callFetchAllCategories();
             if (resCategories?.data) {
                 const categorySelect: ICategorySelect[] = [];
                 resCategories.data.map((ct) => {
@@ -103,7 +103,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
             }
         }
         const fetchSkills = async () => {
-            const resSkills = await callFetchSkills();
+            const resSkills = await callFetchAllSkills();
             if (resSkills?.data) {
                 const skillSelect: ISkillSelect[] = [];
                 resSkills.data.map((sk) => {
@@ -127,6 +127,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                 onCancel={handleCancel}
                 okText="Submit"
                 cancelText="Cancel"
+                maskClosable={false}
             >
                 <div style={{ display: 'flex', width: '100%', marginTop: '15px' }}>
                     <div style={{ width: '40%', height: '100%', paddingRight: '10px' }}>
@@ -168,14 +169,14 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                         <Form.Item
                             label="Course Title"
                             name="title"
-                            rules={[{ required: true, message: "Please enter your name!" }]}
+                            rules={[{ required: true, message: "Please enter title!" }]}
                         >
-                            <Input placeholder="Enter your name" />
+                            <Input placeholder="Enter title" />
                         </Form.Item>
                         <Form.Item
                             label="Category"
                             name="category"
-                            rules={[{ required: true, message: "Please enter your name!" }]}
+                            rules={[{ required: true, message: "Please select category!" }]}
                         >
                             <Select
                                 showSearch
@@ -189,7 +190,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                         <Form.Item
                             label="Skill"
                             name="skill"
-                            rules={[{ required: true, message: "Please enter your name!" }]}
+                            rules={[{ required: true, message: "Please select skill!" }]}
                         >
                             <Select
                                 showSearch
@@ -205,7 +206,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                             name="description"
                         >
                             <TextArea
-                                placeholder="Enter your description"
+                                placeholder="Enter description"
                                 rows={4} // Số dòng hiển thị
                             />
                         </Form.Item>

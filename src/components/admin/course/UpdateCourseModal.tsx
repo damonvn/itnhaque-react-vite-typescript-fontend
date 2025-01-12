@@ -3,7 +3,7 @@ import { Input, Modal, Form, Button, message, Upload, Select } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { callCreateCourse, callFetchCategories, callFetchSkills, callFetchUpdateCourse, callUpdateCourse, callUploadCourseImage } from '@/config/api';
+import { callCreateCourse, callFetchAllCategories, callFetchAllSkills, callFetchUpdateCourse, callUpdateCourse, callUploadCourseImage } from '@/config/api';
 import { INewCourse, IUpdateCourse } from '@/types/backend';
 
 interface IProps {
@@ -105,7 +105,7 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
             const res = await callFetchUpdateCourse(courseId);
             if (res && res.data) {
                 const fetchCategories = async () => {
-                    const resCategories = await callFetchCategories();
+                    const resCategories = await callFetchAllCategories();
                     if (resCategories?.data) {
                         const categorySelect: ICategorySelect[] = [];
                         resCategories.data.map((ct) => {
@@ -115,7 +115,7 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
                     }
                 }
                 const fetchSkills = async () => {
-                    const resSkills = await callFetchSkills();
+                    const resSkills = await callFetchAllSkills();
                     if (resSkills?.data) {
                         const skillSelect: ISkillSelect[] = [];
                         resSkills.data.map((sk) => {
@@ -150,6 +150,7 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
                 onCancel={handleCancel}
                 okText="Submit"
                 cancelText="Cancel"
+                maskClosable={false}
             >
                 <div style={{ display: 'flex', width: '100%', marginTop: '15px' }}>
                     <div style={{ width: '40%', height: '100%', paddingRight: '10px' }}>
@@ -193,14 +194,14 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
                         <Form.Item
                             label="Course Title"
                             name="title"
-                            rules={[{ required: true, message: "Please enter your name!" }]}
+                            rules={[{ required: true, message: "Please enter name!" }]}
                         >
-                            <Input placeholder="Enter your name" />
+                            <Input placeholder="Enter name" />
                         </Form.Item>
                         <Form.Item
                             label="Category"
                             name="category"
-                            rules={[{ required: true, message: "Please enter your name!" }]}
+                            rules={[{ required: true, message: "Please enter name!" }]}
                         >
                             <Select
                                 showSearch
@@ -214,7 +215,7 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
                         <Form.Item
                             label="Skill"
                             name="skill"
-                            rules={[{ required: true, message: "Please enter your name!" }]}
+                            rules={[{ required: true, message: "Please enter name!" }]}
                         >
                             <Select
                                 showSearch
@@ -230,7 +231,7 @@ const UpdateCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, cour
                             name="description"
                         >
                             <TextArea
-                                placeholder="Enter your description"
+                                placeholder="Enter description"
                                 rows={4} // Số dòng hiển thị
                             />
                         </Form.Item>

@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 import '@/styles/App.css'
 import CourseManage from '@/pages/admin/course-manage-page';
-import AdminCourse from './components/admin/AdminCourse';
+import AdminCourse from '@/components/admin/course/AdminCourse';
 import LoginPage from './pages/login/LoginPage';
 import { useEffect } from 'react';
 import { useAppDispatch } from './redux/hooks';
@@ -14,6 +14,10 @@ import AdminPage from '@/pages/admin/AdminPage';
 import CourseLectures from './pages/client/course-lectures/course-lectures';
 import HomePage from './pages/client/home/home';
 import '@/styles/responsive.scss'
+import UserTable from './components/admin/user/UserTable';
+import RoleTable from './components/admin/role/RoleTable';
+import CategoryTable from './components/admin/course.category/CategoryTable';
+import SkillTable from './components/admin/course.skill/SkillTable';
 
 const App = () => {
     const dispatch = useAppDispatch();
@@ -31,7 +35,7 @@ const App = () => {
             errorElement: <div>404 Not Found</div>,
             children: [
                 {
-                    path: "/course", element: <HomePage />
+                    path: "/course", element: <></>
                 }
             ]
         },
@@ -58,16 +62,22 @@ const App = () => {
             errorElement: <div>404 Not Found</div>,
             children: [
                 {
-                    index: true, element: <div>Admin Layout</div>
+                    index: true, element: <AdminCourse />
                 },
                 {
                     path: 'course', element: <AdminCourse />
                 },
                 {
-                    path: 'user', element: <div>manage user page</div>
+                    path: 'user', element: <UserTable />
                 },
                 {
-                    path: 'role', element: <div>manage role page</div>
+                    path: 'role', element: <RoleTable />
+                },
+                {
+                    path: 'category', element: <CategoryTable />
+                },
+                {
+                    path: 'skill', element: <SkillTable />
                 },
             ],
         },

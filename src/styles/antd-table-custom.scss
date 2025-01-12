@@ -1,0 +1,58 @@
+.antd-table-custom {
+    margin-top: -24px;
+    padding: 10px;
+
+    .header {
+        padding: 15px;
+        height: 60px;
+        line-height: 60px;
+        background: #fff;
+        border-radius: 7px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .table-edit-btn,
+    .table-delete-btn {
+        background: none;
+        border: none;
+        padding: 1px;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 15px;
+        cursor: pointer;
+
+        svg {
+            font-size: 16px;
+        }
+    }
+
+    .table-edit-btn {
+        background: none;
+
+        &:hover {
+            svg {
+                color: orange;
+            }
+        }
+    }
+
+    .table-delete-btn {
+        background: none;
+
+        &:hover {
+            svg {
+                color: red;
+            }
+        }
+    }
+}
+
+.add-modal {
+    .ant-modal-title {
+        margin-bottom: 28px;
+    }
+}

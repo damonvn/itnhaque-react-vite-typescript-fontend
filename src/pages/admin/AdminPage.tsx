@@ -6,12 +6,20 @@ import {
     UploadOutlined,
     UserOutlined,
     VideoCameraOutlined,
+    BookOutlined,
+    ReadOutlined,
+    BulbOutlined,
+    ProductOutlined,
+    MoonOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Layout, Menu, Dropdown, theme } from 'antd';
 import '@/styles/admin-layout-custom.scss'
 import { Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { callLogout } from '@/config/api';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+
 
 const logoutMenu = () => {
     const logoutHandle = async () => {
@@ -37,42 +45,55 @@ const AdminPage: React.FC = () => {
     const [collapsed, setCollapsed] = useState(false);
     const accountState = useSelector((state: any) => state.account);
     const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
-
-
+    const navigate = useNavigate();
+    const location = useLocation();
+    const path = location.pathname;
+    const childPath = path.startsWith('/admin/') ? path.replace('/admin/', '') : null;
 
     return (
-
         <div className='admin-layout-custom'>
-            {/* <div style={{ height: "60px", width: "100vw", background: "green", position: "fixed", zIndex: 100, top: 0 }}></div> */}
             <Layout>
                 <Sider trigger={null} collapsible collapsed={collapsed}>
-                    {/* <div className="demo-logo-vertical" /> */}
                     <div style={{ color: "white", padding: "15px" }}>
                         <div style={{ height: "49px", lineHeight: "49px", color: "white", textAlign: "center", fontSize: "20px", borderBottom: "1px solid #d7caca" }}>
                             Admin
                         </div>
                     </div>
-
                     <Menu
                         style={{ marginTop: '16px' }}
                         theme="dark"
                         mode="inline"
-                        defaultSelectedKeys={['1']}
+                        defaultSelectedKeys={[`${childPath ? childPath : 'course'}`]}
                         items={[
                             {
-                                key: '1',
+                                key: 'course',
+                                icon: <ReadOutlined />,
+                                label: 'Course Manage',
+                                onClick: () => navigate('course')
+                            },
+                            {
+                                key: 'user',
                                 icon: <UserOutlined />,
-                                label: 'nav 1',
+                                label: 'User Manage',
+                                onClick: () => navigate('user')
                             },
                             {
-                                key: '2',
-                                icon: <VideoCameraOutlined />,
-                                label: 'nav 2',
+                                key: 'role',
+                                icon: <BulbOutlined />,
+                                label: 'Role Manage',
+                                onClick: () => navigate('role')
                             },
                             {
-                                key: '3',
-                                icon: <UploadOutlined />,
-                                label: 'nav 3',
+                                key: 'category',
+                                icon: <ProductOutlined />,
+                                label: 'Category Manage',
+                                onClick: () => navigate('category')
+                            },
+                            {
+                                key: 'skill',
+                                icon: <MoonOutlined />,
+                                label: 'Skill Manage',
+                                onClick: () => navigate('skill')
                             },
                         ]}
                     />

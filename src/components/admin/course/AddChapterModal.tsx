@@ -51,6 +51,7 @@ const AddChapter: React.FC<AddChapterProps> = ({ state, setSate, courseId }) => 
                 open={state.openModal}
                 onOk={handleOk}
                 onCancel={handleCancel}
+                maskClosable={false}
             >
                 <Input
                     value={chapterTitle}

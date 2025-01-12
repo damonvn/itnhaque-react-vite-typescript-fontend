@@ -1,10 +1,27 @@
 import axios from './axios-customize'
-import { IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse, IAddLessonVideo, INewCourse, ICoursePages, Pages, IPagesCourse, IUpdateCourse, IUpdateCourseActive, ILogin, IResUserLogin, IAccount, IFetchAccount, ISkill, ISkillArray, ICategoryArray, ICourseUpdate, ICourseClientArray, LessonParameters } from '@/types/backend';
+import {
+    IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse,
+    IAddLessonVideo, INewCourse, IUpdateCourse, IUpdateCourseActive,
+    ILogin, IResUserLogin, IFetchAccount, ISkill, ISkillArray, ICategoryArray,
+    ICourseUpdate, ICourseClientArray, LessonParameters, IContentDTO, IRole,
+    IUser, IPagination, ICourseCard,
+    IUserCreate,
+    IRoleCreate,
+    IRoleUpdate,
+    ICategory,
+    ICategoryCreate,
+    ISkillCreate
+} from '@/types/backend';
 
+
+export const callFetchClientContent = async (id: number) => {
+    return (await axios.get<IBackendRes<IContentDTO>>(`/api/v1/client/content/dto/${id}`)).data;
+}
 
 export const callFetchContent = async (id: number) => {
-    return (await axios.get<IBackendRes<IContent>>(`/api/v1/content/${id}`)).data;
+    return (await axios.get<IBackendRes<IContentDTO>>(`/api/v1/content/${id}`)).data;
 }
+
 
 export const callFetchLesson = async (id: number) => {
     return (await axios.get<IBackendRes<ILesson>>(`/api/v1/lesson/${id}`)).data;
@@ -50,7 +67,7 @@ export const callCreateCourse = async (course: INewCourse) => {
 }
 
 export const callFetchCourses = async (query: string) => {
-    return (await axios.get<IBackendRes<Pages<ICoursePages>>>(`/api/v1/course?${query}`)).data;
+    return (await axios.get<IBackendRes<IPagination<ICourseCard[]>>>(`/api/v1/course?${query}`)).data;
 }
 
 export const callFetchCourse = async (id: number) => {
@@ -62,7 +79,7 @@ export const callFetchUpdateCourse = async (id: number) => {
 }
 
 export const callUpdateCourse = async (course: IUpdateCourse) => {
-    return (await axios.put<IBackendRes<ICoursePages>>('/api/v1/course', { ...course })).data;
+    return (await axios.put<IBackendRes<ICourseCard>>('/api/v1/course', { ...course })).data;
 }
 
 
@@ -71,7 +88,8 @@ export const callUpdateCourseActive = async (course: IUpdateCourseActive) => {
 }
 
 export const callLogin = async (user: ILogin) => {
-    return (await axios.post<IBackendRes<IResUserLogin>>('/api/v1/auth/login', { ...user })).data;
+    const res: IBackendRes<IResUserLogin> = (await axios.post('/api/v1/auth/login', { ...user })).data;
+    return res;
 }
 
 export const callLogout = async () => {
@@ -82,12 +100,8 @@ export const callFetchAccount = async () => {
     return (await axios.get<IBackendRes<IFetchAccount>>('/api/v1/auth/account')).data
 }
 
-export const callFetchCategories = async () => {
-    return (await axios.get<IBackendRes<ICategoryArray>>('/api/v1/category')).data
-}
-
-export const callFetchSkills = async () => {
-    return (await axios.get<IBackendRes<ISkillArray>>('/api/v1/skill')).data
+export const callFetchAllSkills = async () => {
+    return (await axios.get<IBackendRes<ISkillArray>>('/api/v1/skill/all')).data
 }
 
 export const callFetClientCourses = async () => {
@@ -109,6 +123,88 @@ export const callNextBtnHandle = async (id: number) => {
 export const callPrevBtnHandle = async (id: number) => {
     return (await axios.post<IBackendRes<number>>('/api/v1/client/lesson/previous', { contentId: id })).data
 }
+
+
+export const callFetchUsers = async (query: string) => {
+    return (await axios.get<IBackendRes<IPagination<IUser[]>>>(`/api/v1/user${query}`)).data
+}
+
+export const callFetchRoles = async (query: string) => {
+    return (await axios.get<IBackendRes<IPagination<IRole[]>>>(`/api/v1/role${query}`)).data
+}
+
+export const callFetchAllRoles = async () => {
+    return (await axios.get<IBackendRes<IRole[]>>('/api/v1/role/all')).data
+}
+
+export const callCreateUser = async (user: IUserCreate) => {
+    return (await axios.post<IBackendRes<IContent>>('/api/v1/user', { ...user })).data;
+}
+
+export const callCreateRole = async (role: IRoleCreate) => {
+    return ((await axios.post<IBackendRes<IRole>>('/api/v1/role', { ...role })).data);
+}
+
+export const callDeleteRole = async (id: number) => {
+    const res: IBackendRes<null> = (await axios.delete(`/api/v1/role/${id}`)).data;
+    return res;
+}
+
+export const callFetchRoleById = async (id: number) => {
+    return (await axios.get<IBackendRes<IRoleUpdate>>(`/api/v1/role/${id}`)).data
+}
+
+export const callUpdateRole = async (role: IRoleUpdate) => {
+    return (await axios.put<IBackendRes<IRoleUpdate>>('/api/v1/role', { ...role })).data
+}
+
+export const callCreateCategory = async (category: ICategoryCreate) => {
+    return ((await axios.post<IBackendRes<ICategory>>('/api/v1/category', { ...category })).data);
+}
+
+export const callFetchCategoryById = async (id: number) => {
+    return (await axios.get<IBackendRes<ICategory>>(`/api/v1/category/${id}`)).data
+}
+
+export const callUpdateCategory = async (category: ICategory) => {
+    return (await axios.put<IBackendRes<ICategory>>('/api/v1/category', { ...category })).data
+}
+
+export const callFetchAllCategories = async () => {
+    return (await axios.get<IBackendRes<ICategoryArray>>('/api/v1/category/all')).data
+}
+
+export const callFetchCategoriesPagination = async (query: string) => {
+    return (await axios.get<IBackendRes<IPagination<ICategory[]>>>(`/api/v1/category${query}`)).data
+}
+
+export const callDeleteCategory = async (id: number) => {
+    const res: IBackendRes<null> = (await axios.delete(`/api/v1/category/${id}`)).data;
+    return res;
+}
+
+
+export const callCreateSkill = async (skill: ISkillCreate) => {
+    return ((await axios.post<IBackendRes<ISkill>>('/api/v1/skill', { ...skill })).data);
+}
+
+export const callFetchSkillsPagination = async (query: string) => {
+    return (await axios.get<IBackendRes<IPagination<ISkill[]>>>(`/api/v1/skill${query}`)).data
+}
+
+export const callDeleteSkill = async (id: number) => {
+    const res: IBackendRes<null> = (await axios.delete(`/api/v1/skill/${id}`)).data;
+    return res;
+}
+
+export const callFetchSkillById = async (id: number) => {
+    return (await axios.get<IBackendRes<ISkill>>(`/api/v1/skill/${id}`)).data
+}
+
+export const callUpdateSkill = async (skill: ISkill) => {
+    return (await axios.put<IBackendRes<ISkill>>('/api/v1/skill', { ...skill })).data
+}
+
 
 
 

@@ -178,8 +178,15 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                 className='course-menu'
                 style={{ top: 60 }}
             >
-                <div className='menu-close'>
-                    Course
+                <div
+                    className='menu-close'
+                    style={{
+                        textAlign: 'center',
+                        fontWeight: '600',
+                        fontSize: '18px'
+                    }}
+                >
+                    Course content
                 </div>
                 <div
                     className='menu-container'

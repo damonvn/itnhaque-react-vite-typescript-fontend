@@ -8,6 +8,7 @@ import { IUserCreate } from '@/types/backend';
 interface IProps {
     isModalOpen: boolean;
     setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+    fetchData: (sort?: string) => Promise<void>;
 }
 
 interface IRoleSelect {
@@ -16,7 +17,7 @@ interface IRoleSelect {
 }
 
 
-const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
+const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, fetchData }) => {
 
     const [roleList, setRoleList] = useState<IRoleSelect[]>([]);
 
@@ -27,7 +28,6 @@ const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
         try {
             // Validate form fields
             const values = await form.validateFields();
-
             const newUser: IUserCreate = {
                 name: values.name,
                 email: values.email,
@@ -42,7 +42,7 @@ const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
 
             const resCourse = await callCreateUser(newUser);
             if (resCourse && resCourse.data) {
-                window.location.href = `${import.meta.env.VITE_FRONTEND_URL}/admin/user`;
+                fetchData('&sort=createdAt,desc');
                 setIsModalOpen(false);
                 form.resetFields();
             }

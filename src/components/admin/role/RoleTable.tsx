@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
-import { Button, notification, Pagination, Table } from 'antd';
+import { Button, notification, Pagination, Popover, Table } from 'antd';
 
 import { callDeleteRole, callFetchRoles } from '@/config/api';
 import '@/styles/antd-table-custom.scss'
@@ -25,6 +25,7 @@ const RoleTable = () => {
     const [totalUsers, setTotalUsers] = useState<number | undefined>();
     const [pageSize, setPageSize] = useState<number | undefined>(10);
     const [currentPage, setCurrentPage] = useState<number | undefined>(1);
+    const [openPopver, setOpenPopver] = useState<{ [key: number]: boolean }>({});
 
     const onChangePagination = (cp: number, ps: number) => {
         const abcd = currentPage;
@@ -52,11 +53,9 @@ const RoleTable = () => {
 
     // }
 
-    const handleDelete = async (record: any) => {
+    const handleDelete = async (id: number) => {
 
-        console.log('record: ', record);
-        const id: number = record.id;
-        const res = await callDeleteRole(+id)
+        const res = await callDeleteRole(id)
         if (res.statusCode === 200) {
             const queryParams = `?page=${currentPage}&size=${pageSize}`
             fetchUsers(queryParams);
@@ -100,12 +99,37 @@ const RoleTable = () => {
                     >
                         <EditOutlined />
                     </button>
-                    <button
-                        className='table-delete-btn'
-                        onClick={() => handleDelete(record)}
+                    <Popover
+                        open={openPopver[+record.id]}
+                        placement="bottomRight"
+                        content={
+                            <div style={{ display: 'flex', justifyContent: 'left', gap: '15px', marginTop: '15px' }}>
+                                <button
+                                    style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                    onClick={() => {
+                                        handleDelete(+record.id);
+                                        setOpenPopver({ [record.id]: false })
+                                    }}
+                                >
+                                    Yes
+                                </button>
+                                <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                    onClick={() => setOpenPopver({ [record.id]: false })}
+                                >
+                                    No
+                                </button>
+                            </div>
+                        }
+                        title="Do you want to delete?"
+                        trigger="click"
                     >
-                        <DeleteOutlined />
-                    </button>
+                        <button
+                            className='table-delete-btn'
+                            onClick={() => handleDelete(+record.id)}
+                        >
+                            <DeleteOutlined />
+                        </button>
+                    </Popover>
                 </div>
             ),
         },

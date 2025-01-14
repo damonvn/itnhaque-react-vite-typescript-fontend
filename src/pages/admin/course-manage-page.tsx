@@ -51,7 +51,6 @@ const CourseManage = () => {
     useEffect(() => {
         //@ts-ignore
         getLesson(+id);
-
         const getLessonParameters = async (contentId: number) => {
             const res = await callGetLessonParameters(contentId);
             console.log('check res 222: ', res)
@@ -67,7 +66,6 @@ const CourseManage = () => {
     }, [id])
 
     const innerHTML = addedButtonHTML(lessonContent.content);
-
     useEffect(() => {
         const handleMenuScroll = () => {
             if (rightMenuRef.current) {

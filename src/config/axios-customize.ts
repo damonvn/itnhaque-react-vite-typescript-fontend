@@ -80,7 +80,7 @@ instance.interceptors.response.use(
             })
             window.location.href = '/login';
         }
-        return error?.response?.data ?? Promise.reject(error);
+        return error?.response ?? Promise.reject(error);
     }
 );
 

@@ -1,13 +1,18 @@
-
-import { Input, Modal, Form, Select } from 'antd';
-
+import { Input, Modal, Form, Select, notification } from 'antd';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { callCreateUser, callFetchAllRoles } from '@/config/api';
-import { IUserCreate } from '@/types/backend';
+import { callFetchAllRoles, callFetchUserById, callUpdateUser } from '@/config/api';
+import { IUserUpdate } from '@/types/backend';
+
+interface IEdit {
+    isOpened: boolean,
+    userId: number
+
+}
 
 interface IProps {
-    isModalOpen: boolean;
-    setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+    isModalOpen: IEdit;
+    setIsModalOpen: Dispatch<SetStateAction<IEdit>>;
+    fetchData: (sort?: string) => Promise<void>;
 }
 
 interface IRoleSelect {
@@ -15,23 +20,18 @@ interface IRoleSelect {
     label: string
 }
 
-
-const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
-
+const EditUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, fetchData }) => {
     const [roleList, setRoleList] = useState<IRoleSelect[]>([]);
-
     const [form] = Form.useForm();
-
-
     const handleOk = async () => {
         try {
             // Validate form fields
             const values = await form.validateFields();
 
-            const newUser: IUserCreate = {
+            const updateUser: IUserUpdate = {
+                id: values.id,
                 name: values.name,
                 email: values.email,
-                password: values.password,
                 gender: values.gender,
                 address: values.address,
                 phone: values.phone,
@@ -39,24 +39,23 @@ const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                     id: values.role
                 }
             };
-
-            const resCourse = await callCreateUser(newUser);
-            if (resCourse && resCourse.data) {
-                window.location.href = `${import.meta.env.VITE_FRONTEND_URL}/admin/user`;
-                setIsModalOpen(false);
+            const res = await callUpdateUser(updateUser);
+            if (res && res.data) {
+                fetchData();
+                setIsModalOpen({ isOpened: false, userId: -1 });
                 form.resetFields();
+                notification.success({
+                    message: 'Update successful!'
+                })
             }
         } catch (info) {
             console.log("Validation Failed:", info);
         }
     };
-
     const handleCancel = () => {
-        setIsModalOpen(false);
+        setIsModalOpen({ isOpened: false, userId: -1 });
         form.resetFields(); // Optional: reset form when cancelling
     };
-
-
     useEffect(() => {
         const fetchRoles = async () => {
             const resRoles = await callFetchAllRoles();
@@ -70,13 +69,29 @@ const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
         }
         fetchRoles();
     }, [])
-
+    useEffect(() => {
+        const fetchUser = async (id: number) => {
+            const res = await callFetchUserById(id);
+            if (res.statusCode === 200 && res?.data) {
+                form.setFieldsValue({
+                    id: res.data.id,
+                    name: res.data.name,
+                    email: res.data.email,
+                    gender: res.data.gender,
+                    address: res.data.address,
+                    phone: res.data.phone,
+                    role: res.data.role.id
+                })
+            }
+        }
+        fetchUser(isModalOpen.userId);
+    }, [])
     return (
         <>
             <Modal
                 width={500}
-                title="Add New User"
-                open={isModalOpen}
+                title="Update User"
+                open={isModalOpen.isOpened}
                 onOk={handleOk}
                 onCancel={handleCancel}
                 okText="Submit"
@@ -90,8 +105,14 @@ const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                         style={{
                             width: '100%'
                         }}
-                    //borderLeft: '1px solid #dedede'
                     >
+                        <Form.Item
+                            label="Id"
+                            name="id"
+                            hidden={true}
+                        >
+                            <Input />
+                        </Form.Item>
                         <Form.Item
                             label="Name"
                             labelCol={{ span: 4 }}
@@ -106,14 +127,7 @@ const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                             name="email"
                             rules={[{ required: true, message: "Please enter email!" }]}
                         >
-                            <Input placeholder="Enter email" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Password"
-                            labelCol={{ span: 4 }}
-                            name="password"
-                        >
-                            <Input.Password placeholder="Enter password" />
+                            <Input disabled />
                         </Form.Item>
                         <Form.Item
                             label="Gender"
@@ -164,13 +178,11 @@ const AddUserModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                                 options={roleList}
                             />
                         </Form.Item>
-
                     </Form>
                 </div>
             </Modal>
-
         </>
     );
 }
 
-export default AddUserModal;
+export default EditUserModal;

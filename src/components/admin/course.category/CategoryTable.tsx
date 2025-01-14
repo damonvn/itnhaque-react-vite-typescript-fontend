@@ -115,21 +115,13 @@ const CategoryTable = () => {
                                     style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
                                     onClick={() => {
                                         handleDelete(record.id);
-                                        setOpenPopver((prev) => {
-                                            const newState = { ...prev }
-                                            newState[record.id] = false;
-                                            return newState;
-                                        })
+                                        setOpenPopver({ [record.id]: false })
                                     }}
                                 >
                                     Yes
                                 </button>
                                 <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
-                                    onClick={() => setOpenPopver((prev) => {
-                                        const newState = { ...prev }
-                                        newState[record.id] = false;
-                                        return newState;
-                                    })}
+                                    onClick={() => setOpenPopver({ [record.id]: false })}
                                 >
                                     No
                                 </button>
@@ -139,13 +131,7 @@ const CategoryTable = () => {
                         trigger="click">
                         <button
                             className='table-delete-btn'
-                            onClick={
-                                () => setOpenPopver((pre) => {
-                                    const newState = { ...pre };
-                                    newState[record.id] = true;
-                                    return newState
-                                })
-                            }
+                            onClick={() => setOpenPopver({ [record.id]: false })}
                         >
                             <DeleteOutlined />
                         </button>

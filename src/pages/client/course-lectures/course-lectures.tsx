@@ -12,6 +12,7 @@ import CopyIcon from '@/assets/CopyIcon';
 import ClientCourseMenu from '@/components/client/course/ClientCourseMenu';
 import { ArrowLeftOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
+import toSlug from '@/config/toSlug';
 
 
 const initialContent: IContent = {
@@ -46,9 +47,9 @@ const CourseLectures = () => {
         const res = await callNextBtnHandle(id);
         if (res?.data) {
             if (menuShow === false) {
-                window.location.href = `/course/lesson/${res.data}?menushow=false`;
+                window.location.href = `/khoa-hoc/${toSlug(courseTitle)}/bai-hoc/${res.data}?menushow=false`;
             } else {
-                window.location.href = `/course/lesson/${res.data}`;
+                window.location.href = `/khoa-hoc/${toSlug(courseTitle)}/bai-hoc/${res.data}`;
             }
         }
     }
@@ -59,9 +60,9 @@ const CourseLectures = () => {
         if (res?.data) {
             // navigate(`/course/lesson/${res.data}`)
             if (menuShow === false) {
-                window.location.href = `/course/lesson/${res.data}?menushow=false`;
+                window.location.href = `/khoa-hoc/${toSlug(courseTitle)}/bai-hoc/${res.data}?menushow=false`;
             } else {
-                window.location.href = `/course/lesson/${res.data}`;
+                window.location.href = `/khoa-hoc/${toSlug(courseTitle)}/bai-hoc/${res.data}`;
             }
         }
     }
@@ -258,13 +259,14 @@ const CourseLectures = () => {
             <header className='header' style={{ display: 'flex', alignItems: 'center' }}>
 
                 <img
-                    src="/9999999.png" alt="IT NHA QUE"
+                    src="/black-white-course-logo.png" alt="IT NHA QUE"
+                    // src="/9999999.png" alt="IT NHA QUE"
                     // src="/qblackbgrlogo.png" alt="IT NHA QUE"
                     // src="/logoqleaf123.png" alt="IT NHA QUE"
                     // src="/logoqletter.png" alt="IT NHA QUE"
                     // src="/image123-removebg-preview.png" alt="IT NHA QUE"
                     // src="/number_44622925.png" alt="IT NHA QUE"
-                    style={{ width: '40px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
+                    style={{ width: '30px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
                 />
                 <span style={{ paddingLeft: '25px', marginRight: '35px', borderRight: '1px solid gray', height: '20px' }}></span>
                 <span>{courseTitle}</span>
@@ -357,8 +359,8 @@ const CourseLectures = () => {
                     courseId={courseId}
                     chapterId={lessonContent.chapterId}
                     contentId={lessonContent.id}
-                    menuShow={menuShow}
                     setMenuShow={setMenuShow}
+                    courseSlug={toSlug(courseTitle)}
                 />
             }
 

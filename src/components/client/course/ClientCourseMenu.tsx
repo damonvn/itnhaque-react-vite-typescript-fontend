@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect, memo, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import '@/styles/course.manage.scss'
 import UpArrow from '@/assets/Icons/UpArrow';
 import DownArrow from '@/assets/Icons/DownArrow';
-import { callFetchCourse } from '@/config/api';
-import { useLocation } from 'react-router-dom';
+import { callFetchClientCourse } from '@/config/api';
 import { useNavigate } from 'react-router-dom';
 import { IChapter } from '@/types/backend';
 
@@ -13,13 +12,13 @@ import { Dropdown } from 'antd';
 
 interface Props {
     courseId: number;
+    courseSlug: string;
     contentId: number;
     chapterId: number;
-    menuShow: boolean | null;
     setMenuShow: (value: boolean | null) => void;
 }
 
-const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId, menuShow, setMenuShow }) => {
+const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId, setMenuShow, courseSlug }) => {
     const rightMenuRef = useRef<HTMLDivElement>(null);
     const menuScrollRef = useRef<HTMLDivElement>(null);
     const [openSections, setOpenSections] = useState<{ [key: number]: boolean }>({});
@@ -28,7 +27,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
     const navigate = useNavigate();
 
     const handleLessonClick = (lessonId: number) => {
-        navigate(`lesson/${lessonId}`);
+        navigate(`${courseSlug}/bai-hoc/${lessonId}`);
     }
     useEffect(() => {
         if (courseLoaded) {
@@ -58,7 +57,8 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
     useEffect(() => {
         const getCourse = async (id: number) => {
             if (id !== 0) {
-                const res = await callFetchCourse(id);
+                const res = await callFetchClientCourse(id);
+                console.log('check res callFetchClientCourse: ', res);
                 if (res?.data?.chapters) {
                     setArrayChapter(res.data.chapters);
                     setCourseLoaded(true);
@@ -236,7 +236,6 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                                                             Video
                                                         </span>
                                                     }
-
                                                 </li>
                                             )}
                                         </ul>

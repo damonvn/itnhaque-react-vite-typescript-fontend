@@ -301,6 +301,24 @@ export interface IUserCreate {
     }
 }
 
+export interface IUserUpdate {
+    id: number;
+    name: string;
+    email: string;
+    gender: string;
+    address: string;
+    phone: string;
+    role: {
+        id: number,
+    }
+}
+
+export interface IUserChangePassword {
+    id: number;
+    oldPassword: string;
+    newPassword: string;
+}
+
 export interface IRoleCreate {
     name: string;
     description: string

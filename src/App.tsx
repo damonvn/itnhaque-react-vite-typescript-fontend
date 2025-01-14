@@ -40,20 +40,13 @@ const App = () => {
             ]
         },
         {
-            path: '/course',
+            path: '/khoa-hoc',
             element: <CourseLectures />,
             errorElement: <div>404 Not Found</div>,
             children: [
                 {
-                    path: "lesson/:id", element: <CourseLectures />
+                    path: ":slug/bai-hoc/:id", element: <CourseLectures />
                 },
-                {
-                    path: "lesson/edit/:id", element: <CourseLectures />
-                },
-                {
-                    path: "chapter/lesson/:id", element: <CourseLectures />
-                },
-
             ],
         },
         {

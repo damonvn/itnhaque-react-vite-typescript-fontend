@@ -20,7 +20,6 @@ const SkillTable = () => {
     const [total, setTotal] = useState<number>();
     const [pageSize, setPageSize] = useState<number>(10);
     const [currentPage, setCurrentPage] = useState<number>(1);
-
     const [openPopver, setOpenPopver] = useState<{ [key: number]: boolean }>({});
 
     const onChangePagination = (cp: number, ps: number) => {
@@ -110,37 +109,24 @@ const SkillTable = () => {
                                     style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
                                     onClick={() => {
                                         handleDelete(record.id);
-                                        setOpenPopver((prev) => {
-                                            const newState = { ...prev }
-                                            newState[record.id] = false;
-                                            return newState;
-                                        })
+                                        setOpenPopver({ [record.id]: false })
                                     }}
                                 >
                                     Yes
                                 </button>
                                 <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
-                                    onClick={() => setOpenPopver((prev) => {
-                                        const newState = { ...prev }
-                                        newState[record.id] = false;
-                                        return newState;
-                                    })}
+                                    onClick={() => setOpenPopver({ [record.id]: false })}
                                 >
                                     No
                                 </button>
                             </div>
                         }
                         title="Do you want to delete?"
-                        trigger="click">
+                        trigger="click"
+                    >
                         <button
                             className='table-delete-btn'
-                            onClick={
-                                () => setOpenPopver((pre) => {
-                                    const newState = { ...pre };
-                                    newState[record.id] = true;
-                                    return newState
-                                })
-                            }
+                            onClick={() => setOpenPopver({ [record.id]: false })}
                         >
                             <DeleteOutlined />
                         </button>

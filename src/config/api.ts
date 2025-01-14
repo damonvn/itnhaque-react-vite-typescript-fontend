@@ -10,7 +10,9 @@ import {
     IRoleUpdate,
     ICategory,
     ICategoryCreate,
-    ISkillCreate
+    ISkillCreate,
+    IUserUpdate,
+    IUserChangePassword
 } from '@/types/backend';
 
 
@@ -74,6 +76,10 @@ export const callFetchCourse = async (id: number) => {
     return (await axios.get<IBackendRes<ICourse>>(`/api/v1/course/${id}`)).data;
 }
 
+export const callFetchClientCourse = async (id: number) => {
+    return (await axios.get<IBackendRes<ICourse>>(`/api/v1/client/course/${id}`)).data;
+}
+
 export const callFetchUpdateCourse = async (id: number) => {
     return (await axios.get<IBackendRes<ICourseUpdate>>(`/api/v1/course/update/${id}`)).data;
 }
@@ -104,8 +110,8 @@ export const callFetchAllSkills = async () => {
     return (await axios.get<IBackendRes<ISkillArray>>('/api/v1/skill/all')).data
 }
 
-export const callFetClientCourses = async () => {
-    return (await axios.get<IBackendRes<ICourseClientArray>>('/api/v1/client/course')).data
+export const callFetClientCourses = async (query?: string) => {
+    return (await axios.get<IBackendRes<ICourseClientArray>>(`/api/v1/client/course?${query}`)).data
 }
 
 export const callFetchChapterById = async (id: number) => {
@@ -124,9 +130,30 @@ export const callPrevBtnHandle = async (id: number) => {
     return (await axios.post<IBackendRes<number>>('/api/v1/client/lesson/previous', { contentId: id })).data
 }
 
+export const callCreateUser = async (user: IUserCreate) => {
+    return (await axios.post<IBackendRes<IUser>>('/api/v1/user', { ...user })).data;
+}
+
+export const callUpdateUser = async (user: IUserUpdate) => {
+    return (await axios.put<IBackendRes<IUserUpdate>>('/api/v1/user', { ...user })).data;
+}
+
 
 export const callFetchUsers = async (query: string) => {
     return (await axios.get<IBackendRes<IPagination<IUser[]>>>(`/api/v1/user${query}`)).data
+}
+
+export const callFetchUserById = async (id: number) => {
+    return (await axios.get<IBackendRes<IUserUpdate>>(`/api/v1/user/${id}`)).data
+}
+
+export const callChangeUserPassword = async (user: IUserChangePassword) => {
+    const res = await axios.put<IBackendRes<null>>('/api/v1/user/password', { ...user });
+    return res.data;
+}
+
+export const callDelelteUser = async (id: number) => {
+    return (await axios.delete<IBackendRes<null>>(`/api/v1/user/${id}`)).data
 }
 
 export const callFetchRoles = async (query: string) => {
@@ -135,10 +162,6 @@ export const callFetchRoles = async (query: string) => {
 
 export const callFetchAllRoles = async () => {
     return (await axios.get<IBackendRes<IRole[]>>('/api/v1/role/all')).data
-}
-
-export const callCreateUser = async (user: IUserCreate) => {
-    return (await axios.post<IBackendRes<IContent>>('/api/v1/user', { ...user })).data;
 }
 
 export const callCreateRole = async (role: IRoleCreate) => {

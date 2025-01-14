@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { InputRef, TableColumnsType, TableColumnType } from 'antd';
-import { Button, Input, Pagination, Space, Table } from 'antd';
+import { Button, Input, Pagination, Popover, Space, Table } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
-import { callFetchUsers } from '@/config/api';
+import { callDelelteUser, callFetchUsers } from '@/config/api';
 import './User.scss'
 import AddUserModal from './AddUserModal';
+import EditUserModal from './EditUserModal';
 
 interface UserType {
     id: string;
@@ -15,16 +16,23 @@ interface UserType {
     role: string;
 }
 
+interface IEdit {
+    isOpened: boolean,
+    userId: number
+}
+
 type DataIndex = keyof { name: string };
 
 const UserTable = () => {
     const [addUserModalOpen, setAddUserModalOpen] = useState(false);
+    const [editModal, setEditModal] = useState<IEdit>({ isOpened: false, userId: -1 });
     const [data, setData] = useState<UserType[]>([]);
     const [totalUsers, setTotalUsers] = useState<number | undefined>();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
+    const [openPopver, setOpenPopver] = useState<{ [key: number]: boolean }>({});
     const searchInput = useRef<InputRef>(null);
 
     const onChangePagination = (cp: number, ps: number) => {
@@ -32,8 +40,12 @@ const UserTable = () => {
         if (cp !== abcd) setCurrentPage(cp);
         if (ps !== pageSize) setPageSize(ps);
     }
-    const fetchUsers = async (query: string) => {
-        const res = await callFetchUsers(query);
+    const fetchData = async (sort?: string) => {
+        let queryParams = `?page=${currentPage}&size=${pageSize}`
+        if (sort) {
+            queryParams += `${sort}`;
+        }
+        const res = await callFetchUsers(queryParams);
         if (res.data?.result) {
             const resUsers: UserType[] = [];
             //@ts-ignore
@@ -51,7 +63,7 @@ const UserTable = () => {
     }
     useEffect(() => {
         const queryParams = `?page=${currentPage}&size=${pageSize}`
-        fetchUsers(queryParams);
+        fetchData(queryParams);
     }, [pageSize, currentPage])
 
     const handleSearch = (
@@ -143,10 +155,18 @@ const UserTable = () => {
 
     const columns: TableColumnsType<UserType> = [
         {
+            title: 'Id',
+            dataIndex: 'id',
+            key: 'id',
+            width: '10%',
+            sorter: (a, b) => a.id.localeCompare(b.id),
+            sortDirections: ['ascend', 'descend',]
+        },
+        {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            width: '30%',
+            width: '15%',
             ...getColumnSearchProps('name'),
             sorter: (a, b) => a.name.localeCompare(b.name),
             sortDirections: ['ascend', 'descend',]
@@ -155,7 +175,7 @@ const UserTable = () => {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            width: '20%',
+            width: '25%',
             sorter: (a, b) => a.email.localeCompare(b.email),
             sortDirections: ['ascend', 'descend',]
         },
@@ -166,10 +186,64 @@ const UserTable = () => {
             sorter: (a, b) => a.role.localeCompare(b.role),
             sortDirections: ['ascend', 'descend',]
         },
+        {
+            title: 'Action',
+            key: 'action',
+            width: '30%',
+            render: (_, record) => (
+                <div>
+                    <button
+                        className='table-edit-btn'
+                        onClick={() => {
+                            setEditModal({ isOpened: true, userId: +record.id });
+                        }}
+                    >
+                        <EditOutlined />
+                    </button>
+                    <Popover
+                        open={openPopver[+record.id]}
+                        placement="left"
+                        content={
+                            <div style={{ display: 'flex', justifyContent: 'left', gap: '15px', marginTop: '15px' }}>
+                                <button
+                                    style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                    onClick={() => {
+                                        handleDelete(+record.id);
+                                        setOpenPopver({ [+record.id]: false })
+                                    }}
+                                >
+                                    Yes
+                                </button>
+                                <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                    onClick={() => setOpenPopver({ [+record.id]: false })}
+                                >
+                                    No
+                                </button>
+                            </div>
+                        }
+                        title="Do you want to delete?"
+                        trigger="click" >
+                        <button
+                            className='table-delete-btn'
+                            onClick={() => setOpenPopver({ [+record.id]: true })}
+                        >
+                            <DeleteOutlined />
+                        </button>
+                    </Popover >
+                </div >
+            ),
+        },
     ];
 
+    const handleDelete = async (id: number) => {
+        const res = await callDelelteUser(id);
+        if (res.statusCode === 200) {
+            fetchData();
+        }
+    }
+
     return (
-        <div className='admin-user-table'>
+        <div className='antd-table-custom'>
             <div className='header'>
                 <div style={{ fontWeight: 'bold' }}>User Manage</div>
                 <Button
@@ -193,7 +267,8 @@ const UserTable = () => {
                 pageSize={pageSize}
                 onChange={(p, s) => onChangePagination(p, s)}
             />
-            {addUserModalOpen && <AddUserModal isModalOpen={addUserModalOpen} setIsModalOpen={setAddUserModalOpen} />}
+            {addUserModalOpen && <AddUserModal isModalOpen={addUserModalOpen} setIsModalOpen={setAddUserModalOpen} fetchData={fetchData} />}
+            {editModal.isOpened && <EditUserModal isModalOpen={editModal} setIsModalOpen={setEditModal} fetchData={fetchData} />}
         </div>
     );
 }

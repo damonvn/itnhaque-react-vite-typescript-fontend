@@ -50,11 +50,14 @@ const SkillTable = () => {
 
     const handleDelete = async (id: number) => {
         const res = await callDeleteSkill(id)
+        console.log('check callDeleteSkill res: ', res)
         if (res.statusCode === 200) {
             fetchData();
             notification.success({
                 message: 'Delete role successfully!'
             })
+        } else if (res.statusCode === 500) {
+            notification.error({ message: 'It cannot be deleted because a 500 error occurred on the server.' })
         }
     }
     useEffect(() => {
@@ -102,20 +105,20 @@ const SkillTable = () => {
                     </button>
                     <Popover
                         open={openPopver[record.id]}
-                        placement="bottomRight"
+                        placement="left"
                         content={
                             <div style={{ display: 'flex', justifyContent: 'left', gap: '15px', marginTop: '15px' }}>
                                 <button
                                     style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
                                     onClick={() => {
                                         handleDelete(record.id);
-                                        setOpenPopver({ [record.id]: false })
+                                        setOpenPopver({})
                                     }}
                                 >
                                     Yes
                                 </button>
                                 <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
-                                    onClick={() => setOpenPopver({ [record.id]: false })}
+                                    onClick={() => setOpenPopver({})}
                                 >
                                     No
                                 </button>
@@ -126,7 +129,7 @@ const SkillTable = () => {
                     >
                         <button
                             className='table-delete-btn'
-                            onClick={() => setOpenPopver({ [record.id]: false })}
+                            onClick={() => setOpenPopver({ [record.id]: true })}
                         >
                             <DeleteOutlined />
                         </button>

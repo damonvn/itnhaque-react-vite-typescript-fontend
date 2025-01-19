@@ -31,6 +31,8 @@ const EditCategoryModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, fetc
                 fetchData();
                 setIsModalOpen({ isOpened: false, categoryId: -1 });
                 form.resetFields();
+            } else if (res.statusCode === 500) {
+                notification.error({ message: 'It cannot be deleted because a 500 error occurred on the server.' })
             } else if (res.statusCode === 400) {
                 notification.error({
                     message: res.message ? res.message : 'An error has occurred'

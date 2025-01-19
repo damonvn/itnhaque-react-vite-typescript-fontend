@@ -23,6 +23,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
     const menuScrollRef = useRef<HTMLDivElement>(null);
     const [openSections, setOpenSections] = useState<{ [key: number]: boolean }>({});
     const [arrayChapter, setArrayChapter] = useState<IChapter[]>([]);
+    const [lessonsInCourseIndex, setLessonsInCourseIndex] = useState<{ [key: string]: number }>({})
     const [courseLoaded, setCourseLoaded] = useState(false);
     const navigate = useNavigate();
 
@@ -61,6 +62,15 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                 console.log('check res callFetchClientCourse: ', res);
                 if (res?.data?.chapters) {
                     setArrayChapter(res.data.chapters);
+                    let currentLessonIndex = 0;
+                    res.data.chapters.map((c, cIndex) => {
+                        c.lessons.map((_, lIndex) => {
+                            currentLessonIndex += 1;
+                            let newState = lessonsInCourseIndex;
+                            newState[`${cIndex}-${lIndex}`] = currentLessonIndex;
+                            setLessonsInCourseIndex(newState);
+                        })
+                    })
                     setCourseLoaded(true);
                 }
             }
@@ -203,7 +213,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                                             handleScrollMenu(e, "chapter", openSections[c.id]);
                                         }}
                                     >
-                                        {`Chapter ${cIndex > 0 ? cIndex + 1 : '0' + (cIndex + 1).toString()}: ${c.title}`}
+                                        {`Chapter ${(cIndex + 1).toString()}: ${c.title}`}
                                         {openSections[c.id] ? <span className='up-arrow'><UpArrow /></span> : <span className="down-arrrow"><DownArrow /></span>}
                                     </div>
                                     <div
@@ -215,7 +225,6 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                                         <ul>
                                             {c.lessons.map((l, lIndex) =>
                                                 <li
-                                                    //isOpenLesson &&
                                                     className={`lesson-title lesson-title-client-custom ${(l.contentId === contentId) ? 'lesson-opening' : ''}`}
                                                     key={l.id}
                                                     onClick={(e) => {
@@ -224,7 +233,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                                                         handleScrollMenu(e, 'lesson')
                                                     }}
                                                 >
-                                                    {`${cIndex * 10 + lIndex + 1}. ${l.title}`}
+                                                    {`${lessonsInCourseIndex[`${cIndex}-${lIndex}`]}. ${l.title}`}
                                                     {!l.linkVideo &&
                                                         <span
                                                             className='client-lesson-action'

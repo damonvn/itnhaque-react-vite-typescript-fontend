@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { Button, notification, Pagination, Popover, Table } from 'antd';
-
-
-import { callDeleteCategory, callDeleteRole, callFetchCategoriesPagination } from '@/config/api';
+import { callDeleteCategory, callFetchCategoriesPagination } from '@/config/api';
 import '@/styles/antd-table-custom.scss'
 import { ICategory } from '@/types/backend';
 import AddCategoryModal from './AddCategoryMadal';
@@ -63,6 +61,8 @@ const CategoryTable = () => {
             notification.success({
                 message: 'Delete role successfully!'
             })
+        } else if (res.statusCode === 500) {
+            notification.error({ message: 'It cannot be deleted because a 500 error occurred on the server.' })
         }
     }
     useEffect(() => {
@@ -108,36 +108,36 @@ const CategoryTable = () => {
                     </button>
                     <Popover
                         open={openPopver[record.id]}
-                        placement="bottomRight"
+                        placement="left"
                         content={
                             <div style={{ display: 'flex', justifyContent: 'left', gap: '15px', marginTop: '15px' }}>
                                 <button
                                     style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
                                     onClick={() => {
                                         handleDelete(record.id);
-                                        setOpenPopver({ [record.id]: false })
+                                        setOpenPopver({});
                                     }}
                                 >
                                     Yes
                                 </button>
                                 <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
-                                    onClick={() => setOpenPopver({ [record.id]: false })}
+                                    onClick={() => setOpenPopver({})}
                                 >
                                     No
                                 </button>
                             </div>
                         }
                         title="Do you want to delete?"
-                        trigger="click">
+                        trigger="click" >
                         <button
                             className='table-delete-btn'
-                            onClick={() => setOpenPopver({ [record.id]: false })}
+                            onClick={() => setOpenPopver({ [record.id]: true })}
                         >
                             <DeleteOutlined />
                         </button>
-                    </Popover>
+                    </Popover >
 
-                </div>
+                </div >
             ),
         },
     ];

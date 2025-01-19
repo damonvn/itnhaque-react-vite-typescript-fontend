@@ -60,6 +60,7 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
     const [openAddChapter, setOpenAddChapter] = useState<AddChapterState>(initialAddChapterState);
     const [openAddLesson, setOpenAddLesson] = useState<AddLessonState>(initialAddLessonState);
     const [openAddLessonVideo, setOpenAddLessonVideo] = useState<AddLessonVideoState>(initialAddLessonVideoState);
+    const [lessonsInCourseIndex, setLessonsInCourseIndex] = useState<{ [key: string]: number }>({})
     const location = useLocation();
     const isOpenLesson = location.pathname.includes('admin-course-manage/lesson');
     const isEditLesson = location.pathname.includes('/lesson/edit');
@@ -99,6 +100,15 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                 const res = await callFetchCourse(id);
                 if (res?.data?.chapters) {
                     setArrayChapter(res.data.chapters);
+                    let currentLessonIndex = 0;
+                    res.data.chapters.map((c, cIndex) => {
+                        c.lessons.map((_, lIndex) => {
+                            currentLessonIndex += 1;
+                            let newState = lessonsInCourseIndex;
+                            newState[`${cIndex}-${lIndex}`] = currentLessonIndex;
+                            setLessonsInCourseIndex(newState);
+                        })
+                    })
                     setCourseLoaded(true);
                 }
             }
@@ -211,118 +221,121 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                     >
                         {
                             //@ts-ignore
-                            arrayChapter.length > 0 && arrayChapter.map((c, cIndex) => (
-                                <div className='chapter' key={c.id}>
-                                    <div
-                                        className={`chapter-title ${isOpenNewChapter && chapterId === c.id ? 'chapter-opening' : ''}`}
-                                        onClick={(e) => {
-                                            setOpenSections((prev) => {
-                                                const copyState = prev;
-                                                return {
-                                                    ...copyState,
-                                                    [c.id]: !copyState[c.id],
-                                                }
-                                            })
-                                            handleScrollMenu(e, "chapter", openSections[c.id]);
-                                        }}
-                                    >
-                                        {`Chapter ${cIndex > 0 ? cIndex + 1 : '0' + (cIndex + 1).toString()}: ${c.title}`}
-                                        {openSections[c.id] ? <span className='up-arrow'><UpArrow /></span> : <span className="down-arrrow"><DownArrow /></span>}
-                                        <div className='chapter-action'>
-                                            <PlusSquareOutlined
-                                                className='add'
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const newState: AddChapterState = {
-                                                        openModal: true,
-                                                        chapterIndex: cIndex + 1,
+                            arrayChapter.length > 0 && arrayChapter.map((c, cIndex) => {
+                                //@ts-ignore
+                                return (
+                                    <div className='chapter' key={c.id}>
+                                        <div
+                                            className={`chapter-title ${isOpenNewChapter && chapterId === c.id ? 'chapter-opening' : ''}`}
+                                            onClick={(e) => {
+                                                setOpenSections((prev) => {
+                                                    const copyState = prev;
+                                                    return {
+                                                        ...copyState,
+                                                        [c.id]: !copyState[c.id],
                                                     }
-                                                    setOpenAddChapter(newState);
-                                                }}
-                                            />
-                                            <EditOutlined
-                                                className='edit' style={{ marginRight: arrayChapter.length === 1 ? '5px' : '0px' }}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                }}
-                                            />
-                                            {arrayChapter.length > 1 && <DeleteOutlined className='delete' />}
-                                        </div>
-                                    </div>
-                                    <div
-                                        className='chapter-lesson'
-                                        style={{
-                                            display: openSections[c.id] ? "block" : "none",
-                                        }}
-                                    >
-                                        <ul>
-                                            {c.lessons.map((l, lIndex) =>
-                                                <li
-                                                    className={`lesson-title ${(isOpenLesson && l.contentId === contentId) ? 'lesson-opening' : ''}`}
-                                                    key={l.id}
+                                                })
+                                                handleScrollMenu(e, "chapter", openSections[c.id]);
+                                            }}
+                                        >
+                                            {`Chapter ${(cIndex + 1).toString()}: ${c.title}`}
+                                            {openSections[c.id] ? <span className='up-arrow'><UpArrow /></span> : <span className="down-arrrow"><DownArrow /></span>}
+                                            <div className='chapter-action'>
+                                                <PlusSquareOutlined
+                                                    className='add'
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleLessonClick(l.id);
-                                                        handleScrollMenu(e, 'lesson')
+                                                        const newState: AddChapterState = {
+                                                            openModal: true,
+                                                            chapterIndex: cIndex + 1,
+                                                        }
+                                                        setOpenAddChapter(newState);
                                                     }}
-                                                >
-                                                    {`${cIndex * 10 + lIndex + 1}. ${l.title}`}
-                                                    <div
-                                                        className='lesson-action'
-                                                    >
-                                                        <PlusSquareOutlined
-                                                            className='add'
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                const newState: AddLessonState = {
-                                                                    openModal: true,
-                                                                    chapterId: c.id,
-                                                                    lessonIndex: lIndex + 1,
-                                                                }
-                                                                setOpenAddLesson(newState);
-                                                            }}
-
-                                                        />
-                                                        <EditOutlined
-                                                            className='edit'
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                navigate(`/admin-course-manage/lesson/edit/${l.contentId}`);
-                                                            }}
-                                                        />
-                                                        <MergeCellsOutlined className='swap' onClick={(e) => {
+                                                />
+                                                <EditOutlined
+                                                    className='edit' style={{ marginRight: arrayChapter.length === 1 ? '5px' : '0px' }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                    }}
+                                                />
+                                                {arrayChapter.length > 1 && <DeleteOutlined className='delete' />}
+                                            </div>
+                                        </div>
+                                        <div
+                                            className='chapter-lesson'
+                                            style={{
+                                                display: openSections[c.id] ? "block" : "none",
+                                            }}
+                                        >
+                                            <ul>
+                                                {c.lessons.map((l, lIndex) =>
+                                                    <li
+                                                        className={`lesson-title ${(isOpenLesson && l.contentId === contentId) ? 'lesson-opening' : ''}`}
+                                                        key={l.id}
+                                                        onClick={(e) => {
                                                             e.stopPropagation();
-                                                        }} />
-                                                        {c.lessons.length > 1 && <DeleteOutlined className='delete' />}
-                                                        {!l.linkVideo ?
-                                                            <VideoCameraAddOutlined
-                                                                className='lesson-video'
+                                                            handleLessonClick(l.id);
+                                                            handleScrollMenu(e, 'lesson')
+                                                        }}
+                                                    >
+                                                        {`${lessonsInCourseIndex[`${cIndex}-${lIndex}`]}. ${l.title}`}
+                                                        <div
+                                                            className='lesson-action'
+                                                        >
+                                                            <PlusSquareOutlined
+                                                                className='add'
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    const newState: AddLessonVideoState = {
-                                                                        lessonId: l.id,
-                                                                        openModal: true
+                                                                    const newState: AddLessonState = {
+                                                                        openModal: true,
+                                                                        chapterId: c.id,
+                                                                        lessonIndex: lIndex + 1,
                                                                     }
-                                                                    setOpenAddLessonVideo(newState);
+                                                                    setOpenAddLesson(newState);
+                                                                }}
+
+                                                            />
+                                                            <EditOutlined
+                                                                className='edit'
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    navigate(`/admin-course-manage/lesson/edit/${l.contentId}`);
                                                                 }}
                                                             />
-                                                            :
-                                                            <VideoCameraOutlined
-                                                                className='lesson-video'
-                                                                onClick={() => {
-                                                                    window.open(`${l.linkVideo}`, '_blank');
-                                                                }}
-                                                            />
-                                                        }
+                                                            <MergeCellsOutlined className='swap' onClick={(e) => {
+                                                                e.stopPropagation();
+                                                            }} />
+                                                            {c.lessons.length > 1 && <DeleteOutlined className='delete' />}
+                                                            {!l.linkVideo ?
+                                                                <VideoCameraAddOutlined
+                                                                    className='lesson-video'
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        const newState: AddLessonVideoState = {
+                                                                            lessonId: l.id,
+                                                                            openModal: true
+                                                                        }
+                                                                        setOpenAddLessonVideo(newState);
+                                                                    }}
+                                                                />
+                                                                :
+                                                                <VideoCameraOutlined
+                                                                    className='lesson-video'
+                                                                    onClick={() => {
+                                                                        window.open(`${l.linkVideo}`, '_blank');
+                                                                    }}
+                                                                />
+                                                            }
 
-                                                    </div>
+                                                        </div>
 
-                                                </li>
-                                            )}
-                                        </ul>
+                                                    </li>
+                                                )}
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         }
                     </div>
                 </div>

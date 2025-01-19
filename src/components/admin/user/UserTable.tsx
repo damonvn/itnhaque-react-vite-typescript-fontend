@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { InputRef, TableColumnsType, TableColumnType } from 'antd';
-import { Button, Input, Pagination, Popover, Space, Table } from 'antd';
+import { Button, Input, message, notification, Pagination, Popover, Space, Table } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
 import { callDelelteUser, callFetchUsers } from '@/config/api';
@@ -209,13 +209,13 @@ const UserTable = () => {
                                     style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
                                     onClick={() => {
                                         handleDelete(+record.id);
-                                        setOpenPopver({ [+record.id]: false })
+                                        setOpenPopver({})
                                     }}
                                 >
                                     Yes
                                 </button>
                                 <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
-                                    onClick={() => setOpenPopver({ [+record.id]: false })}
+                                    onClick={() => setOpenPopver({})}
                                 >
                                     No
                                 </button>
@@ -225,7 +225,7 @@ const UserTable = () => {
                         trigger="click" >
                         <button
                             className='table-delete-btn'
-                            onClick={() => setOpenPopver({ [+record.id]: true })}
+                            onClick={() => setOpenPopver({ [record.id]: true })}
                         >
                             <DeleteOutlined />
                         </button>
@@ -239,6 +239,8 @@ const UserTable = () => {
         const res = await callDelelteUser(id);
         if (res.statusCode === 200) {
             fetchData();
+        } else if (res.statusCode === 500) {
+            notification.error({ message: 'It cannot be deleted because a 500 error occurred on the server.' })
         }
     }
 

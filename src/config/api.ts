@@ -227,12 +227,3 @@ export const callFetchSkillById = async (id: number) => {
 export const callUpdateSkill = async (skill: ISkill) => {
     return (await axios.put<IBackendRes<ISkill>>('/api/v1/skill', { ...skill })).data
 }
-
-
-
-
-
-
-
-
-

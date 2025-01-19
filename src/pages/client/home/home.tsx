@@ -3,8 +3,8 @@ import './home.scss'
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import { useEffect, useState } from 'react';
-import { callFetClientCourses } from '@/config/api';
-import { ICourseClientArray } from '@/types/backend';
+import { callFetchAllSkills, callFetClientCourses } from '@/config/api';
+import { ICourseClientArray, ISkill } from '@/types/backend';
 import toSlug from '@/config/toSlug';
 
 
@@ -13,11 +13,11 @@ import toSlug from '@/config/toSlug';
 type MenuItem = Required<MenuProps>['items'][number];
 
 
-
-
 const HomePage = () => {
     const [current, setCurrent] = useState('all');
     const [courses, setCourses] = useState<ICourseClientArray>([])
+    const [skills, setSkills] = useState<ISkill[]>([])
+
     const [form] = Form.useForm();
 
     const items: MenuItem[] = [
@@ -91,8 +91,16 @@ const HomePage = () => {
             setCourses(res.data.result);
         }
     }
+
+    const fetchSkills = async () => {
+        const res = await callFetchAllSkills();
+        if (res.statusCode === 200 && res?.data) {
+            setSkills(res.data);
+        }
+    }
     useEffect(() => {
         fetchCourses();
+        fetchSkills();
     }, [])
     return (
         <div>
@@ -141,7 +149,24 @@ const HomePage = () => {
                             >
                                 <Checkbox.Group>
                                     <Row>
-                                        <Col
+                                        {skills.length > 0 && skills.map((item) => {
+                                            return (
+                                                <Col
+                                                    key={item.id}
+                                                    className='home-left-menu-item'
+                                                    span={24}
+                                                >
+                                                    <Checkbox
+                                                        className='custom-checkbox'
+                                                        value={item.value}
+                                                    >
+                                                        {item.name}
+                                                    </Checkbox>
+                                                </Col>
+                                            );
+
+                                        })}
+                                        {/* <Col
                                             className='home-left-menu-item'
                                             span={24}
                                         >
@@ -162,7 +187,7 @@ const HomePage = () => {
                                             >
                                                 Frontend ReactJS
                                             </Checkbox>
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                 </Checkbox.Group>
                             </Form.Item>

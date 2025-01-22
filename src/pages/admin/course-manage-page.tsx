@@ -53,7 +53,6 @@ const CourseManage = () => {
         getLesson(+id);
         const getLessonParameters = async (contentId: number) => {
             const res = await callGetLessonParameters(contentId);
-            console.log('check res 222: ', res)
             if (res?.data) {
                 setCurrentChapterIndex(res.data.chapterInCourseIndex);
                 setCurrentLessonIndex(res.data.lessonInChapterIndex);

@@ -57,9 +57,7 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
 
     const handleOk = async () => {
         try {
-            // Validate form fields
             const values = await form.validateFields();
-            // Create course object
             const course: INewCourse = {
                 title: values.title,
                 description: values.description,
@@ -151,7 +149,6 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                             maxCount={1}
                             multiple={false}
                             customRequest={handleUploadImage}
-                            // beforeUpload={beforeUpload}
                             onChange={handleUploadChange}
                         // onRemove={(file) => handleRemoveFile(file)}
                         // onPreview={handlePreview}
@@ -164,7 +161,6 @@ const AddCourseModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                         style={{
                             width: '60%', paddingLeft: '25px'
                         }}
-                    //borderLeft: '1px solid #dedede'
                     >
                         <Form.Item
                             label="Course Title"

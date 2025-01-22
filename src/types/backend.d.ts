@@ -132,6 +132,11 @@ export interface IChapter {
     updatedBy?: string;
 }
 
+interface IUpdateChapter {
+    id: number,
+    title: string
+}
+
 export interface INewChapterCourse {
     id: number
 }

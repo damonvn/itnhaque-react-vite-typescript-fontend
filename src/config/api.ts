@@ -12,7 +12,9 @@ import {
     ICategoryCreate,
     ISkillCreate,
     IUserUpdate,
-    IUserChangePassword
+    IUserChangePassword,
+    IChapter,
+    IUpdateChapter
 } from '@/types/backend';
 
 
@@ -32,14 +34,28 @@ export const callFetchLesson = async (id: number) => {
 
 
 export const callCreateChapter = async (chapter: INewChapter) => {
-    return (await axios.post<IBackendRes<IContent>>('/api/v1/chapter', { ...chapter })).data;
+    return (await axios.post<IBackendRes<IChapter>>('/api/v1/chapter', { ...chapter })).data;
 }
+
+export const callUpdateChapter = async (chapter: IUpdateChapter) => {
+    return (await axios.put<IBackendRes<IChapter>>('/api/v1/chapter', { ...chapter })).data;
+}
+
+export const callDeleteChapter = async (id: number) => {
+    return (await axios.delete<IBackendRes<number>>(`/api/v1/chapter/${id}`)).data;
+}
+
 
 //INewLesson
 
 export const callCreateLesson = async (lesson: INewLesson) => {
     return (await axios.post<IBackendRes<IContent>>('/api/v1/lesson', { ...lesson })).data;
 }
+
+export const callDeleteLesson = async (id: number) => {
+    return (await axios.delete<IBackendRes<number>>(`/api/v1/lesson/${id}`)).data;
+}
+
 
 export const callUpdateLesson = async (content: IContent) => {
     return (await axios.put<IBackendRes<IContent>>('/api/v1/lesson/update', { ...content })).data;
@@ -56,7 +72,7 @@ export const callUploadCourseImage = async (file: any, folderType: string) => {
 
     return (await axios<IBackendRes<{ fileName: string }>>({
         method: 'post',
-        url: '/api/v1/files',
+        url: '/api/v1/file',
         data: bodyFormData,
         headers: {
             "Content-Type": "multipart/form-data",

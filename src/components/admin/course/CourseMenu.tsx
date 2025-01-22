@@ -3,13 +3,15 @@ import { DeleteOutlined, EditOutlined, MergeCellsOutlined, PlusSquareOutlined, V
 import '@/styles/course.manage.scss'
 import UpArrow from '@/assets/Icons/UpArrow';
 import DownArrow from '@/assets/Icons/DownArrow';
-import { callFetchCourse } from '@/config/api';
+import { callDeleteChapter, callDeleteLesson, callFetchCourse } from '@/config/api';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { IChapter } from '@/types/backend';
 import AddChapter from './AddChapterModal';
 import AddLesson from './AddLessonModal';
 import AddLessonVideo from './AddLessonVideoModal';
+import EidtChapterModal from './EditChapterModal';
+import { notification, Popover } from 'antd';
 
 
 interface Props {
@@ -21,6 +23,11 @@ interface Props {
 export interface AddChapterState {
     openModal: boolean;
     chapterIndex: number
+}
+
+export interface IEditChapter {
+    openModal: boolean,
+    chapterId: number
 }
 
 const initialAddChapterState: AddChapterState = {
@@ -51,6 +58,7 @@ const initialAddLessonVideoState: AddLessonVideoState = {
 }
 
 
+
 const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) => {
     const rightMenuRef = useRef<HTMLDivElement>(null);
     const menuScrollRef = useRef<HTMLDivElement>(null);
@@ -58,9 +66,12 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
     const [arrayChapter, setArrayChapter] = useState<IChapter[]>([]);
     const [courseLoaded, setCourseLoaded] = useState(false);
     const [openAddChapter, setOpenAddChapter] = useState<AddChapterState>(initialAddChapterState);
+    const [editChapterModal, setEditChapterModal] = useState<IEditChapter>({ openModal: false, chapterId: -1 });
     const [openAddLesson, setOpenAddLesson] = useState<AddLessonState>(initialAddLessonState);
     const [openAddLessonVideo, setOpenAddLessonVideo] = useState<AddLessonVideoState>(initialAddLessonVideoState);
-    const [lessonsInCourseIndex, setLessonsInCourseIndex] = useState<{ [key: string]: number }>({})
+    const [lessonsInCourseIndex, setLessonsInCourseIndex] = useState<{ [key: string]: number }>({});
+    const [openPopverChapter, setOpenPopverChapter] = useState<{ [key: number]: boolean }>({})
+    const [openPopverLesson, setOpenPopverLesson] = useState<{ [key: number]: boolean }>({})
     const location = useLocation();
     const isOpenLesson = location.pathname.includes('admin-course-manage/lesson');
     const isEditLesson = location.pathname.includes('/lesson/edit');
@@ -69,6 +80,29 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
     const handleLessonClick = (lessonId: number) => {
         navigate(`lesson/${lessonId}`);
     }
+
+    const handleDeleteChapter = async (id: number) => {
+        const res = await callDeleteChapter(id);
+        if (res.statusCode === 200) {
+            window.location.href = `/admin-course-manage/chapter/lesson/${res.data}`
+        } else if (res.statusCode === 500) {
+            notification.error({
+                message: 'Cannot delete it, a 500 error occurred from the server'
+            })
+        }
+    }
+
+    const handleDeleteLesson = async (id: number) => {
+        const res = await callDeleteLesson(id);
+        if (res.statusCode === 200 && res?.data) {
+            window.location.href = `/admin-course-manage/chapter/lesson/${res.data}`
+        } else if (res.statusCode === 500) {
+            notification.error({
+                message: 'Cannot delete it, a 500 error occurred from the server'
+            })
+        }
+    }
+
     useEffect(() => {
         if (courseLoaded && (isOpenLesson || isEditLesson)) {
             setTimeout(() => {
@@ -256,9 +290,48 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                                                     className='edit' style={{ marginRight: arrayChapter.length === 1 ? '5px' : '0px' }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
+                                                        setEditChapterModal({ openModal: true, chapterId: c.id })
                                                     }}
                                                 />
-                                                {arrayChapter.length > 1 && <DeleteOutlined className='delete' />}
+                                                {arrayChapter.length > 1 &&
+                                                    <Popover
+                                                        open={openPopverChapter[c.id]}
+                                                        onOpenChange={() => setOpenPopverChapter({})}
+                                                        placement="leftBottom"
+                                                        rootClassName="antd-lesson-popover-custom"
+                                                        content={
+                                                            <div
+                                                                style={{ display: 'flex', justifyContent: 'left', gap: '15px', marginTop: '15px' }}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                <button
+                                                                    style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                                                    onClick={() => {
+                                                                        handleDeleteChapter(c.id);
+                                                                        setOpenPopverChapter({})
+                                                                    }}
+                                                                >
+                                                                    Yes
+                                                                </button>
+                                                                <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                                                    onClick={() => setOpenPopverChapter({})}
+                                                                >
+                                                                    No
+                                                                </button>
+                                                            </div>
+                                                        }
+                                                        title="Do you want to delete?"
+                                                        trigger="click"
+                                                    >
+                                                        <DeleteOutlined
+                                                            className={`delete ${openPopverChapter[c.id] ? 'c-del-popover' : ''}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setOpenPopverChapter({ [c.id]: true })
+                                                            }}
+                                                        />
+                                                    </Popover>
+                                                }
                                             </div>
                                         </div>
                                         <div
@@ -270,7 +343,7 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                                             <ul>
                                                 {c.lessons.map((l, lIndex) =>
                                                     <li
-                                                        className={`lesson-title ${(isOpenLesson && l.contentId === contentId) ? 'lesson-opening' : ''}`}
+                                                        className={`lesson-title ${(isOpenLesson && l.contentId === contentId) ? 'lesson-opening' : ''} ${openPopverLesson[l.id] ? 'l-del-popver' : ''}`}
                                                         key={l.id}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -293,7 +366,6 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                                                                     }
                                                                     setOpenAddLesson(newState);
                                                                 }}
-
                                                             />
                                                             <EditOutlined
                                                                 className='edit'
@@ -305,7 +377,45 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                                                             <MergeCellsOutlined className='swap' onClick={(e) => {
                                                                 e.stopPropagation();
                                                             }} />
-                                                            {c.lessons.length > 1 && <DeleteOutlined className='delete' />}
+                                                            {c.lessons.length > 1 &&
+                                                                <Popover
+                                                                    open={openPopverLesson[l.id]}
+                                                                    onOpenChange={() => setOpenPopverLesson({})}
+                                                                    placement="leftBottom"
+                                                                    rootClassName="antd-lesson-popover-custom"
+                                                                    content={
+                                                                        <div
+                                                                            style={{ display: 'flex', justifyContent: 'left', gap: '15px', marginTop: '15px' }}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        >
+                                                                            <button
+                                                                                style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                                                                onClick={() => {
+                                                                                    handleDeleteLesson(l.id);
+                                                                                    setOpenPopverLesson({})
+                                                                                }}
+                                                                            >
+                                                                                Yes
+                                                                            </button>
+                                                                            <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                                                                onClick={() => setOpenPopverLesson({})}
+                                                                            >
+                                                                                No
+                                                                            </button>
+                                                                        </div>
+                                                                    }
+                                                                    title="Do you want to delete?"
+                                                                    trigger="click"
+                                                                >
+                                                                    <DeleteOutlined
+                                                                        className='delete'
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setOpenPopverLesson({ [l.id]: true })
+                                                                        }}
+                                                                    />
+                                                                </Popover>
+                                                            }
                                                             {!l.linkVideo ?
                                                                 <VideoCameraAddOutlined
                                                                     className='lesson-video'
@@ -326,7 +436,6 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                                                                     }}
                                                                 />
                                                             }
-
                                                         </div>
 
                                                     </li>
@@ -338,11 +447,12 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
                             })
                         }
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
             {openAddChapter.openModal && <AddChapter state={openAddChapter} setSate={setOpenAddChapter} courseId={courseId} />}
             {openAddLesson.openModal && <AddLesson state={openAddLesson} setState={setOpenAddLesson} courseId={courseId} />}
             {openAddLessonVideo.openModal && <AddLessonVideo state={openAddLessonVideo} setState={setOpenAddLessonVideo} />}
+            {editChapterModal.openModal && <EidtChapterModal state={editChapterModal} setState={setEditChapterModal} />}
         </>
     );
 })

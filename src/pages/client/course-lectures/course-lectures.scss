@@ -12,6 +12,26 @@
         color: #fff;
         text-align: left;
 
+        .course-header-title {
+            max-width: 70%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .back-to-home {
+            padding: 10px 15px;
+            margin-right: 10px;
+            opacity: 0.9;
+            font-size: 24px;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.8;
+                color: yellow;
+            }
+        }
+
     }
 
     .client-course-menu {

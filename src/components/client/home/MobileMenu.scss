@@ -1,0 +1,27 @@
+.mobile-menu {
+    font-size: 16px;
+
+    li {
+        padding: 15px 15px;
+        cursor: pointer;
+        background-color: #fcfcfc;
+        border-bottom: 1px solid #ededed;
+
+        &:hover {
+            background-color: #383b3b;
+            color: white;
+        }
+    }
+}
+
+.mobile-menu-icon {
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.mobile-close-icon {
+    &:hover {
+        opacity: 0.8;
+    }
+}

@@ -28,6 +28,7 @@ const CourseManage = () => {
     const [courseId, setCourseId] = useState<number>(0)
     const [lessonContent, setLessonContent] = useState<IContent>(initialContent);
     const [isRender, setIsRender] = useState<boolean>(false);
+    const [courseTitle, setCourseTitle] = useState<string>('')
 
     const location = useLocation();
     const isEditLesson = location.pathname.includes('/lesson/edit');
@@ -41,8 +42,10 @@ const CourseManage = () => {
 
     const getLesson = async (contentId: number) => {
         const res = await callFetchContent(contentId);
+        console.log('check callFetchContent res: ', res);
         if (res && res.data) {
             setCourseId(res.data.courseId);
+            setCourseTitle(res.data.courseTitle);
             setLessonContent(res.data);
             setIsRender(true);
         }
@@ -181,7 +184,21 @@ const CourseManage = () => {
         <div
             className='admin-course-manager'
         >
-            <header className='header'></header>
+            <header className='header' style={{ display: 'flex', alignItems: 'center' }}>
+
+                <img
+                    src="/black-white-course-logo.png" alt="IT NHA QUE"
+                    // src="/9999999.png" alt="IT NHA QUE"
+                    // src="/qblackbgrlogo.png" alt="IT NHA QUE"
+                    // src="/logoqleaf123.png" alt="IT NHA QUE"
+                    // src="/logoqletter.png" alt="IT NHA QUE"
+                    // src="/image123-removebg-preview.png" alt="IT NHA QUE"
+                    // src="/number_44622925.png" alt="IT NHA QUE"
+                    style={{ width: '30px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
+                />
+                <span style={{ paddingLeft: '25px', marginRight: '35px', borderRight: '1px solid gray', height: '20px' }}></span>
+                <span>{courseTitle}</span>
+            </header>
             <div
                 className='admin-lesson-content-container'
                 style={{

@@ -2,22 +2,26 @@ import { Card, Checkbox, Col, Form, Row } from 'antd';
 import './home.scss'
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
-import { useEffect, useState } from 'react';
-import { callFetchAllSkills, callFetClientCourses } from '@/config/api';
-import { ICourseClientArray, ISkill } from '@/types/backend';
+import { ReactNode, useEffect, useState } from 'react';
+import { callFetchAllCategories, callFetchAllSkills, callFetClientCourses } from '@/config/api';
+import { ICategory, ICourseClient, ISkill } from '@/types/backend';
 import toSlug from '@/config/toSlug';
-
-
-
+import MobileMenu from '@/components/client/home/MobileMenu';
+import { LineStrokeColorVar } from 'antd/es/progress/style';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
+interface CategoryMenuItem {
+    key: string;
+    label: ReactNode
+}
 
 const HomePage = () => {
     const [current, setCurrent] = useState('all');
-    const [courses, setCourses] = useState<ICourseClientArray>([])
+    const [courses, setCourses] = useState<ICourseClient[]>([])
     const [skills, setSkills] = useState<ISkill[]>([])
-
+    const [highlight, setHighlight] = useState<{ [key: string]: boolean }>({ [-1]: true })
+    const [categories, setCategories] = useState<ICategory[]>([])
     const [form] = Form.useForm();
 
     const items: MenuItem[] = [
@@ -86,9 +90,20 @@ const HomePage = () => {
             queryParams += `&${filter}`;
         }
         const res = await callFetClientCourses(queryParams);
+        console.log('check res: callFetClientCourses: ', res);
         if (res?.data) {
             //@ts-ignore
             setCourses(res.data.result);
+        }
+    }
+
+    const fetchCategories = async () => {
+        const res = await callFetchAllCategories();
+        console.log('check callFetchAllSkills res: ', res);
+        if (res.statusCode === 200 && res?.data) {
+            let data: ICategory[] = [{ id: -1, name: 'Tất cả', value: 'all' }];
+            data = [...data, ...res.data]
+            setCategories(data);
         }
     }
 
@@ -100,51 +115,93 @@ const HomePage = () => {
     }
     useEffect(() => {
         fetchCourses();
+        fetchCategories();
         fetchSkills();
     }, [])
     return (
         <div>
             <header
                 className='home-header pd-l-ss pd-r-ss pd-l-1 pd-r-1 pd-l-2 pd-r-2'
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
             >
                 <div
                     style={{ display: 'flex', width: '100%', boxSizing: 'border-box' }}
                     className='home-header-content'
                 >
-                    <div className='header-logo'>
+                    <div
+                        onClick={() => window.location.href = '/'}
+                        className='header-logo'
+                    >
                         <img
-                            // src="/it-nha-que-logo2.png" alt="IT NHA QUE"
-                            // src="/number_44622925.png" alt="IT NHA QUE"
-                            // src="/logoqletter.png" alt="IT NHA QUE"
-                            // src="/logoqleaf123.png" alt="IT NHA QUE"
-                            src="/green-q-logo.png" alt="IT NHA QUE"
-                            // src="/logo-q-home-page.png" alt="IT NHA QUE"
-                            style={{ width: '40px', marginTop: '6px', marginRight: '100px', marginLeft: '10px', opacity: 0.9 }}
+                            src="it-nha-que-home-logo.png" alt="Home"
+                            style={{ width: '37px', marginRight: '5px', marginLeft: '10px', opacity: 0.9, fontSize: '35px', color: '#fff' }}
                         />
+                        <span style={{ fontFamily: 'Impact', fontStyle: 'italic', fontSize: '13px', marginBottom: '-30px', marginRight: '48px', opacity: 0.9, color: '#B8860B' }}>It nhà quê</span>
                     </div>
-                    {/* <div className='header-menu-item'>Full Stack</div>
-                    <div className='header-menu-item'>Front End</div>
-                    <div className='header-menu-item'>Back End</div> */}
-                    <Menu style={{ height: '58px', lineHeight: '58px', marginTop: '2px' }} onClick={onClickTopMenu} selectedKeys={[current]} mode="horizontal" items={items} />
+                    {/* <Menu
+                        className='home-header-menu-responsive'
+                        style={{ height: '58px', lineHeight: '58px', marginTop: '2px' }}
+                        onClick={onClickTopMenu}
+                        selectedKeys={[current]}
+                        mode="horizontal"
+                        items={items}
+                    /> */}
+                    <ul
+                        className='home-header-menu home-header-menu-responsive'
+                        style={{ height: '58px', lineHeight: '58px' }}
+                    >
+                        {
+                            categories.length > 0 && categories.map((c) => {
+                                return (
+                                    <li
+                                        key={c.id}
+                                        onClick={() => {
+                                            if (c.value == 'all') {
+                                                fetchCourses();
+                                            } else {
+                                                fetchCourses(`filter=category.value='${c.value}'`)
+                                            }
+                                            setHighlight({ [c.id]: true });
+                                        }}
+                                    >
+                                        <span className={`${highlight[c.id] ? 'current-home-menu-item' : ''}`}>{c.name}</span>
+                                    </li>
+                                );
+                            })
+                        }
+                    </ul>
+
                 </div>
+                <MobileMenu />
             </header>
+
             <div
-                style={{ height: '100vh', marginTop: '90px', }}
+                style={{ minHeight: '100vh', marginTop: '90px', }}
                 className='home-content pd-l-ss pd-r-ss pd-l-1 pd-r-1 pd-l-2 pd-r-2'
             >
-                <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', boxSizing: 'border-box' }}>
+                <div
+                    className='home-content-container-responsive'
+                    style={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', boxSizing: 'border-box' }}
+                >
                     <div
-                        style={{ width: '20%' }}
+                        style={{ width: '25%', paddingRight: '45px', boxSizing: 'border-box' }}
+                        className='leftmenu-responsive'
                     >
                         <Form
                             form={form}
-                            className='home-left-menu l-ss l-1'
-                            style={{ border: '1px solid #e8ebed', padding: '10px', width: '100%', borderRadius: '3px', }}
+                            className='l-ss l-1 left-form-ismoblie'
+                            style={{ border: '1px solid #e8ebed', padding: '10px', width: '100%', borderRadius: '3px', position: 'sticky', top: '90px' }}
                             onValuesChange={(changedValues, values) => handleLeftMenuOnchange(changedValues, values)}
                         >
+                            <div
+                                style={{
+                                    fontWeight: 600, fontSize: '17px', marginTop: '15px', marginLeft: '4px', marginBottom: '7px'
+                                }}
+                            >
+                                Chọn theo kỹ năng
+                            </div>
                             <Form.Item
                                 name='skills'
-                                label={<span style={{ fontWeight: 600, fontSize: '18px', marginTop: '15px', marginLeft: '4px' }}>Chọn theo kỹ năng</span>}
                                 labelCol={{ span: 24 }}
                             >
                                 <Checkbox.Group>
@@ -166,7 +223,7 @@ const HomePage = () => {
                                             );
 
                                         })}
-                                        {/* <Col
+                                        <Col
                                             className='home-left-menu-item'
                                             span={24}
                                         >
@@ -187,7 +244,7 @@ const HomePage = () => {
                                             >
                                                 Frontend ReactJS
                                             </Checkbox>
-                                        </Col> */}
+                                        </Col>
                                     </Row>
                                 </Checkbox.Group>
                             </Form.Item>
@@ -195,16 +252,20 @@ const HomePage = () => {
                     </div>
                     <div
                         style={{
-                            width: '80%', paddingLeft: '25px', boxSizing: 'border-box'
+                            width: '75%', boxSizing: 'border-box'
                         }}
-                        className='home-course-container'
+                        className='home-course-responsive'
                     >
-                        <div style={{ paddingLeft: '30px', width: '100%', boxSizing: 'border-box' }}>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: '24px', minHeight: '100vh', marginLeft: '-15px', marginRight: '-15px' }}>
+                        <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                            <div
+                                className='home-course-container home-course-container-responsive'
+                                style={{ display: 'flex', flexWrap: 'wrap', rowGap: '50px', marginLeft: '-15px', marginRight: '-15px' }}
+                            >
                                 {courses.map((course) => (
                                     <div
                                         key={course.id}
                                         style={{ width: '33.333%', flexWrap: 'wrap', paddingLeft: '15px', paddingRight: '15px', boxSizing: 'border-box' }}
+                                        className='homecard-responsive'
                                     >
                                         <Card
                                             style={{ width: '100%', cursor: 'pointer' }}
@@ -215,7 +276,7 @@ const HomePage = () => {
                                                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/course/${course.image}`}
                                                 />
                                             }
-                                            onClick={() => window.location.href = `/khoa-hoc/${toSlug(course.title)}/bai-hoc/${course.id}`}
+                                            onClick={() => window.location.href = `/khoa-hoc/${toSlug(course.title)}/bai-hoc/${course.firstLessonId}`}
                                         >
                                             <div
                                                 style={{

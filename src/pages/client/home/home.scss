@@ -10,8 +10,8 @@
     background-color: #fff;
 
     .ant-menu-title-content {
-        font-family: IBM Plex sans-serif;
-        font-size: 16px;
+        font-family: Monaco;
+        font-size: 14px;
     }
 }
 
@@ -25,7 +25,6 @@
         padding-right: 15px;
         font-weight: 600;
         font-size: 14px;
-        // font-family: 'Roboto regular', sans-serif;
         line-height: 50px;
 
         &:hover {
@@ -92,22 +91,148 @@
 
 .home-course-container {
     .ant-card {
-        border-radius: 0;
+        border-radius: 2px;
 
         img {
-            border-radius: 0;
+            border-radius: 2px;
+        }
+    }
+}
+
+//.ant-card .ant-card-cover >*
+
+.header-logo {
+    display: flex;
+    align-items: center;
+
+    &:hover {
+        cursor: pointer;
+        opacity: 0.9;
+    }
+}
+
+.home-header-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+
+    li {
+        padding: 0px 20px;
+        font-family: Monaco;
+        font-size: 14px;
+        cursor: pointer;
+
+        span {
+            padding: 0px 5px;
+            line-height: 57px;
+            display: block;
+        }
+
+        &:hover {
+            span {
+                border-bottom: 2px solid #00c063;
+            }
         }
     }
 }
 
 
+.current-home-menu-item {
+    color: #00c063;
+
+    display: block;
+    padding: 0px 5px;
+    border-bottom: 2px solid #00c063;
+}
 
 
-/* Small devices (≥576px) */
-@media (min-width: 576px) {}
+@media (max-width: 576px) {
+    .mobile-menu-container-responsive {
+        display: block !important;
+    }
 
-/* Medium devices (≥768px) */
-@media (min-width: 768px) {}
+    .home-header-menu-responsive {
+        display: none !important;
+    }
+
+    .home-content-container-responsive {
+        row-gap: 35px !important;
+    }
+
+    .home-course-container-responsive {
+        row-gap: 25px !important;
+    }
+
+    .leftmenu-responsive {
+        width: 100% !important;
+        padding-right: 0px !important;
+    }
+
+    .home-course-responsive {
+        width: 100% !important;
+
+        .homecard-responsive {
+            width: 100% !important;
+        }
+    }
+
+    .client-course-menu-responsive {
+        width: 75% !important;
+        z-index: 1001 !important;
+    }
+
+    .course-header-logo-responsive,
+    .course-header-logo-separate-responsive {
+        display: none !important;
+    }
+
+    .course-header-title-responsive {
+        margin-left: 20px;
+        max-width: 90% !important;
+    }
+}
+
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .leftmenu-responsive {
+        width: 50% !important;
+        padding-right: 25px !important;
+    }
+
+    .home-course-responsive {
+        width: 50% !important;
+
+        .homecard-responsive {
+            width: 100% !important;
+        }
+    }
+
+    .client-course-menu-responsive {
+        width: 40% !important;
+        z-index: 1001 !important;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 992px) {
+    .leftmenu-responsive {
+        width: 35% !important;
+        padding-right: 25px !important;
+    }
+
+    .home-course-responsive {
+        width: 65% !important;
+
+        .homecard-responsive {
+            width: 50% !important;
+        }
+    }
+
+    .client-course-menu-responsive {
+        width: 40% !important;
+        z-index: 1001 !important;
+    }
+}
 
 /* Large devices (≥992px) */
 @media (min-width: 992px) {}

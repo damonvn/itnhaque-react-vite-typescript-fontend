@@ -147,7 +147,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
         <>
             <div
                 ref={rightMenuRef}
-                className='client-course-menu'
+                className='client-course-menu client-course-menu-responsive'
                 style={{ top: window.scrollY < 60 ? `${60 - window.scrollY}px` : 0 }} //display: menuShow ? 'block' : 'none'
             >
                 <div className='menu-close menu-close-client'>

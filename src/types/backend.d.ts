@@ -25,6 +25,9 @@ export interface ICourseCard {
     image: string;
     description: string;
     active: boolean;
+    category: string;
+    skill: string;
+    firstLessonId: number;
     createdAt?: string;
     createdBy?: string;
     updatedAt?: string;
@@ -37,13 +40,15 @@ export interface ICourseClient {
     image: string;
     description: string;
     active: boolean;
+    category: string;
+    skill: string;
+    firstLessonId: number;
     createdAt?: string;
     createdBy?: string;
     updatedAt?: string;
     updatedBy?: string;
 }
 
-export type ICourseClientArray = ICourseClient[];
 
 export interface ICourseUpdate {
     id: number;
@@ -227,9 +232,6 @@ export interface ICategoryCreate {
     name: string;
     value: string;
 }
-
-
-export type ICategoryArray = ICategory[];
 
 export interface ISkill {
     id: number;

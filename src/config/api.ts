@@ -2,8 +2,8 @@ import axios from './axios-customize'
 import {
     IBackendRes, ILesson, IContent, INewChapter, INewLesson, ICourse,
     IAddLessonVideo, INewCourse, IUpdateCourse, IUpdateCourseActive,
-    ILogin, IResUserLogin, IFetchAccount, ISkill, ISkillArray, ICategoryArray,
-    ICourseUpdate, ICourseClientArray, LessonParameters, IContentDTO, IRole,
+    ILogin, IResUserLogin, IFetchAccount, ISkill, ISkillArray,
+    ICourseUpdate, LessonParameters, IContentDTO, IRole,
     IUser, IPagination, ICourseCard,
     IUserCreate,
     IRoleCreate,
@@ -14,7 +14,8 @@ import {
     IUserUpdate,
     IUserChangePassword,
     IChapter,
-    IUpdateChapter
+    IUpdateChapter,
+    ICourseClient
 } from '@/types/backend';
 
 
@@ -44,9 +45,6 @@ export const callUpdateChapter = async (chapter: IUpdateChapter) => {
 export const callDeleteChapter = async (id: number) => {
     return (await axios.delete<IBackendRes<number>>(`/api/v1/chapter/${id}`)).data;
 }
-
-
-//INewLesson
 
 export const callCreateLesson = async (lesson: INewLesson) => {
     return (await axios.post<IBackendRes<IContent>>('/api/v1/lesson', { ...lesson })).data;
@@ -127,7 +125,7 @@ export const callFetchAllSkills = async () => {
 }
 
 export const callFetClientCourses = async (query?: string) => {
-    return (await axios.get<IBackendRes<ICourseClientArray>>(`/api/v1/client/course?${query}`)).data
+    return (await axios.get<IBackendRes<ICourseClient[]>>(`/api/v1/client/course?${query}`)).data
 }
 
 export const callFetchChapterById = async (id: number) => {
@@ -210,7 +208,7 @@ export const callUpdateCategory = async (category: ICategory) => {
 }
 
 export const callFetchAllCategories = async () => {
-    return (await axios.get<IBackendRes<ICategoryArray>>('/api/v1/category/all')).data
+    return (await axios.get<IBackendRes<ICategory[]>>('/api/v1/category/all')).data
 }
 
 export const callFetchCategoriesPagination = async (query: string) => {

@@ -10,8 +10,9 @@ import { IContent } from '@/types/backend';
 import { useParams } from 'react-router-dom';
 import CopyIcon from '@/assets/CopyIcon';
 import ClientCourseMenu from '@/components/client/course/ClientCourseMenu';
-import { ArrowLeftOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, HomeOutlined, LeftOutlined, ReadOutlined, RightOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
+import { isMobile } from 'react-device-detect';
 import toSlug from '@/config/toSlug';
 
 
@@ -256,25 +257,36 @@ const CourseLectures = () => {
         <div
             className='client-course-manager'
         >
-            <header className='header' style={{ display: 'flex', alignItems: 'center' }}>
-
-                <img
-                    src="/black-white-course-logo.png" alt="IT NHA QUE"
-                    // src="/9999999.png" alt="IT NHA QUE"
-                    // src="/qblackbgrlogo.png" alt="IT NHA QUE"
-                    // src="/logoqleaf123.png" alt="IT NHA QUE"
-                    // src="/logoqletter.png" alt="IT NHA QUE"
-                    // src="/image123-removebg-preview.png" alt="IT NHA QUE"
-                    // src="/number_44622925.png" alt="IT NHA QUE"
-                    style={{ width: '30px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
-                />
-                <span style={{ paddingLeft: '25px', marginRight: '35px', borderRight: '1px solid gray', height: '20px' }}></span>
-                <span>{courseTitle}</span>
+            <header className='header' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', width: 'calc(100% - 60px)' }}>
+                    {/* <img
+                        className='course-header-logo-responsive'
+                        src="/black-white-course-logo.png" alt="IT NHA QUE"
+                        style={{ width: '30px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
+                    /> */}
+                    <span
+                        className='course-header-logo-responsive'
+                        style={{ width: '40px', marginTop: '0px', marginLeft: '20px', marginRight: '1px', opacity: 0.7, fontSize: '32px' }}
+                    >
+                        <ReadOutlined />
+                    </span>
+                    <span
+                        className='course-header-logo-separate-responsive'
+                        style={{ paddingLeft: '25px', marginRight: '35px', borderRight: '1px solid gray', height: '20px' }}>
+                    </span>
+                    <div className='course-header-title course-header-title-responsive'>{courseTitle}</div>
+                </div>
+                <div
+                    onClick={() => window.location.href = '/'}
+                    className='back-to-home'
+                >
+                    <HomeOutlined />
+                </div>
             </header>
             {
                 menuShow !== null &&
                 <div
-                    className='lesson-content'
+                    className='lesson-content client-lesson-content-responsive'
                     style={{
                         width: menuShow ? '70%' : '100%', textAlign: 'center', minHeight: '100vh', boxSizing: 'border-box',
                     }}
@@ -332,9 +344,9 @@ const CourseLectures = () => {
                         chaptersSize !== -1 && lessonsSize !== -1 &&
                         !(currentChapterIndex === chaptersSize - 1 && currentLessonIndex === lessonsSize - 1) &&
                         <div
-                            className='course-right-btn'
+                            className='course-right-btn course-right-btn-responsive'
                             style={{
-                                left: menuShow ? 'calc(70vw - 42px)' : 'calc(100vw - 47px)',
+                                left: menuShow ? 'calc(70% - 32px)' : 'calc(100% - 32px)'
                             }}
                             onClick={() => {
                                 nextBtnOnClickHandle();

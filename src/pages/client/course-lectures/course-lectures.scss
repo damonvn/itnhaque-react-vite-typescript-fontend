@@ -334,16 +334,32 @@
     }
 }
 
-.client-lesson-content {
-    .ql-syntax {
-        overflow-x: auto;
 
+.client-lesson-content {
+    pre.ql-syntax {
+        background-color: #f4f4f4;
+        overflow-x: auto;
+        padding: 20px;
+        border-radius: 6px;
+        border: 1px solid #e3e3e3;
+        font-size: 15px;
+    }
+
+    .ql-syntax {
         .copy-btn {
             cursor: pointer;
+            background-color: #f4f4f4 !important;
+            border: none;
 
             &:hover {
-                opacity: 0.9;
-                color: greenyellow;
+                color: blue;
+            }
+
+            &:focus,
+            &:focus-visible {
+                outline: 2px auto blue;
+                color: blue;
+                background-color: #f4f4f4 !important;
             }
         }
     }

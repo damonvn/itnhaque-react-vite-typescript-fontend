@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState, memo, useMemo } from 'react';
 import '@/styles/quill.editor.scss';
 import { IContent } from '@/types/backend';
 import { callUpdateLesson } from '@/config/api';
-import { Input } from 'antd';
+import { Button, Input } from 'antd';
 
 
 
@@ -184,7 +184,7 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
                     ref={quillRef}
                     onChange={handleOnchange}
                 />
-                <button
+                <Button
                     style={{
                         marginTop: '15px',
                         marginBottom: '15px'
@@ -192,7 +192,7 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
                     onClick={() => {
                         handleUpdateLessonContent();
                     }}
-                >Save</button>
+                >Save</Button>
             </div>
         </>
     );

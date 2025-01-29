@@ -18,6 +18,7 @@ import UserTable from './components/admin/user/UserTable';
 import RoleTable from './components/admin/role/RoleTable';
 import CategoryTable from './components/admin/course.category/CategoryTable';
 import SkillTable from './components/admin/course.skill/SkillTable';
+import FileTable from './components/admin/file/FileTable';
 
 const App = () => {
     const dispatch = useAppDispatch();
@@ -71,6 +72,9 @@ const App = () => {
                 },
                 {
                     path: 'skill', element: <SkillTable />
+                },
+                {
+                    path: 'file', element: <FileTable />
                 },
             ],
         },

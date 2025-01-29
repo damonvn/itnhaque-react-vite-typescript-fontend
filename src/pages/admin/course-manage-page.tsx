@@ -10,7 +10,7 @@ import CourseMemu from '@/components/admin/course/CourseMenu';
 import { IContent } from '@/types/backend';
 import { useLocation, useParams } from 'react-router-dom';
 import CopyIcon from '@/assets/CopyIcon';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined, ReadOutlined, RightOutlined } from '@ant-design/icons';
 
 const initialContent: IContent = {
     id: 0,
@@ -42,7 +42,7 @@ const CourseManage = () => {
 
     const getLesson = async (contentId: number) => {
         const res = await callFetchContent(contentId);
-        console.log('check callFetchContent res: ', res);
+        console.log('check callFetchContent res 5555: ', res);
         if (res && res.data) {
             setCourseId(res.data.courseId);
             setCourseTitle(res.data.courseTitle);
@@ -116,10 +116,10 @@ const CourseManage = () => {
         const handleCopyCodeBlocks = () => {
             const codeBlocks = document.querySelectorAll('.ql-syntax');
             codeBlocks.forEach((fatherElement: Element) => {
-                const copyBtn = fatherElement.querySelector('.copy-btn') as HTMLButtonElement | null;
+                const copyBtn = fatherElement.querySelector('.admin-copy-btn') as HTMLButtonElement | null;
                 if (copyBtn) {
                     const fatherCopy = fatherElement.cloneNode(true) as HTMLElement;
-                    const removeBTN = fatherCopy.querySelector('.copy-btn');
+                    const removeBTN = fatherCopy.querySelector('.admin-copy-btn');
                     if (removeBTN) {
                         fatherCopy.removeChild(removeBTN);
                     }
@@ -153,7 +153,7 @@ const CourseManage = () => {
         return () => {
             const codeBlocks = document.querySelectorAll('.ql-syntax');
             codeBlocks.forEach((fatherElement: Element) => {
-                const copyBtn = fatherElement.querySelector('.copy-btn') as HTMLButtonElement | null;
+                const copyBtn = fatherElement.querySelector('.admin-copy-btn') as HTMLButtonElement | null;
                 if (copyBtn) {
                     const handleClick = (copyBtn as any)._handleClick; // Truy xuất lại hàm handleClick
                     if (handleClick) {
@@ -185,17 +185,11 @@ const CourseManage = () => {
             className='admin-course-manager'
         >
             <header className='header' style={{ display: 'flex', alignItems: 'center' }}>
-
-                <img
-                    src="/black-white-course-logo.png" alt="IT NHA QUE"
-                    // src="/9999999.png" alt="IT NHA QUE"
-                    // src="/qblackbgrlogo.png" alt="IT NHA QUE"
-                    // src="/logoqleaf123.png" alt="IT NHA QUE"
-                    // src="/logoqletter.png" alt="IT NHA QUE"
-                    // src="/image123-removebg-preview.png" alt="IT NHA QUE"
-                    // src="/number_44622925.png" alt="IT NHA QUE"
-                    style={{ width: '30px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
-                />
+                <span
+                    style={{ width: '40px', marginTop: '0px', marginLeft: '20px', marginRight: '1px', opacity: 0.7, fontSize: '32px' }}
+                >
+                    <ReadOutlined />
+                </span>
                 <span style={{ paddingLeft: '25px', marginRight: '35px', borderRight: '1px solid gray', height: '20px' }}></span>
                 <span>{courseTitle}</span>
             </header>
@@ -226,11 +220,20 @@ const CourseManage = () => {
                                 }
                             </>
                             :
-                            <div
-                                style={{ textAlign: 'left', marginTop: '10px' }}
-                                className='lesson-content'
-                                dangerouslySetInnerHTML={{ __html: innerHTML }}
-                            />
+                            <>
+                                <div
+                                    className='lesson-content'
+                                    style={{ textAlign: 'left', marginTop: '24px', marginBottom: '12px', fontWeight: 'bold  ' }}
+                                >
+                                    {lessonContent.title}
+                                </div>
+                                <div
+                                    style={{ textAlign: 'left', marginTop: '10px' }}
+                                    className='lesson-content'
+                                    dangerouslySetInnerHTML={{ __html: innerHTML }}
+                                />
+                            </>
+
                     }
                 </div>
 
@@ -290,9 +293,9 @@ const addedButtonHTML = (innerHTML: string) => {
     if (blocks.length > 0) {
         //@ts-ignore
         blocks.forEach((block) => {
-            if (!block.classList.contains('copy-btn')) {
+            if (!block.classList.contains('admin-copy-btn')) {
                 const btn = document.createElement('button');
-                btn.className = 'copy-btn';
+                btn.className = 'admin-copy-btn';
                 btn.style.position = 'absolute';
                 btn.style.top = '6px';
                 btn.style.right = '8px';
@@ -329,7 +332,7 @@ const handleLessonScroll = () => {
         //@ts-ignore
         const lessonBlockWidth = lessonBlock.getBoundingClientRect().width;
         codeBlocks.forEach(codeBlock => {
-            const copyBTN = codeBlock.querySelector('.copy-btn');
+            const copyBTN = codeBlock.querySelector('.admin-copy-btn');
             if (copyBTN) {
                 const bottom = codeBlock.getBoundingClientRect().bottom;
                 //@ts-ignore
@@ -349,7 +352,7 @@ const handleLessonScroll = () => {
                             //@ts-ignore
                             copyBTN.style.top = '6px';
                             //@ts-ignore
-                            copyBTN.style.left = `${lessonBlockLeft + lessonBlockWidth - 8 - 105}px`;
+                            copyBTN.style.left = `${lessonBlockLeft + lessonBlockWidth - 9 - 105}px`;
                             //@ts-ignore
                             copyBTN.style.right = 'auto';
                         }

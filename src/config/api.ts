@@ -15,7 +15,8 @@ import {
     IUserChangePassword,
     IChapter,
     IUpdateChapter,
-    ICourseClient
+    ICourseClient,
+    IFile
 } from '@/types/backend';
 
 
@@ -27,12 +28,9 @@ export const callFetchContent = async (id: number) => {
     return (await axios.get<IBackendRes<IContentDTO>>(`/api/v1/content/${id}`)).data;
 }
 
-
 export const callFetchLesson = async (id: number) => {
     return (await axios.get<IBackendRes<ILesson>>(`/api/v1/lesson/${id}`)).data;
 }
-
-
 
 export const callCreateChapter = async (chapter: INewChapter) => {
     return (await axios.post<IBackendRes<IChapter>>('/api/v1/chapter', { ...chapter })).data;
@@ -78,6 +76,14 @@ export const callUploadCourseImage = async (file: any, folderType: string) => {
     })).data;
 }
 
+export const callFetchAllFilesPagination = async (query: string) => {
+    return (await axios.get<IBackendRes<IPagination<IFile[]>>>(`/api/v1/file${query}`)).data
+}
+
+export const callDeleteFile = async (id: number) => {
+    return (await axios.delete<IBackendRes<boolean>>(`/api/v1/file/${id}`)).data
+}
+
 export const callCreateCourse = async (course: INewCourse) => {
     return (await axios.post<IBackendRes<IContent>>('/api/v1/course', { ...course })).data;
 }
@@ -105,6 +111,10 @@ export const callUpdateCourse = async (course: IUpdateCourse) => {
 
 export const callUpdateCourseActive = async (course: IUpdateCourseActive) => {
     return (await axios.put<IBackendRes<null>>('/api/v1/course/active', { ...course })).data;
+}
+
+export const callDeleteCourse = async (id: number) => {
+    return (await axios.delete<IBackendRes<null>>(`/api/v1/course/${id}`)).data;
 }
 
 export const callLogin = async (user: ILogin) => {

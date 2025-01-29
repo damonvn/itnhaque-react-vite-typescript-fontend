@@ -1,70 +1,22 @@
 import { Card, Checkbox, Col, Form, Row } from 'antd';
 import './home.scss'
-import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { callFetchAllCategories, callFetchAllSkills, callFetClientCourses } from '@/config/api';
 import { ICategory, ICourseClient, ISkill } from '@/types/backend';
 import toSlug from '@/config/toSlug';
-import MobileMenu from '@/components/client/home/MobileMenu';
-import { LineStrokeColorVar } from 'antd/es/progress/style';
+import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
+import RightArrow from '@/components/client/home/RightArrow';
 
-type MenuItem = Required<MenuProps>['items'][number];
 
-interface CategoryMenuItem {
-    key: string;
-    label: ReactNode
-}
+
 
 const HomePage = () => {
-    const [current, setCurrent] = useState('all');
     const [courses, setCourses] = useState<ICourseClient[]>([])
     const [skills, setSkills] = useState<ISkill[]>([])
-    const [highlight, setHighlight] = useState<{ [key: string]: boolean }>({ [-1]: true })
+    const [menuHighlight, setMenuHighlight] = useState<{ [key: string]: boolean }>({ [-1]: true })
     const [categories, setCategories] = useState<ICategory[]>([])
+    const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
     const [form] = Form.useForm();
-
-    const items: MenuItem[] = [
-        {
-            key: 'all',
-            label: (
-                <a
-                    target="_blank" rel="noopener noreferrer"
-                    onClick={() => fetchCourses()}
-                >
-                    Tất cả
-                </a>
-            ),
-        },
-        {
-            key: 'two',
-            label: (
-                <a
-                    target="_blank" rel="noopener noreferrer"
-                    onClick={() => fetchCourses(`filter=category.value='frontend'`)}
-                >
-                    Frontend
-                </a>
-            ),
-        },
-        {
-            key: 'three',
-            label: (
-                <a
-                    target="_blank" rel="noopener noreferrer"
-                    onClick={() => fetchCourses(`filter=category.value='backend'`)}
-                >
-                    Backend
-                </a>
-            ),
-        }
-    ];
-
-
-    const onClickTopMenu: MenuProps['onClick'] = (e) => {
-        setCurrent(e.key);
-        form.resetFields();
-    };
 
     const handleLeftMenuOnchange = (_: any, values: any) => {
         if (values.skills.length > 0) {
@@ -76,10 +28,10 @@ const HomePage = () => {
                     filter += `skill.value='${skill}'`
                 }
             })
-            setCurrent('');
+            setMenuHighlight({});
             fetchCourses(filter);
         } else {
-            setCurrent('');
+            setMenuHighlight({ [-1]: true });
             fetchCourses();
         }
     }
@@ -136,19 +88,10 @@ const HomePage = () => {
                             src="it-nha-que-home-logo.png" alt="Home"
                             style={{ width: '37px', marginRight: '5px', marginLeft: '10px', opacity: 0.9, fontSize: '35px', color: '#fff' }}
                         />
-                        <span style={{ fontFamily: 'Impact', fontStyle: 'italic', fontSize: '13px', marginBottom: '-30px', marginRight: '48px', opacity: 0.9, color: '#B8860B' }}>It nhà quê</span>
+                        <span style={{ fontFamily: 'Impact', fontStyle: 'italic', fontSize: '13px', marginBottom: '-30px', marginRight: '48px', opacity: 0.9, color: '#B8860B' }}>IT nhà quê</span>
                     </div>
-                    {/* <Menu
-                        className='home-header-menu-responsive'
-                        style={{ height: '58px', lineHeight: '58px', marginTop: '2px' }}
-                        onClick={onClickTopMenu}
-                        selectedKeys={[current]}
-                        mode="horizontal"
-                        items={items}
-                    /> */}
                     <ul
                         className='home-header-menu home-header-menu-responsive'
-                        style={{ height: '58px', lineHeight: '58px' }}
                     >
                         {
                             categories.length > 0 && categories.map((c) => {
@@ -158,13 +101,15 @@ const HomePage = () => {
                                         onClick={() => {
                                             if (c.value == 'all') {
                                                 fetchCourses();
+                                                form.resetFields();
                                             } else {
                                                 fetchCourses(`filter=category.value='${c.value}'`)
+                                                form.resetFields();
                                             }
-                                            setHighlight({ [c.id]: true });
+                                            setMenuHighlight({ [c.id]: true });
                                         }}
                                     >
-                                        <span className={`${highlight[c.id] ? 'current-home-menu-item' : ''}`}>{c.name}</span>
+                                        <span className={`${menuHighlight[c.id] ? 'current-home-menu-item' : ''}`}>{c.name}</span>
                                     </li>
                                 );
                             })
@@ -172,7 +117,57 @@ const HomePage = () => {
                     </ul>
 
                 </div>
-                <MobileMenu />
+                <div
+                    className='mobile-menu-container-responsive'
+                    style={{ fontSize: '28px', cursor: 'pointer', display: 'none', marginRight: '5px' }}
+                    onClick={() => setMobileMenuOpened((prev) => {
+                        const newState = !prev;
+                        return newState;
+                    })}
+                >
+                    {!mobileMenuOpened && <MenuOutlined className='mobile-menu-icon' />}
+                    {mobileMenuOpened && <CloseOutlined className='mobile-close-icon' />}
+
+                </div>
+
+                {
+                    mobileMenuOpened &&
+                    <ul
+                        style={{
+                            // display: mobileMenuOpened ? 'block' : 'none',
+                            // visibility: mobileMenuOpened ? 'visible' : 'hidden',
+                            position: 'fixed', left: 0, margin: 0, padding: 0, listStyle: 'none',
+                            top: '60px', width: '100%', boxSizing: 'border-box', zIndex: '10',
+                        }}
+                        className='mobile-menu-item-container'
+                    >
+                        {
+                            categories.length > 0 && categories.map((ct, ind) => {
+                                return (
+                                    <li
+                                        className={`${ind === 0 ? 'top-mobile-menu-item' : ''} ${menuHighlight[ct.id] ? 'current-mobile-menu-item' : ''}`}
+                                        key={ct.id}
+                                        onClick={() => {
+                                            if (ct.value == 'all') {
+                                                fetchCourses();
+                                                form.resetFields();
+                                            } else {
+                                                fetchCourses(`filter=category.value='${ct.value}'`)
+                                                form.resetFields();
+                                            }
+                                            setMenuHighlight({ [ct.id]: true });
+                                            setMobileMenuOpened(false)
+                                        }}
+                                    >
+                                        {ct.name}
+                                    </li>
+                                );
+                            })
+                        }
+                    </ul>
+                }
+
+
             </header>
 
             <div
@@ -221,30 +216,7 @@ const HomePage = () => {
                                                     </Checkbox>
                                                 </Col>
                                             );
-
                                         })}
-                                        <Col
-                                            className='home-left-menu-item'
-                                            span={24}
-                                        >
-                                            <Checkbox
-                                                className='custom-checkbox'
-                                                value={'backendJava'}
-                                            >
-                                                Backend Java
-                                            </Checkbox>
-                                        </Col>
-                                        <Col
-                                            className='home-left-menu-item'
-                                            span={24}
-                                        >
-                                            <Checkbox
-                                                className='custom-checkbox'
-                                                value={'frontendReactJS'}
-                                            >
-                                                Frontend ReactJS
-                                            </Checkbox>
-                                        </Col>
                                     </Row>
                                 </Checkbox.Group>
                             </Form.Item>
@@ -265,34 +237,42 @@ const HomePage = () => {
                                     <div
                                         key={course.id}
                                         style={{ width: '33.333%', flexWrap: 'wrap', paddingLeft: '15px', paddingRight: '15px', boxSizing: 'border-box' }}
-                                        className='homecard-responsive'
+                                        className='homecard-responsive client-course-card'
                                     >
                                         <Card
                                             style={{ width: '100%', cursor: 'pointer' }}
                                             cover={
-                                                <img
-                                                    style={{ width: '100%' }}
-                                                    alt="example"
-                                                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/course/${course.image}`}
+                                                <div
+                                                    style={{
+                                                        width: '100%',
+                                                        minHeight: '120px',
+                                                        aspectRatio: '100 / 57',
+                                                        backgroundImage: `url(${import.meta.env.VITE_BACKEND_URL}/storage/course/${course.image})`,
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center',
+                                                        backgroundRepeat: 'no-repeat',
+                                                        borderRadius: '2px 2px 1px 1px'
+                                                    }}
                                                 />
                                             }
                                             onClick={() => window.location.href = `/khoa-hoc/${toSlug(course.title)}/bai-hoc/${course.firstLessonId}`}
                                         >
                                             <div
                                                 style={{
+                                                    display: 'block',
                                                     marginTop: '-10px',
-                                                    marginLeft: '-12px',
-                                                    marginRight: '-12px',
-                                                    marginBottom: '28px',
-                                                    // border: '1px solid red',
-                                                    height: '130px',
+                                                    marginLeft: '-14px',
+                                                    marginRight: '-16px',
                                                 }}
                                             >
-                                                <div className='course-title'>
-                                                    {course.title}
+                                                <div className='client-course-title-container'>
+                                                    <span style={{ background: '#ffbd1b', padding: '3px 5px', marginRight: '5px', fontSize: '15px', borderRadius: '2px' }}>{course.skill}</span>
+                                                    <span className='client-course-title'>{course.title}</span>
                                                 </div>
-                                                <div className='course-discripttion'>
-                                                    {course.description}
+
+                                                <div className='client-course-detail'>
+                                                    <RightArrow />
+                                                    <span style={{ fontSize: '15px' }}>Xem chi tiết</span>
                                                 </div>
                                             </div>
                                         </Card>
@@ -303,7 +283,7 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

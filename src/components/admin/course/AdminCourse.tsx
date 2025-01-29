@@ -1,12 +1,10 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Card, Switch, Button } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Card, Switch, Button, Popover, notification } from 'antd';
 import AddCourseModal from './AddCourseModal';
 import { useEffect, useState } from 'react';
-import { callFetchCourses, callUpdateCourseActive } from '@/config/api';
+import { callDeleteCourse, callFetchCourses, callUpdateCourseActive } from '@/config/api';
 import { ICourseCard, IUpdateCourseActive } from '@/types/backend';
 import UpdateCourseModal from './UpdateCourseModal';
-
-
 
 const AdminCourse = () => {
     const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
@@ -14,6 +12,7 @@ const AdminCourse = () => {
     const [updateCourseId, setUpdateCourseId] = useState(-1);
     const [courses, setCourses] = useState<ICourseCard[]>([]);
     const [coursesActive, setCoursesActive] = useState<{ [key: number]: boolean }>({});
+    const [openPopver, setOpenPopver] = useState<{ [key: number]: boolean }>({});
     const switchOnChange = async (checked: boolean, cId: number, cTitle: string) => {
         const actCourse: IUpdateCourseActive = {
             id: cId,
@@ -45,6 +44,21 @@ const AdminCourse = () => {
         }
     }
 
+    const handleDelete = async (id: number) => {
+        const res = await callDeleteCourse(id);
+        if (res.statusCode === 200) {
+            fetchCourses();
+            notification.success({
+                message: 'Delete successfully'
+            })
+
+        } else if (res.statusCode === 500) {
+            notification.error({
+                message: 'Unable to delete this course due to 500 error.'
+            })
+        }
+    }
+
     useEffect(() => {
         fetchCourses();
     }, [])
@@ -71,10 +85,17 @@ const AdminCourse = () => {
                         <Card
                             style={{ width: '100%', cursor: 'pointer' }}
                             cover={
-                                <img
-                                    style={{ width: '100%' }}
-                                    alt="example"
-                                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/course/${course.image}`}
+                                <div
+                                    style={{
+                                        width: '100%',
+                                        minHeight: '120px',
+                                        aspectRatio: '100 / 57',
+                                        backgroundImage: `url(${import.meta.env.VITE_BACKEND_URL}/storage/course/${course.image})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        backgroundRepeat: 'no-repeat',
+                                    }}
+
                                 />
                             }
                             onClick={() => window.location.href = `/admin-course-manage/lesson/${course.firstLessonId}`}
@@ -85,7 +106,6 @@ const AdminCourse = () => {
                                     marginLeft: '-12px',
                                     marginRight: '-12px',
                                     marginBottom: '28px',
-                                    // border: '1px solid red',
                                     height: '130px',
                                 }}
                             >
@@ -93,7 +113,10 @@ const AdminCourse = () => {
                                     {course.title}
                                 </div>
                                 <div className='course-discripttion'>
-                                    {course.description}
+                                    {`- ${course.category}`}
+                                </div>
+                                <div className='course-discripttion'>
+                                    {`- ${course.skill}`}
                                 </div>
                             </div>
                             <Switch
@@ -102,7 +125,7 @@ const AdminCourse = () => {
                                     event.stopPropagation();
                                     switchOnChange(value, course.id, course.title)
                                 }}
-                                style={{ position: 'absolute', left: '75px', bottom: '12px', borderRadius: '15px' }}
+                                style={{ position: 'absolute', left: '12px', width: '48px', bottom: '12px', borderRadius: '15px' }}
                             />
                             <Button
                                 className='course-edit'
@@ -114,16 +137,53 @@ const AdminCourse = () => {
                             >
                                 EDIT
                             </Button>
+                            <Popover
+                                open={openPopver[course.id]}
+                                placement="leftBottom"
+                                content={
+                                    <div
+                                        className='course-delete-popover'
+                                        onClick={(e) => e.stopPropagation()}
+                                        style={{ display: 'flex', justifyContent: 'left', gap: '15px', marginTop: '15px', paddingBottom: '8px' }}
+                                    >
+                                        <button
+                                            style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                            onClick={(e) => {
+                                                handleDelete(course.id);
+                                                e.stopPropagation();
+                                                setOpenPopver({});
+                                            }}
+                                        >
+                                            Yes
+                                        </button>
+                                        <button style={{ padding: '2px 10px', cursor: 'pointer', minWidth: '50px' }}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                setOpenPopver({});
+                                            }}
+                                        >
+                                            No
+                                        </button>
+                                    </div>
+                                }
+                                title="Do you want to delete?"
+                                trigger="click"
+                            >
+                                <DeleteOutlined className={`course-delete ${openPopver[course.id] ? 'course-delete-popover-opened' : ''}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenPopver({ [course.id]: true });
+                                    }}
+                                />
+                            </Popover>
+
                         </Card>
                     </div>
                 ))}
-
-
             </div>
             {addCourseModalOpen && <AddCourseModal isModalOpen={addCourseModalOpen} setIsModalOpen={setAddCourseModalOpen} />}
             {updateCourseModalOpen && <UpdateCourseModal courseId={updateCourseId} isModalOpen={updateCourseModalOpen} setIsModalOpen={setUpdateCourseModalOpen} />}
-
-        </div>
+        </div >
     );
 }
 

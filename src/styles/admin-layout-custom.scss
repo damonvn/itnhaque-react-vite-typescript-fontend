@@ -29,30 +29,21 @@
 
         .course-title {
             font-family: sans-serif;
-            // font-family: "Roboto", "Arial", sans-serif;
-            font-size: 17px;
-            /* Kích thước chữ */
+            font-size: 15px;
             line-height: 24px;
-            /* Chiều cao mỗi dòng */
             font-weight: 600;
-            /* Độ đậm chữ */
             overflow: hidden;
-            /* Ẩn phần văn bản thừa */
             display: -webkit-box;
-            /* Sử dụng Flexbox */
             -webkit-box-orient: vertical;
-            /* Đặt hướng là dọc */
             -webkit-line-clamp: 2;
-            /* Hiển thị tối đa 2 dòng */
             text-overflow: ellipsis;
-            /* Thêm dấu ba chấm khi bị cắt */
             white-space: normal;
-            /* Cho phép ngắt dòng */
         }
 
         .course-discripttion {
             margin-top: 10px;
-            font-size: 15px;
+            font-size: 14px;
+            font-style: italic;
             overflow: hidden;
             /* Ẩn phần văn bản thừa */
             display: -webkit-box;
@@ -69,7 +60,7 @@
 
         .course-edit {
             position: absolute;
-            left: 12px;
+            left: 75px;
             bottom: 12px;
             height: 22px;
             width: 48px;
@@ -87,6 +78,33 @@
                 border: 1.5px solid #D9772D;
                 opacity: 0.9;
             }
+        }
+
+        .course-delete {
+            position: absolute;
+            right: 8px;
+            bottom: 12px;
+            font-size: 22px;
+            color: rgb(236, 73, 73);
+            opacity: 0.7;
+            cursor: pointer;
+            padding: 0px 5px;
+
+            &:hover {
+                right: 7px;
+                bottom: 12px;
+                color: red;
+                opacity: 1;
+                font-size: 24px;
+            }
+        }
+
+        .course-delete-popover-opened {
+            right: 7px;
+            bottom: 12px;
+            color: rgb(236, 73, 73);
+            opacity: 0.9;
+            font-size: 24px;
         }
     }
 

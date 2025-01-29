@@ -75,7 +75,9 @@
 
     .ant-checkbox-checked .ant-checkbox-inner {
         background-color: #00bf63 !important;
+        background-color: #00bf63 !important;
         /* Màu nền khi được chọn */
+        border-color: #00bf63 !important;
         border-color: #00bf63 !important;
         /* Viền khi được chọn */
     }
@@ -91,7 +93,7 @@
 
 .home-course-container {
     .ant-card {
-        border-radius: 2px;
+        border-radius: 2px !important;
 
         img {
             border-radius: 2px;
@@ -116,6 +118,11 @@
     padding: 0;
     margin: 0;
     display: flex;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 59px;
+    line-height: 59px;
 
     li {
         padding: 0px 20px;
@@ -129,21 +136,100 @@
             display: block;
         }
 
+        .current-home-menu-item {
+            color: #00bf63;
+            // border-bottom: 2px solid #00c063; màu xanh
+            border-bottom: 2px solid #00bf63;
+        }
+
         &:hover {
             span {
-                border-bottom: 2px solid #00c063;
+                border-bottom: 2px solid #00bf63;
             }
         }
     }
 }
 
 
-.current-home-menu-item {
-    color: #00c063;
+.client-course-card {
+    transition: transform 0.2s ease;
 
-    display: block;
-    padding: 0px 5px;
-    border-bottom: 2px solid #00c063;
+    &:hover {
+        transform: translateY(-5px);
+    }
+
+    .ant-card-body {
+        height: 127px;
+    }
+
+    .client-course-title-container {
+        height: 84px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .client-course-title {
+        font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-size: 16px;
+        font-weight: 400;
+
+        &:hover {
+            color: #007fff;
+        }
+    }
+
+    .client-course-detail {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 17px;
+        width: 110px;
+
+        &:hover {
+            color: #007fff;
+        }
+    }
+}
+
+
+.mobile-menu-item-container {
+    font-size: 16px;
+
+    li {
+        padding: 15px 15px;
+        cursor: pointer;
+        background-color: #fcfcfc;
+        border-bottom: 1px solid #ededed;
+        font-family: Monaco;
+
+        &:hover {
+            background-color: #ededed;
+        }
+    }
+
+    .top-mobile-menu-item {
+        padding-top: 20px !important;
+    }
+
+}
+
+.mobile-menu-icon {
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.mobile-close-icon {
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.current-mobile-menu-item {
+    color: #b8860b !important;
 }
 
 
@@ -165,6 +251,7 @@
     }
 
     .leftmenu-responsive {
+        display: none !important;
         width: 100% !important;
         padding-right: 0px !important;
     }

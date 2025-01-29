@@ -128,25 +128,26 @@ const CourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId }) =>
         }
     }, [courseLoaded])
 
-    useEffect(() => {
-        const getCourse = async (id: number) => {
-            if (id !== 0) {
-                const res = await callFetchCourse(id);
-                if (res?.data?.chapters) {
-                    setArrayChapter(res.data.chapters);
-                    let currentLessonIndex = 0;
-                    res.data.chapters.map((c, cIndex) => {
-                        c.lessons.map((_, lIndex) => {
-                            currentLessonIndex += 1;
-                            let newState = lessonsInCourseIndex;
-                            newState[`${cIndex}-${lIndex}`] = currentLessonIndex;
-                            setLessonsInCourseIndex(newState);
-                        })
+    const getCourse = async (id: number) => {
+        if (id !== 0) {
+            const res = await callFetchCourse(id);
+            if (res?.data?.chapters) {
+                setArrayChapter(res.data.chapters);
+                let currentLessonIndex = 0;
+                res.data.chapters.map((c, cIndex) => {
+                    c.lessons.map((_, lIndex) => {
+                        currentLessonIndex += 1;
+                        let newState = lessonsInCourseIndex;
+                        newState[`${cIndex}-${lIndex}`] = currentLessonIndex;
+                        setLessonsInCourseIndex(newState);
                     })
-                    setCourseLoaded(true);
-                }
+                })
+                setCourseLoaded(true);
             }
         }
+    }
+
+    useEffect(() => {
         getCourse(courseId);
         setOpenSections({ [chapterId]: true });
     }, [courseId])

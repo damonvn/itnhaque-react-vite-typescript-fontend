@@ -9,7 +9,8 @@ import {
     ProductOutlined,
     MoonOutlined,
     SettingOutlined,
-    ProfileOutlined
+    HomeOutlined,
+    FileOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Layout, Menu, Dropdown, theme, MenuProps } from 'antd';
 import '@/styles/admin-layout-custom.scss'
@@ -48,9 +49,11 @@ const AdminPage: React.FC = () => {
         {
             key: '1',
             label: (
-                <div>
-                    <ProfileOutlined />
-                    <span style={{ marginLeft: '10px' }}>Profile</span>
+                <div
+                    onClick={() => window.location.href = '/'}
+                >
+                    <HomeOutlined />
+                    <span style={{ marginLeft: '10px' }}>Back to Home</span>
                 </div>
             ),
         },
@@ -118,6 +121,12 @@ const AdminPage: React.FC = () => {
                                 icon: <MoonOutlined />,
                                 label: 'Skill Manage',
                                 onClick: () => navigate('skill')
+                            },
+                            {
+                                key: 'file',
+                                icon: <FileOutlined />,
+                                label: 'File Manage',
+                                onClick: () => navigate('file')
                             },
                         ]}
                     />

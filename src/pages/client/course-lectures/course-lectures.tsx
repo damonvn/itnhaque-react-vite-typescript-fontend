@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 
 import 'react-quill/dist/quill.snow.css';
-import 'highlight.js/styles/monokai.css';
-// import '@/styles/course.manage.scss'
+// import 'highlight.js/styles/atom-one-light.css';
+// import 'highlight.js/styles/atom-one-dark.css';
+// import 'highlight.js/styles/vs.css';
+// import 'highlight.js/styles/monokai.css';
+import 'highlight.js/styles/github.css'
 import './course-lectures.scss';
 
 import { callFetchClientContent, callGetLessonParameters, callNextBtnHandle, callPrevBtnHandle } from '@/config/api';
@@ -12,7 +15,6 @@ import CopyIcon from '@/assets/CopyIcon';
 import ClientCourseMenu from '@/components/client/course/ClientCourseMenu';
 import { ArrowLeftOutlined, HomeOutlined, LeftOutlined, ReadOutlined, RightOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
 import toSlug from '@/config/toSlug';
 
 
@@ -90,7 +92,7 @@ const CourseLectures = () => {
                     copyBtns.forEach((btn) => {
                         if (btn.getBoundingClientRect().top === 6) {
                             //@ts-ignore
-                            btn.style.left = `${l + w - btn.clientWidth - 8}px`;
+                            btn.style.left = `${l + w - btn.clientWidth - 9}px`;
                         }
                     });
                 }
@@ -238,7 +240,7 @@ const CourseLectures = () => {
                         if (btn.getBoundingClientRect().top === 6) {
                             console.log('btn.getBoundingClientRect().top: ', btn.getBoundingClientRect().top)
                             //@ts-ignore
-                            btn.style.left = `${l + w - btn.clientWidth - 8}px`;
+                            btn.style.left = `${l + w - btn.clientWidth - 9}px`;
                         }
                     });
                 }
@@ -259,11 +261,6 @@ const CourseLectures = () => {
         >
             <header className='header' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', width: 'calc(100% - 60px)' }}>
-                    {/* <img
-                        className='course-header-logo-responsive'
-                        src="/black-white-course-logo.png" alt="IT NHA QUE"
-                        style={{ width: '30px', marginTop: '0px', marginLeft: '20px', marginRight: '15px', opacity: 0.7 }}
-                    /> */}
                     <span
                         className='course-header-logo-responsive'
                         style={{ width: '40px', marginTop: '0px', marginLeft: '20px', marginRight: '1px', opacity: 0.7, fontSize: '32px' }}
@@ -298,7 +295,12 @@ const CourseLectures = () => {
                         }}
                     >
                         <div
-                            style={{ textAlign: 'left', marginTop: '10px' }}
+                            style={{ textAlign: 'left', marginTop: '28px', fontWeight: 'bold' }}
+                        >
+                            {lessonContent.title}
+                        </div>
+                        <div
+                            style={{ textAlign: 'left' }}
                             className='client-lesson-content'
                             dangerouslySetInnerHTML={{ __html: innerHTML }}
                         />
@@ -449,7 +451,7 @@ const handleLessonScroll = () => {
                             //@ts-ignore
                             copyBTN.style.top = '6px';
                             //@ts-ignore
-                            copyBTN.style.left = `${lessonBlockLeft + lessonBlockWidth - 8 - 105}px`;
+                            copyBTN.style.left = `${lessonBlockLeft + lessonBlockWidth - 9 - 105}px`;
                             //@ts-ignore
                             copyBTN.style.right = 'auto';
                         }

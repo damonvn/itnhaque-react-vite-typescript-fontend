@@ -330,3 +330,10 @@ export interface IRoleCreate {
     name: string;
     description: string
 }
+
+export interface IFile {
+    id: number;
+    name: string;
+    folder: string;
+    createdAt?: string;
+}

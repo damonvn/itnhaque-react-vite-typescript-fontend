@@ -188,10 +188,12 @@
     pre.ql-syntax {
         padding: 20px;
         border-radius: 6px;
-        background-color: #f4f4f4;
+        background-color: #f4f4f4 !important;
         border: 1px solid #e3e3e3;
         font-size: 14px;
         overflow-x: auto;
+        color: #213547 !important;
+        margin: 0 !important;
     }
 
     .admin-copy-btn {
@@ -214,10 +216,6 @@
         min-height: 400px !important;
         font-size: 15px;
         width: 100%;
-
-        .ql-syntax {
-            font-size: 13px;
-        }
     }
 }
 

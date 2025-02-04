@@ -21,7 +21,6 @@ const AddSkillModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen, fetchDat
                 value: values.value
             };
             const res = await callCreateSkill(newSkill);
-            console.log('check res create: ', res)
             if (res.statusCode === 201 && res.data) {
                 // window.location.href = `${import.meta.env.VITE_FRONTEND_URL}/admin/skill`;
                 fetchData('&sort=createdAt,desc');

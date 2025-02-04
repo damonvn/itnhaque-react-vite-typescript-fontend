@@ -59,7 +59,6 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
         const getCourse = async (id: number) => {
             if (id !== 0) {
                 const res = await callFetchClientCourse(id);
-                console.log('check res callFetchClientCourse: ', res);
                 if (res?.data?.chapters) {
                     setArrayChapter(res.data.chapters);
                     let currentLessonIndex = 0;

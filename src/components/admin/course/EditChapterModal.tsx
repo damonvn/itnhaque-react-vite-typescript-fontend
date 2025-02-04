@@ -26,7 +26,6 @@ const EidtChapterModal: React.FC<EditChapterProps> = ({ state, setState }) => {
             title: chapterTitle,
         };
         const res = await callUpdateChapter(updateChapter);
-        console.log('check callUpdateChapter res: ', res);
         if (res.statusCode === 200 && res?.data) {
             window.location.href = `/admin-course-manage/chapter/lesson/${res.data.id}`;
             const newState: IEditChapter = {

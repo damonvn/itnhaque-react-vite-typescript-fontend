@@ -23,11 +23,7 @@ const EditRoleModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
     const { TextArea } = Input;
     const handleOk = async () => {
         try {
-            // Validate form fields
-
-
             const values = await form.validateFields();
-            console.log('check vl: ', values)
             const newRole: IRoleUpdate = {
                 id: values.id,
                 name: values.name,

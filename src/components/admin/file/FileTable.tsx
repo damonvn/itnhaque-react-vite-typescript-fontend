@@ -23,7 +23,6 @@ const FileTable = () => {
     const fetchFiles = async (query: string) => {
         const res = await callFetchAllFilesPagination(query);
         if (res?.data?.result) {
-            console.log('check callFetchAllFilesPagination res: ', res);
             setData(res.data.result);
             setTotalUsers(res.data.meta.total);
         }
@@ -32,7 +31,6 @@ const FileTable = () => {
     const handleDelete = async (id: number) => {
 
         const res = await callDeleteFile(id)
-        console.log('check callDeleteFile res: ', res);
         if (res.statusCode === 200 && res.data === true) {
             const queryParams = `?page=${currentPage}&size=${pageSize}`
             fetchFiles(queryParams);

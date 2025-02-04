@@ -21,7 +21,6 @@ const AddCategoryModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => 
                 value: values.value
             };
             const res = await callCreateCategory(newCategory);
-            console.log('check res create: ', res)
             if (res.statusCode === 201 && res.data) {
                 window.location.href = `${import.meta.env.VITE_FRONTEND_URL}/admin/category`;
                 setIsModalOpen(false);

@@ -238,7 +238,6 @@ const CourseLectures = () => {
                 if (copyBtns.length > 0) {
                     copyBtns.forEach((btn) => {
                         if (btn.getBoundingClientRect().top === 6) {
-                            console.log('btn.getBoundingClientRect().top: ', btn.getBoundingClientRect().top)
                             //@ts-ignore
                             btn.style.left = `${l + w - btn.clientWidth - 9}px`;
                         }

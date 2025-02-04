@@ -50,7 +50,6 @@ const SkillTable = () => {
 
     const handleDelete = async (id: number) => {
         const res = await callDeleteSkill(id)
-        console.log('check callDeleteSkill res: ', res)
         if (res.statusCode === 200) {
             fetchData();
             notification.success({

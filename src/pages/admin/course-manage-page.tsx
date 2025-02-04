@@ -42,7 +42,6 @@ const CourseManage = () => {
 
     const getLesson = async (contentId: number) => {
         const res = await callFetchContent(contentId);
-        console.log('check callFetchContent res 5555: ', res);
         if (res && res.data) {
             setCourseId(res.data.courseId);
             setCourseTitle(res.data.courseTitle);

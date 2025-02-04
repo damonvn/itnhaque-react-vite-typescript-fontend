@@ -25,7 +25,6 @@ const AddRoleModal: React.FC<IProps> = ({ isModalOpen, setIsModalOpen }) => {
                 description: values.description
             };
             const res = await callCreateRole(newRole);
-            console.log('check res create: ', res)
             if (res.statusCode === 201 && res.data) {
                 window.location.href = `${import.meta.env.VITE_FRONTEND_URL}/admin/role`;
                 setIsModalOpen(false);

@@ -42,7 +42,6 @@ const HomePage = () => {
             queryParams += `&${filter}`;
         }
         const res = await callFetClientCourses(queryParams);
-        console.log('check res: callFetClientCourses: ', res);
         if (res?.data) {
             //@ts-ignore
             setCourses(res.data.result);
@@ -51,7 +50,6 @@ const HomePage = () => {
 
     const fetchCategories = async () => {
         const res = await callFetchAllCategories();
-        console.log('check callFetchAllSkills res: ', res);
         if (res.statusCode === 200 && res?.data) {
             let data: ICategory[] = [{ id: -1, name: 'Tất cả', value: 'all' }];
             data = [...data, ...res.data]

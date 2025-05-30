@@ -216,7 +216,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                                         {openSections[c.id] ? <span className='up-arrow'><UpArrow /></span> : <span className="down-arrrow"><DownArrow /></span>}
                                     </div>
                                     <div
-                                        className='chapter-lesson'
+                                        className='client-chapter-lesson'
                                         style={{
                                             display: openSections[c.id] ? "block" : "none",
                                         }}
@@ -224,7 +224,7 @@ const ClientCourseMenu: React.FC<Props> = memo(({ courseId, contentId, chapterId
                                         <ul>
                                             {c.lessons.map((l, lIndex) =>
                                                 <li
-                                                    className={`lesson-title lesson-title-client-custom ${(l.contentId === contentId) ? 'lesson-opening' : ''}`}
+                                                    className={`${(l.contentId === contentId) ? 'client-lesson-opening ' : ''}client-lesson-title`}
                                                     key={l.id}
                                                     onClick={(e) => {
                                                         e.stopPropagation();

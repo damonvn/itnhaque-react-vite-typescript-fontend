@@ -15,6 +15,7 @@
         width: 30%;
         position: fixed;
         right: 0;
+        z-index: 10;
         box-sizing: border-box;
         border-left: 1px solid #cccccc;
         background-color: #f7f9fa;
@@ -84,7 +85,7 @@
 
                     .add {
                         &:hover {
-                            color: #007BFF;
+                            color: #6d28d2;
                             opacity: 1;
                         }
                     }
@@ -100,8 +101,8 @@
                     padding: 0;
 
                     .lesson-opening {
-                        background-color: #2d2f31;
-                        color: white;
+                        background-color: #d1d2e0;
+                        color: #2a2b3f;
                     }
 
                     li {
@@ -116,14 +117,8 @@
                         box-sizing: border-box;
 
                         &:hover {
-                            // background-color: #e5edf4;
-                            // border: 1px solid grey;
-                            // background-color: #363636;
-                            // color: white;
-                            // border: 2px solid black;
-                            // color: orange;
-                            background-color: #55585b;
-                            color: white;
+                            background-color: #d1d2e0;
+                            color: #2a2b3f;
                         }
 
                         .lesson-action {
@@ -140,7 +135,7 @@
 
                             .add {
                                 &:hover {
-                                    color: #007BFF;
+                                    color: #6d28d2;
                                 }
                             }
 
@@ -193,7 +188,8 @@
         font-size: 14px;
         overflow-x: auto;
         color: #213547 !important;
-        margin: 0 !important;
+        margin-top: 15px;
+        margin-bottom: 15px;
     }
 
     .admin-copy-btn {
@@ -216,6 +212,16 @@
         min-height: 400px !important;
         font-size: 15px;
         width: 100%;
+
+        p {
+            margin-bottom: 14px;
+        }
+
+        ul,
+        ol {
+            margin-top: -6px;
+            margin-bottom: 14px;
+        }
     }
 }
 
@@ -223,6 +229,14 @@
 
 .admin-course-manager {
     .admin-lesson-content-container {
+        .admin-lesson-content {
+
+            ul,
+            ol {
+                margin-top: -10px;
+            }
+        }
+
         .course-left-btn {
             position: fixed;
             opacity: 1;
@@ -241,11 +255,11 @@
             }
 
             &:hover {
-                border-color: #007BFF;
+                border-color: #6d28d2;
                 opacity: 0.7 !important;
 
                 .course-left-btn-icon {
-                    color: #007BFF;
+                    color: #6d28d2;
                     opacity: 1 !important;
                 }
             }
@@ -268,10 +282,10 @@
             }
 
             &:hover {
-                border-color: #007BFF;
+                border-color: #6d28d2;
 
                 .course-right-btn-icon {
-                    color: #007BFF;
+                    color: #6d28d2;
                     opacity: 0.7 !important;
                 }
             }
@@ -314,7 +328,6 @@
 }
 
 .l-del-popver {
-
     background-color: #55585b;
     color: white;
 

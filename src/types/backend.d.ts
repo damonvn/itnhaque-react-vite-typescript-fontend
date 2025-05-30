@@ -172,7 +172,8 @@ export interface IContent {
     lessonId: number;
     title: string;
     lessonVideoURL: string;
-    content: string;
+    contentHtml: string;
+    contentDelta: string;
     createdAt?: string;
     updatedAt?: string;
     createdBy?: string;
@@ -187,7 +188,8 @@ export interface IContentDTO {
     title: string;
     courseTitle: string;
     lessonVideoURL: string;
-    content: string;
+    contentHtml: string;
+    contentDelta: string;
     createdAt?: string;
     updatedAt?: string;
     createdBy?: string;

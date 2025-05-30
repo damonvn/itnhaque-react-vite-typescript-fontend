@@ -54,6 +54,7 @@ export const callDeleteLesson = async (id: number) => {
 
 
 export const callUpdateLesson = async (content: IContent) => {
+    console.log('check update lesson: ', content);
     return (await axios.put<IBackendRes<IContent>>('/api/v1/lesson/update', { ...content })).data;
 }
 

@@ -1,4 +1,5 @@
-import ReactQuill from 'react-quill';
+
+import ReactQuill, { UnprivilegedEditor } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';  // Styles for Quill Editor
 import 'highlight.js/styles/monokai.css';
 import hljs from 'highlight.js';
@@ -7,9 +8,12 @@ import '@/styles/quill.editor.scss';
 import { IContent } from '@/types/backend';
 import { callUpdateLesson } from '@/config/api';
 import { Button, Input } from 'antd';
+import { DeltaStatic, Sources } from 'quill';
+import Quill from 'quill';
+import { triggerFocus } from 'antd/es/input/Input';
 
 
-
+const Delta = Quill.import('delta');
 const formats = [
     'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'link', 'code-block'
@@ -20,16 +24,22 @@ interface IProps {
 }
 
 const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
+    const quillRef = useRef<ReactQuill>(null);
 
     const [lessonTitle, setLessonTitle] = useState('');
     const [lsVideoURL, setLsVideoURL] = useState('');
-    const [editorValue, setEditorValue] = useState(''); // Giá trị ban đầu
+    const [edittorvalue, setEditorValue] = useState<DeltaStatic | string>();
+    const [editorHtmlValue, setEditorHtmlValue] = useState<string>('');
+    const [editorDeltaValue, setEditorDeltaValue] = useState<DeltaStatic>(); // Giá trị ban đầu
 
-    const handleOnchange = (value: any) => {
-        setEditorValue(value);
+    const handleOnchange = (value: string, delta: DeltaStatic, source: Sources, editor: UnprivilegedEditor) => {
+        setEditorHtmlValue(value);
+        const deltaContent: DeltaStatic = editor.getContents();
+        setEditorDeltaValue(deltaContent);
     }
 
-    const quillRef = useRef(null);
+    console.log('check rerender')
+
     const handleImageUpload = () => {
         const url = prompt('Enter the Image URL:');
         if (url) {
@@ -135,7 +145,8 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
         if (quillRef.current) {
             const lesson: IContent = lessonContent;
             lesson.title = lessonTitle;
-            lesson.content = editorValue;
+            lesson.contentHtml = editorHtmlValue;
+            lesson.contentDelta = JSON.stringify(editorDeltaValue);
             lesson.lessonVideoURL = lsVideoURL;
             const res = await callUpdateLesson(lesson);
             if (res && res?.data) {
@@ -146,10 +157,35 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
     useEffect(() => {
         setLessonTitle(lessonContent.title);
         setLsVideoURL(lessonContent.lessonVideoURL);
-        setEditorValue(lessonContent.content);
+        setEditorValue(JSON.parse(lessonContent.contentDelta));
+        setEditorHtmlValue(lessonContent.contentHtml);
+        setEditorDeltaValue(JSON.parse(lessonContent.contentDelta));
     }, [])
 
+    useEffect(() => {
+        const quill = quillRef.current?.getEditor();
+        if (!quill) return;
 
+        const editor = quill.root;
+
+        const handlePaste = (e: ClipboardEvent) => {
+            e.preventDefault(); // ❌ Ngăn Quill xử lý mặc định
+            // Tùy chọn: xử lý thủ công ở đây, hoặc đơn giản bỏ qua hoàn toàn
+            // Ví dụ: chỉ dán plain text
+            const text = e.clipboardData?.getData('text/plain');
+            const range = quill.getSelection(true);
+            if (range && text) {
+                quill.insertText(range.index, text, 'user');
+                quill.setSelection({ index: range.index + text.length, length: 0 });
+            }
+        };
+
+        editor.addEventListener('paste', handlePaste, true);
+
+        return () => {
+            editor.removeEventListener('paste', handlePaste, true);
+        };
+    }, []);
 
     return (
         <>
@@ -178,7 +214,7 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
                         marginLeft: 'auto',
                         marginRight: 'auto',
                     }}
-                    value={editorValue}
+                    value={editorDeltaValue}
                     modules={modules}
                     formats={formats}
                     ref={quillRef}
@@ -199,3 +235,4 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
 })
 
 export default QuillEditor;
+

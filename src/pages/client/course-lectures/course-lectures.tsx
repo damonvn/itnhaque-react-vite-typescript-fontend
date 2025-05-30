@@ -25,7 +25,8 @@ const initialContent: IContent = {
     lessonId: 0,
     title: '',
     lessonVideoURL: '',
-    content: ''
+    contentHtml: '',
+    contentDelta: '',
 }
 
 const CourseLectures = () => {
@@ -129,7 +130,7 @@ const CourseLectures = () => {
         getLessonParameters(+id);
     }, [id])
 
-    const innerHTML = addedButtonHTML(lessonContent.content);
+    const innerHTML = addedButtonHTML(lessonContent.contentHtml);
 
     useEffect(() => {
         const handleMenuScroll = () => {

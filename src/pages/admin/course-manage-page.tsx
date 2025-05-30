@@ -19,7 +19,8 @@ const initialContent: IContent = {
     lessonId: 0,
     title: '',
     lessonVideoURL: '',
-    content: ''
+    contentHtml: '',
+    contentDelta: ''
 }
 
 const CourseManage = () => {
@@ -66,7 +67,7 @@ const CourseManage = () => {
         getLessonParameters(+id);
     }, [id])
 
-    const innerHTML = addedButtonHTML(lessonContent.content);
+    const innerHTML = addedButtonHTML(lessonContent.contentHtml);
     useEffect(() => {
         const handleMenuScroll = () => {
             if (rightMenuRef.current) {
@@ -228,7 +229,7 @@ const CourseManage = () => {
                                 </div>
                                 <div
                                     style={{ textAlign: 'left', marginTop: '10px' }}
-                                    className='lesson-content'
+                                    className='admin-lesson-content'
                                     dangerouslySetInnerHTML={{ __html: innerHTML }}
                                 />
                             </>
@@ -237,7 +238,7 @@ const CourseManage = () => {
                 </div>
 
                 {
-                    currentChapterIndex !== -1 && currentLessonIndex !== -1 &&
+                    !isEditLesson && currentChapterIndex !== -1 && currentLessonIndex !== -1 &&
                     chaptersSize !== -1 && lessonsSize !== -1 &&
                     !(currentChapterIndex === 0 && currentLessonIndex === 0) &&
                     <div
@@ -254,7 +255,7 @@ const CourseManage = () => {
                     </div>
                 }
                 {
-                    currentChapterIndex !== -1 && currentLessonIndex !== -1 &&
+                    !isEditLesson && currentChapterIndex !== -1 && currentLessonIndex !== -1 &&
                     chaptersSize !== -1 && lessonsSize !== -1 &&
                     !(currentChapterIndex === chaptersSize - 1 && currentLessonIndex === lessonsSize - 1) &&
                     <div

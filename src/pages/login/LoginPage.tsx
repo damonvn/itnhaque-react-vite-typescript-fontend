@@ -1,9 +1,9 @@
 import type { FormProps } from 'antd';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import './LoginPage.scss'
 import { callLogin } from '@/config/api';
 import { ILogin, IAccount } from '@/types/backend';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setUerLoginInfor } from '@/redux/slices/accountSlice';
 import { useLocation } from 'react-router-dom';
 

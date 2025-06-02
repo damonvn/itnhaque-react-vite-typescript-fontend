@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Bỏ qua Dockerfile ở thư mục gốc dự án
+Dockerfile

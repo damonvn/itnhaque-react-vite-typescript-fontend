@@ -4,8 +4,8 @@
 import { Input, Modal, Form, notification } from 'antd';
 
 import React, { Dispatch, SetStateAction, useEffect } from 'react';
-import { callCreateRole, callFetchRoleById, callUpdateRole } from '@/config/api';
-import { IRoleCreate, IRoleUpdate } from '@/types/backend';
+import { callFetchRoleById, callUpdateRole } from '@/config/api';
+import { IRoleUpdate } from '@/types/backend';
 
 interface IEdit {
     isOpened: boolean,

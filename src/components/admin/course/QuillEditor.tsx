@@ -9,11 +9,8 @@ import { IContent } from '@/types/backend';
 import { callUpdateLesson } from '@/config/api';
 import { Button, Input } from 'antd';
 import { DeltaStatic, Sources } from 'quill';
-import Quill from 'quill';
-import { triggerFocus } from 'antd/es/input/Input';
 
 
-const Delta = Quill.import('delta');
 const formats = [
     'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'link', 'code-block'
@@ -28,11 +25,10 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
 
     const [lessonTitle, setLessonTitle] = useState('');
     const [lsVideoURL, setLsVideoURL] = useState('');
-    const [edittorvalue, setEditorValue] = useState<DeltaStatic | string>();
     const [editorHtmlValue, setEditorHtmlValue] = useState<string>('');
     const [editorDeltaValue, setEditorDeltaValue] = useState<DeltaStatic>(); // Giá trị ban đầu
 
-    const handleOnchange = (value: string, delta: DeltaStatic, source: Sources, editor: UnprivilegedEditor) => {
+    const handleOnchange = (value: string, _delta: DeltaStatic, _source: Sources, editor: UnprivilegedEditor) => {
         setEditorHtmlValue(value);
         const deltaContent: DeltaStatic = editor.getContents();
         setEditorDeltaValue(deltaContent);
@@ -157,7 +153,6 @@ const QuillEditor: React.FC<IProps> = memo(({ lessonContent }) => {
     useEffect(() => {
         setLessonTitle(lessonContent.title);
         setLsVideoURL(lessonContent.lessonVideoURL);
-        setEditorValue(JSON.parse(lessonContent.contentDelta));
         setEditorHtmlValue(lessonContent.contentHtml);
         setEditorDeltaValue(JSON.parse(lessonContent.contentDelta));
     }, [])

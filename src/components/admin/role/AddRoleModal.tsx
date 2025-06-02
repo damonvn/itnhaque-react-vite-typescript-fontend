@@ -4,7 +4,6 @@ import { Input, Modal, Form, notification } from 'antd';
 import React, { Dispatch, SetStateAction } from 'react';
 import { callCreateRole } from '@/config/api';
 import { IRoleCreate } from '@/types/backend';
-import { createRoutesFromChildren } from 'react-router-dom';
 
 interface IProps {
     isModalOpen: boolean;

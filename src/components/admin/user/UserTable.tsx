@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { InputRef, TableColumnsType, TableColumnType } from 'antd';
-import { Button, Input, message, notification, Pagination, Popover, Space, Table } from 'antd';
+import { Button, Input, notification, Pagination, Popover, Space, Table } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
 import { callDelelteUser, callFetchUsers } from '@/config/api';

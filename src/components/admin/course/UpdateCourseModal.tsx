@@ -1,10 +1,9 @@
 
 import { Input, Modal, Form, Button, message, Upload, Select } from 'antd';
-import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { callCreateCourse, callFetchAllCategories, callFetchAllSkills, callFetchUpdateCourse, callUpdateCourse, callUploadCourseImage } from '@/config/api';
-import { INewCourse, IUpdateCourse } from '@/types/backend';
+import { callFetchAllCategories, callFetchAllSkills, callFetchUpdateCourse, callUpdateCourse, callUploadCourseImage } from '@/config/api';
+import { IUpdateCourse } from '@/types/backend';
 
 interface IProps {
     courseId: number;

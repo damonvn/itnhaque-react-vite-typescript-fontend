@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Modal } from 'antd';
-import { callCreateChapter, callFetchChapterById, callUpdateChapter } from '@/config/api';
-import { AddChapterState, IEditChapter } from './CourseMenu';
+import { callFetchChapterById, callUpdateChapter } from '@/config/api';
+import { IEditChapter } from './CourseMenu';
 import { IUpdateChapter } from '@/types/backend';
 
 
@@ -17,10 +17,6 @@ const EidtChapterModal: React.FC<EditChapterProps> = ({ state, setState }) => {
     const [form] = Form.useForm();
 
     const handleOk = async () => {
-
-
-        const values = await form.validateFields();
-
         const updateChapter: IUpdateChapter = {
             id: state.chapterId,
             title: chapterTitle,

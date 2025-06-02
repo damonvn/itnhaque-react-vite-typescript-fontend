@@ -1,10 +1,6 @@
 import axiosClient from "axios";
 import { Mutex } from "async-mutex";
 import { IBackendRes, IResUserLogin } from "@/types/backend";
-import { notification } from "antd";
-
-
-
 
 /**
  * Creates an initial 'axios' instance with custom settings.

@@ -7,9 +7,6 @@ import toSlug from '@/config/toSlug';
 import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import RightArrow from '@/components/client/home/RightArrow';
 
-
-
-
 const HomePage = () => {
     const [courses, setCourses] = useState<ICourseClient[]>([])
     const [skills, setSkills] = useState<ISkill[]>([])
